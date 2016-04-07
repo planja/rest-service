@@ -40,8 +40,8 @@ public class ProcessRequestService {
         final List<Date> returnDates = processRequestHelper.getReturnDates(returnStartDate, returnEndDate, dates);
 
         Map<List<Date>, List<Date>> map = processRequestHelper.getORDates(dates, returnDates, exceptReturnDates, exceptDates);
-        final List<Date> oDates = map.keySet().stream().findFirst().get();
-        final List<Date> rDates = map.values().stream().findFirst().get();
+        final List<Date> oDates = map.values().stream().findFirst().get();
+        final List<Date> rDates = map.keySet().stream().findFirst().get();
 
         String result = "";
     }
