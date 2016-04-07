@@ -8,7 +8,7 @@ import actor.processingrequestparam.PreProcessingRequestParamActor;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
-import viewmodel.TestParamViewModel;
+import viewmodel.ParamsViewModel;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -42,8 +42,8 @@ public class RESTService {
     @Path("/post")
     @Produces(MediaType.APPLICATION_JSON)
     //@Consumes(MediaType.APPLICATION_JSON)
-    public List<String> addCustomer(/*TestParamViewModel paramViewModel*/) {
-        PreProcessingRequestParamActor.paramViewModel = new TestParamViewModel();
+    public List<String> addCustomer(/*ParamsViewModel paramsViewModel*/) {
+        PreProcessingRequestParamActor.paramsViewModel = new ParamsViewModel();
         ActorSystem system = ActorSystem.create("ActorSystem");
         ActorRef actorRef = system.actorOf(Props.create(PreProcessingRequestParamActor.class), "PreProcessingRequestParamActor");
         return Arrays.asList("hello get", "hi get");

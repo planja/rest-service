@@ -1,10 +1,6 @@
 package actor.processingresult;
 
-import akka.actor.ActorRef;
-import akka.actor.ActorSystem;
-import akka.actor.Props;
 import akka.actor.UntypedActor;
-import com.typesafe.config.ConfigFactory;
 import domain.ParserResult;
 
 /**

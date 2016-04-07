@@ -10,7 +10,7 @@ public class Messenger {
     private ActorSystem system;
     private ActorRef remoteActor, myActor;
 
-    //Исправлю создание только 1 раз
+    //TODO один раз создавать или пересоздавать после каждого сообщения?
     public Messenger() {
         system = ActorSystem.create("RemoteSystem", ConfigFactory.load()
                 .getConfig("ActorConfig"));
@@ -19,9 +19,10 @@ public class Messenger {
                 .actorFor("akka.tcp://RemoteSystem@127.0.0.1:2552/user/Actor");
     }
 
+
     public void sendMessage() {
         myActor.tell(new HelloMessage(remoteActor), null);
-        system.stop(myActor);
+        system.shutdown();
     }
 
 }

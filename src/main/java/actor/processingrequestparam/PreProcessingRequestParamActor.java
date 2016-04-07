@@ -5,19 +5,19 @@ import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.actor.UntypedActor;
 import domain.Params;
-import viewmodel.TestParamViewModel;
+import viewmodel.ParamsViewModel;
 
 /**
  * Created by Никита on 05.04.2016.
  */
 public class PreProcessingRequestParamActor extends UntypedActor {
 
-    public static TestParamViewModel paramViewModel;
+    public static ParamsViewModel paramsViewModel;
 
     @Override
     public void preStart() {
         final ActorRef processingRequest = getContext().actorOf(Props.create(ProcessingRequestParamActor.class), "processingRequest");
-        processingRequest.tell(paramViewModel, getSelf());//Вызываю актор обработки параметров
+        processingRequest.tell(paramsViewModel, getSelf());//Вызываю актор обработки параметров
     }
 
     @Override
