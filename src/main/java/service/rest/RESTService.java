@@ -9,9 +9,11 @@ import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
 import viewmodel.ParamsViewModel;
+import viewmodel.RequestParamsVewModel;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.Arrays;
 import java.util.List;
 
@@ -22,7 +24,7 @@ public class RESTService {
     @GET
     @Path("/get/{some_param}")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<String> getAllCustomers(@PathParam("some_param") long id) {
+    public List<String> get(@PathParam("some_param") long id) {
         return Arrays.asList("hello get", "hi get");
     }
 
@@ -41,12 +43,12 @@ public class RESTService {
     @POST
     @Path("/post")
     @Produces(MediaType.APPLICATION_JSON)
-    //@Consumes(MediaType.APPLICATION_JSON)
-    public List<String> addCustomer(/*ParamsViewModel paramsViewModel*/) {
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response post(RequestParamsVewModel vewModel) {
         PreProcessingRequestParamActor.paramsViewModel = new ParamsViewModel();
         ActorSystem system = ActorSystem.create("ActorSystem");
         ActorRef actorRef = system.actorOf(Props.create(PreProcessingRequestParamActor.class), "PreProcessingRequestParamActor");
-        return Arrays.asList("hello get", "hi get");
+        return Response.status(Response.Status.OK).build();
     }
 
 }

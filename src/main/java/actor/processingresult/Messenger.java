@@ -10,7 +10,6 @@ public class Messenger {
     private ActorSystem system;
     private ActorRef remoteActor, myActor;
 
-    //TODO один раз создавать или пересоздавать после каждого сообщения?
     public Messenger() {
         system = ActorSystem.create("RemoteSystem", ConfigFactory.load()
                 .getConfig("ActorConfig"));
