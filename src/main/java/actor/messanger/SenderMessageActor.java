@@ -1,4 +1,4 @@
-package actor.processingresult; /**
+package actor.messanger; /**
  * Created by Никита on 04.04.2016.
  */
 import akka.actor.UntypedActor;

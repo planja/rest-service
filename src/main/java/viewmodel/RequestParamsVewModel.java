@@ -1,7 +1,9 @@
 package viewmodel;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import service.processrequest.ProcessRequestHelperService;
 
+import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
@@ -14,12 +16,9 @@ public class RequestParamsVewModel {
     public RequestParamsVewModel() {
     }
 
-    public RequestParamsVewModel(String parser, String user, String password, String login, String name, String origin, String destination, Date ow_start_date, Date ow_end_date, Date rt_start_date, Date rt_end_date, List<Date> ow_except_dates, List<Date> rt_except_dates, String seats, List<String> cabins, String type, String request_id, String user_id) {
+    public RequestParamsVewModel(String parser, String user, String origin, String destination, Date ow_start_date, Date ow_end_date, Date rt_start_date, Date rt_end_date, List<Date> ow_except_dates, List<Date> rt_except_dates, int seats, List<String> cabins, String type, int request_id, int user_id) {
         this.parser = parser;
         this.user = user;
-        this.password = password;
-        this.login = login;
-        this.name = name;
         this.origin = origin;
         this.destination = destination;
         this.ow_start_date = ow_start_date;
@@ -37,9 +36,6 @@ public class RequestParamsVewModel {
 
     private String parser;
     private String user;
-    private String password;
-    private String login;
-    private String name;
     private String origin;
     private String destination;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
@@ -54,11 +50,16 @@ public class RequestParamsVewModel {
     private List<Date> ow_except_dates;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     private List<Date> rt_except_dates;
-    private String seats;
+    private int seats;
     private List<String> cabins;
     private String type;
-    private String request_id;
-    private String user_id;
+    private int request_id;
+    private int user_id;
+
+
+    private List<Date> owDates;
+    private List<Date> returnDates;
+
 
     public String getParser() {
         return parser;
@@ -74,30 +75,6 @@ public class RequestParamsVewModel {
 
     public void setUser(String user) {
         this.user = user;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getLogin() {
-        return login;
-    }
-
-    public void setLogin(String login) {
-        this.login = login;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getOrigin() {
@@ -164,11 +141,11 @@ public class RequestParamsVewModel {
         this.rt_except_dates = rt_except_dates;
     }
 
-    public String getSeats() {
+    public int getSeats() {
         return seats;
     }
 
-    public void setSeats(String seats) {
+    public void setSeats(int seats) {
         this.seats = seats;
     }
 
@@ -188,19 +165,33 @@ public class RequestParamsVewModel {
         this.type = type;
     }
 
-    public String getRequest_id() {
+    public int getRequest_id() {
         return request_id;
     }
 
-    public void setRequest_id(String request_id) {
+    public void setRequest_id(int request_id) {
         this.request_id = request_id;
     }
 
-    public String getUser_id() {
+    public int getUser_id() {
         return user_id;
     }
 
-    public void setUser_id(String user_id) {
+    public void setUser_id(int user_id) {
         this.user_id = user_id;
     }
+
+    public List<Date> getOwDates() throws ParseException {
+        List<Date> dates = ProcessRequestHelperService.getDaysBetweenDates(getOw_start_date(), getOw_end_date());
+        List<Date> returnDates = ProcessRequestHelperService.getReturnDates(getRt_start_date(), getRt_end_date(), dates);
+        return ProcessRequestHelperService.getODates(dates, returnDates, this.getOw_except_dates());
+    }
+
+    public List<Date> getReturnDates() throws ParseException {
+        List<Date> dates = ProcessRequestHelperService.getDaysBetweenDates(getOw_start_date(), getOw_end_date());
+        List<Date> returnDates = ProcessRequestHelperService.getReturnDates(getRt_start_date(), getRt_end_date(), dates);
+        return ProcessRequestHelperService.getRDates(dates, returnDates, this.getRt_except_dates());
+
+    }
+
 }

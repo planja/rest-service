@@ -1,5 +1,6 @@
 package actor.processingresult;
 
+import actor.messanger.Messenger;
 import akka.actor.UntypedActor;
 import domain.ParserResult;
 
@@ -11,7 +12,7 @@ public class ProcessingResultOfParserActor extends UntypedActor {
     public void onReceive(Object msg) throws Exception {
         if (msg instanceof ParserResult) {
             System.out.println("Processing result of parser");
-            new Messenger().sendMessage();
+            Messenger.create().sendMessage();
             getContext().stop(getSelf());
 
         } else
