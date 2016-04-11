@@ -4,10 +4,8 @@ import service.actor.messanger.Messenger;
 import akka.actor.UntypedActor;
 import domain.ParserResult;
 
-/**
- * Created by Никита on 05.04.2016.
- */
 public class ProcessingResultOfParserActor extends UntypedActor {
+
     @Override
     public void onReceive(Object msg) throws Exception {
         if (msg instanceof ParserResult) {
@@ -19,3 +17,5 @@ public class ProcessingResultOfParserActor extends UntypedActor {
             unhandled(msg);
     }
 }
+
+// send отправка в другое приложение. запись в базу данных. другому актору который запишет в базу
