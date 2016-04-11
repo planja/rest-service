@@ -12,8 +12,8 @@ public class ProcessingResultOfParserActor extends UntypedActor {
     public void onReceive(Object msg) throws Exception {
         if (msg instanceof ParserResult) {
             System.out.println("Processing result of parser");
-            Messenger.create().sendMessage();
-            getContext().stop(getSelf());
+            Messenger.sendMessage();
+            getContext().system().shutdown();
 
         } else
             unhandled(msg);

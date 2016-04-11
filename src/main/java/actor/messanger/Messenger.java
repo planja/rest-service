@@ -19,16 +19,12 @@ public class Messenger {
                 .actorFor("akka.tcp://RemoteSystem@127.0.0.1:2552/user/Actor");
     }
 
-    public static Messenger create() {
-        if (instance == null) {
+    public static void create() {
+        if (instance == null)
             instance = new Messenger();
-        } else {
-            return instance;
-        }
-        return instance;
     }
 
-    public void sendMessage() {
+    public static void sendMessage() {
         System.out.println("Send remote message");
         myActor.tell(new HelloMessage(remoteActor), null);
         System.out.println(count++);

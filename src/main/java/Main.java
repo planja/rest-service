@@ -1,4 +1,5 @@
 
+import actor.messanger.Messenger;
 import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.Request;
@@ -67,6 +68,7 @@ public class Main {
      */
     public static void main(String[] args) throws IOException {
         try {
+            Messenger.create();
             final HttpServer server = startServer();
             System.out.println(String.format("Jersey app started with WADL available at "
                     + "%sapplication.wadl\nHit enter to stop it...", BASE_URI));
