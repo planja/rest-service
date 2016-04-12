@@ -1,11 +1,13 @@
-package actor.request2parser;
+package service.actor.request2parser;
 
-import actor.processingresult.ProcessingResultOfParserActor;
+
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.actor.UntypedActor;
 import domain.ParserResult;
-import viewmodel.RequestParamsVewModel;
+import service.actor.processingresult.ProcessingResultOfParserActor;
+import service.viewmodel.RequestParamsVewModel;
+
 
 /**
  * Created by Никита on 05.04.2016.

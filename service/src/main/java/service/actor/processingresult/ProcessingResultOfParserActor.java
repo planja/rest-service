@@ -1,13 +1,11 @@
-package actor.processingresult;
+package service.actor.processingresult;
 
-import actor.messanger.Messenger;
+import service.actor.messanger.Messenger;
 import akka.actor.UntypedActor;
 import domain.ParserResult;
 
-/**
- * Created by Никита on 05.04.2016.
- */
 public class ProcessingResultOfParserActor extends UntypedActor {
+
     @Override
     public void onReceive(Object msg) throws Exception {
         if (msg instanceof ParserResult) {

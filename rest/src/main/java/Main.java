@@ -1,5 +1,5 @@
 
-import actor.messanger.Messenger;
+import service.actor.messanger.Messenger;
 import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.Request;
@@ -31,7 +31,7 @@ public class Main {
 
         try {
             Properties props = new Properties();
-            props.load(new FileInputStream(new File("src/main/resources/config.properties")));
+            props.load(new FileInputStream(new File("service/src/main/resources/config.properties")));
             Main.BASE_URI = Main.BASE_URI + props.getProperty("port") + "/";
         } catch (IOException io) {
             //System.out.println(io);
@@ -40,7 +40,7 @@ public class Main {
 
         // create a resource config that scans for JAX-RS resources and providers
         // in com.example.rest package
-        final ResourceConfig rc = new ResourceConfig().packages("service.rest");
+        final ResourceConfig rc = new ResourceConfig().packages("rest");
 
         // create and start a new instance of grizzly http server
 

@@ -1,19 +1,17 @@
-package service.rest;
+package rest;
 
 /**
  * Created by Никита on 01.04.2016.
  */
 
-import actor.request2parser.RequestToParserActor;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
-import viewmodel.RequestParamsVewModel;
-
+import service.actor.request2parser.RequestToParserActor;
+import service.viewmodel.*;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 

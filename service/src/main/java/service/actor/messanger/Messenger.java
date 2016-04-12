@@ -1,8 +1,9 @@
-package actor.messanger;
+package service.actor.messanger;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
+import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import domain.HelloMessage;
 
@@ -12,11 +13,17 @@ public class Messenger {
     public static int count = 0;
 
     private Messenger() {
-        ActorSystem system = ActorSystem.create("RemoteSystem", ConfigFactory.load()
-                .getConfig("ActorConfig"));
+        init();
+    }
+
+    private static void init() {
+        final Config config = ConfigFactory.load().getConfig("remoteActor");
+        ActorSystem system = ActorSystem.create("RemoteSystem", config);
+
+        final String path = "akka.tcp://RemoteSystem@127.0.0.1:2552/user/remoteActor";
+        remoteActor = system.actorFor(path);
         myActor = system.actorOf(Props.create(SenderMessageActor.class), "SenderMessageActor");
-        remoteActor = system
-                .actorFor("akka.tcp://RemoteSystem@127.0.0.1:2552/user/Actor");
+
     }
 
     public static void create() {

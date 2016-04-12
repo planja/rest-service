@@ -1,4 +1,4 @@
-package viewmodel;
+package service.viewmodel;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import service.processrequest.ProcessRequestHelperService;
