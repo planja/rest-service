@@ -17,5 +17,3 @@ public class ProcessingResultOfParserActor extends UntypedActor {
             unhandled(msg);
     }
 }
-
-// send отправка в другое приложение. запись в базу данных. другому актору который запишет в базу

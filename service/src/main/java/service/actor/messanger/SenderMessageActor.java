@@ -1,6 +1,5 @@
-package service.actor.messanger; /**
- * Created by Никита on 04.04.2016.
- */
+package service.actor.messanger;
+
 import akka.actor.UntypedActor;
 import domain.HelloMessage;
 
