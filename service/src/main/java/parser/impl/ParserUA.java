@@ -11,6 +11,6 @@ public class ParserUA extends UntypedActor implements ParserActor {
 
     @Override
     public void onReceive(Object message) throws Exception {
-        log.info("got it");
+        log.info("got it UA");
     }
 }

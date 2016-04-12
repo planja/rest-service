@@ -8,7 +8,7 @@ import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
 import service.RequestData;
-import service.actor.request2parser.RequestToParserActor;
+import service.actor.RequestActor;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -41,7 +41,7 @@ public class RESTService {
                         @PathParam("user_id") int user_id) {
 
         ActorSystem system = ActorSystem.create("ActorSystem");
-        ActorRef actorRef = system.actorOf(Props.create(RequestToParserActor.class), "RequestToParserActor");
+        ActorRef actorRef = system.actorOf(Props.create(RequestActor.class), "RequestToParserActor");
         RequestData viewModel = new RequestData(parser, user, origin, destination, ow_start_date, ow_end_date,
                 rt_start_date, rt_end_date, ow_except_dates, rt_except_dates, seats, cabins, type, request_id, user_id);
         actorRef.tell(viewModel, actorRef);
@@ -54,7 +54,7 @@ public class RESTService {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response post(RequestData viewModel) {
         ActorSystem system = ActorSystem.create("ActorSystem");
-        ActorRef actorRef = system.actorOf(Props.create(RequestToParserActor.class), "RequestToParserActor");
+        ActorRef actorRef = system.actorOf(Props.create(RequestActor.class), "RequestToParserActor");
         actorRef.tell(viewModel, actorRef);
         return Response.status(Response.Status.OK).build();
     }
