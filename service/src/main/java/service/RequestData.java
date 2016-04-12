@@ -1,4 +1,4 @@
-package service.viewmodel;
+package service;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import service.processrequest.ProcessRequestHelperService;
@@ -7,16 +7,13 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Created by Никита on 08.04.2016.
- */
-public class RequestParamsVewModel {
+public class RequestData {
 
     @Deprecated
-    public RequestParamsVewModel() {
+    public RequestData() {
     }
 
-    public RequestParamsVewModel(String parser, String user, String origin, String destination, Date ow_start_date, Date ow_end_date, Date rt_start_date, Date rt_end_date, List<Date> ow_except_dates, List<Date> rt_except_dates, int seats, List<String> cabins, String type, int request_id, int user_id) {
+    public RequestData(String parser, String user, String origin, String destination, Date ow_start_date, Date ow_end_date, Date rt_start_date, Date rt_end_date, List<Date> ow_except_dates, List<Date> rt_except_dates, int seats, List<String> cabins, String type, int request_id, int user_id) {
         this.parser = parser;
         this.user = user;
         this.origin = origin;

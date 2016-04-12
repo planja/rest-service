@@ -5,9 +5,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.IntStream;
 
-/**
- * Created by Никита on 07.04.2016.
- */
 public class ProcessRequestHelperService {
 
     public static List<Date> getDaysBetweenDates(Date startDate, Date endDate) {

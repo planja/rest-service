@@ -7,8 +7,9 @@ package rest;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
+import service.RequestData;
 import service.actor.request2parser.RequestToParserActor;
-import service.viewmodel.*;
+
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -41,7 +42,7 @@ public class RESTService {
 
         ActorSystem system = ActorSystem.create("ActorSystem");
         ActorRef actorRef = system.actorOf(Props.create(RequestToParserActor.class), "RequestToParserActor");
-        RequestParamsVewModel viewModel = new RequestParamsVewModel(parser, user, origin, destination, ow_start_date, ow_end_date,
+        RequestData viewModel = new RequestData(parser, user, origin, destination, ow_start_date, ow_end_date,
                 rt_start_date, rt_end_date, ow_except_dates, rt_except_dates, seats, cabins, type, request_id, user_id);
         actorRef.tell(viewModel, actorRef);
         return Response.status(Response.Status.OK).build();
@@ -51,7 +52,7 @@ public class RESTService {
     @Path("search")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response post(RequestParamsVewModel viewModel) {
+    public Response post(RequestData viewModel) {
         ActorSystem system = ActorSystem.create("ActorSystem");
         ActorRef actorRef = system.actorOf(Props.create(RequestToParserActor.class), "RequestToParserActor");
         actorRef.tell(viewModel, actorRef);
