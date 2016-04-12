@@ -12,14 +12,11 @@
     <artifactId>service</artifactId>
 
     <dependencies>
-
         <dependency>
             <groupId>rest-service</groupId>
             <artifactId>domain</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
-
-
 
 </project>
