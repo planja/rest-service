@@ -6,6 +6,7 @@ import akka.event.LoggingAdapter;
 import akka.routing.FromConfig;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+import domain.actor.Repository;
 import parser.interf.ParserActor;
 import service.actor.messanger.SenderMessageActor;
 import vo.transfer.ParserResult;
@@ -15,13 +16,14 @@ import service.RequestData;
 import service.actor.processingresult.ProcessingResultOfParserActor;
 import service.adaptor.impl.AdaptorFactory;
 import service.adaptor.interf.Adaptor;
+import vo.view.IMTAward;
 
 import java.util.ArrayList;
 
 public class RequestActor extends UntypedActor {
 
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
-    private ActorSelection repositoryActor;
+    private ActorRef repositoryActor;
 
     @Override
     public void onReceive(Object message) throws Exception {
@@ -33,7 +35,7 @@ public class RequestActor extends UntypedActor {
             ActorRef parserActor = context().system().actorOf(Props.create(getType(requestData).getParserClass()));
             parserActor.tell(message, self());
 
-            repositoryActor.tell(new ArrayList<>(), self());
+            repositoryActor.tell(new ArrayList<IMTAward>(), self());
 
             //ActorRef processingResultOfParserActor = getContext().system().actorOf(Props.create(ProcessingResultOfParserActor.class), "processingResultOfParserActor");
             //processingResultOfParserActor.tell(new ParserResult(), getSelf());
@@ -45,8 +47,8 @@ public class RequestActor extends UntypedActor {
     public void preStart() throws Exception {
         //final Config config = ConfigFactory.load().getConfig("repositoryActor");
         //ActorSystem system = ActorSystem.create("RemoteSystem", config);
-        final String path = "akka.tcp://RepositorySystem@127.0.0.1:2554/user/repositoryActor";
-        repositoryActor = context().system().actorSelection(path);
+        //final String path = "akka.tcp://RepositorySystem@127.0.0.1:2554/user/repositoryActor";
+        repositoryActor = context().system().actorOf(Props.create(Repository.class));
     }
 
     private PreparedData prepareData(RequestData requestData) {

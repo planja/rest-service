@@ -8,34 +8,29 @@ import akka.event.LoggingAdapter;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import domain.HelloMessage;
+import vo.view.IMTAward;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 public class Repository extends UntypedActor {
 
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
-    public static void main(String[] args) {
-        //testing remote repository actor
-        startSystem();
-    }
-
-    private static void startSystem() {
-        final Config config = ConfigFactory.load().getConfig("repositoryActor");
-        ActorSystem system = ActorSystem.create("RepositorySystem", config);
-        system.actorOf(Props.create(Repository.class));
-    }
-
     @Override
     public void onReceive(Object message) throws Exception {
-        log.info("i'm in");
-        if (message instanceof String) {
-            log.info("repository got it");
+        if (message instanceof List<?>) {
+            log.info("create");
         }
         unhandled(message);
     }
 
     @Override
     public void preStart() throws Exception {
+    }
+
+    @Override
+    public void postStop() {
+        context().system().shutdown();
     }
 }
