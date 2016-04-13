@@ -1,25 +1,22 @@
 package service.actor;
 
-import akka.actor.*;
+import akka.actor.ActorRef;
+import akka.actor.Props;
+import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import akka.routing.FromConfig;
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
+import akka.pattern.Patterns;
+import akka.util.Timeout;
 import domain.actor.Repository;
-import parser.interf.ParserActor;
-import scala.concurrent.Future;
-import service.actor.messanger.SenderMessageActor;
-import vo.transfer.ParserResult;
 import parser.ParserType;
-import parser.PreparedData;
+import scala.concurrent.Await;
+import scala.concurrent.Future;
+import scala.concurrent.duration.Duration;
 import service.RequestData;
-import service.actor.processingresult.ProcessingResultOfParserActor;
 import service.adaptor.impl.AdaptorFactory;
 import service.adaptor.interf.Adaptor;
 import vo.view.IMTAward;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class RequestActor extends UntypedActor {
@@ -37,9 +34,12 @@ public class RequestActor extends UntypedActor {
             ActorRef parserActor = context().system().actorOf(Props.create(parserType.getParserClass()));
             parserActor.tell(message, self());
 
-            //Future<List<?>> result =
+            Timeout timeout = new Timeout(Duration.create(5, "seconds"));
+            Future<Object> future = Patterns.ask(parserActor, message, timeout);
+            List<?> result = (List<?>) Await.result(future, timeout.duration());
+
             Adaptor adaptor = AdaptorFactory.getAdaptor(parserType);
-            List<IMTAward> awards = adaptor.adaptData(new ArrayList<>());
+            List<IMTAward> awards = adaptor.adaptData(result);
 
             repositoryActor.tell(awards, self());
         } else
