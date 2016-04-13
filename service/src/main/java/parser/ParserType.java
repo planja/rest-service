@@ -17,7 +17,8 @@ public enum ParserType {
             return ParserAA.class;
         }
 
-    }, UA {
+    },
+    UA {
         @Override
         public Adaptor getAdaptorService() {
             return new AdaptorServiceAA();

@@ -8,6 +8,7 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import domain.actor.Repository;
 import parser.interf.ParserActor;
+import scala.concurrent.Future;
 import service.actor.messanger.SenderMessageActor;
 import vo.transfer.ParserResult;
 import parser.ParserType;
@@ -19,6 +20,7 @@ import service.adaptor.interf.Adaptor;
 import vo.view.IMTAward;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class RequestActor extends UntypedActor {
 
@@ -30,15 +32,16 @@ public class RequestActor extends UntypedActor {
         if (message instanceof RequestData) {
             RequestData requestData = (RequestData) message;
 
-            PreparedData preparedData = prepareData(requestData);
+            ParserType parserType = getType(requestData);
 
-            ActorRef parserActor = context().system().actorOf(Props.create(getType(requestData).getParserClass()));
+            ActorRef parserActor = context().system().actorOf(Props.create(parserType.getParserClass()));
             parserActor.tell(message, self());
 
-            repositoryActor.tell(new ArrayList<IMTAward>(), self());
+            //Future<List<?>> result =
+            Adaptor adaptor = AdaptorFactory.getAdaptor(parserType);
+            List<IMTAward> awards = adaptor.adaptData(new ArrayList<>());
 
-            //ActorRef processingResultOfParserActor = getContext().system().actorOf(Props.create(ProcessingResultOfParserActor.class), "processingResultOfParserActor");
-            //processingResultOfParserActor.tell(new ParserResult(), getSelf());
+            repositoryActor.tell(awards, self());
         } else
             unhandled(message);
     }
@@ -49,11 +52,6 @@ public class RequestActor extends UntypedActor {
         //ActorSystem system = ActorSystem.create("RemoteSystem", config);
         //final String path = "akka.tcp://RepositorySystem@127.0.0.1:2554/user/repositoryActor";
         repositoryActor = context().system().actorOf(Props.create(Repository.class));
-    }
-
-    private PreparedData prepareData(RequestData requestData) {
-        Adaptor adaptor = AdaptorFactory.getAdaptor(requestData.getParser());
-        return adaptor.adaptData(requestData);
     }
 
     private ParserType getType(RequestData requestData) {
