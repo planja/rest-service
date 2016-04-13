@@ -2,7 +2,7 @@ package service.actor.processingresult;
 
 import service.actor.messanger.Messenger;
 import akka.actor.UntypedActor;
-import domain.ParserResult;
+import vo.transfer.ParserResult;
 
 public class ProcessingResultOfParserActor extends UntypedActor {
 
