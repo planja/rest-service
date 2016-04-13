@@ -8,7 +8,8 @@ import java.util.List;
 public class AdaptorServiceAA implements Adaptor {
 
     @Override
-    public List<IMTAward> adaptData(List<?> parserData) {
+    public List<IMTAward> adaptData(List<?> parserData, String... args) {
         return null;
     }
 }
+
