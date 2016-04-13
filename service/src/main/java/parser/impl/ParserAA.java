@@ -13,4 +13,9 @@ public class ParserAA extends UntypedActor implements ParserActor {
     public void onReceive(Object message) throws Exception {
         log.info("got it AA");
     }
+
+    @Override
+    public void postStop() {
+        context().system().shutdown();
+    }
 }
