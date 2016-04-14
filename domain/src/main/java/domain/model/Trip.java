@@ -4,7 +4,6 @@ import javax.persistence.*;
 import javax.persistence.Entity;
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.Objects;
 
 /**
  * Created by Никита on 12.04.2016.
@@ -17,10 +16,6 @@ public class Trip {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "request_id", nullable = false)
-    private Request request;
 
     @Column(name = "depart_code")
     private String departCode;
@@ -43,12 +38,15 @@ public class Trip {
     @Column(name = "cost")
     private BigDecimal cost;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "request_id", nullable = false)
+    private Query query;
+
     public Trip() {
     }
 
-    public Trip(Long id, Request request, String departCode, String arriveCode, String departPlace, String arrivePlace, Date tripDate, String tripDuration, BigDecimal cost) {
+    public Trip(Long id, String departCode, String arriveCode, String departPlace, String arrivePlace, Date tripDate, String tripDuration, BigDecimal cost) {
         this.id = id;
-        this.request = request;
         this.departCode = departCode;
         this.arriveCode = arriveCode;
         this.departPlace = departPlace;
@@ -64,14 +62,6 @@ public class Trip {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Request getRequest() {
-        return request;
-    }
-
-    public void setRequest(Request request) {
-        this.request = request;
     }
 
     public String getDepartCode() {

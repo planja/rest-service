@@ -2,24 +2,23 @@ package domain.model;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
+import java.io.Serializable;
 import java.util.Date;
-import java.util.Objects;
-
-/**
- * Created by Никита on 12.04.2016.
- */
-
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
-@Table(name = "requests")
-public class Request {
+@Table(name = "queries")
+public class Query implements Serializable {
+
+    private static final long serialVersionUID = 42L;
 
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "alias", unique = true)
+    @Column(name = "alias")
     private String alias;
 
     @Column(name = "type")
@@ -32,33 +31,37 @@ public class Request {
     private String to;
 
     @Column(name = "include_from_nearby")
-    private Boolean includeFromNearby;
+    private Integer includeFromNearby;
 
     @Column(name = "include_to_nearby")
-    private Boolean includeToNearby;
+    private Integer includeToNearby;
 
     @Column(name = "departure")
     private Date departure;
 
     @Column(name = "flexible_departure")
-    private boolean flexibleDeparture;
+    private Integer flexibleDeparture;
 
     @Column(name = "arrival")
     private Date arrival;
 
     @Column(name = "flexible_arrival")
-    private Boolean flexibleArrival;
+    private Integer flexibleArrival;
 
     @Column(name = "passengers")
     private Integer passengers;
 
+    @Column(name = "classes")
+    private String classes;
+
+    @Column(name = "parsers")
+    private String parsers;
 
     @Column(name = "status")
     private Integer status;
 
     @Column(name = "error")
-    private Boolean error;
-
+    private Integer error;
 
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
@@ -68,28 +71,17 @@ public class Request {
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
 
-    public Request() {
-    }
+    @OneToOne(mappedBy = "query")
+    private ParserAnswer parserAnswer;
 
-    public Request(Long id, String alias, String type, String from, String to, Boolean includeFromNearby, Boolean includeToNearby, Date departure, boolean flexibleDeparture, Date arrival, Boolean flexibleArrival, Integer passengers, Integer status, Boolean error, Date createdAt, Date updatedAt) {
-        this.id = id;
-        this.alias = alias;
-        this.type = type;
-        this.from = from;
-        this.to = to;
-        this.includeFromNearby = includeFromNearby;
-        this.includeToNearby = includeToNearby;
-        this.departure = departure;
-        this.flexibleDeparture = flexibleDeparture;
-        this.arrival = arrival;
-        this.flexibleArrival = flexibleArrival;
-        this.passengers = passengers;
-        this.status = status;
-        this.error = error;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
+    @OneToMany(mappedBy = "query")
+    private Set<ParserError> parserErrors = new HashSet<>();
 
+/*    @OneToMany
+    private Set<Trip> trips = new HashSet<>();*/
+
+    public Query() {
+    }
 
     public Long getId() {
         return id;
@@ -131,19 +123,19 @@ public class Request {
         this.to = to;
     }
 
-    public Boolean getIncludeFromNearby() {
+    public Integer getIncludeFromNearby() {
         return includeFromNearby;
     }
 
-    public void setIncludeFromNearby(Boolean includeFromNearby) {
+    public void setIncludeFromNearby(Integer includeFromNearby) {
         this.includeFromNearby = includeFromNearby;
     }
 
-    public Boolean getIncludeToNearby() {
+    public Integer getIncludeToNearby() {
         return includeToNearby;
     }
 
-    public void setIncludeToNearby(Boolean includeToNearby) {
+    public void setIncludeToNearby(Integer includeToNearby) {
         this.includeToNearby = includeToNearby;
     }
 
@@ -155,11 +147,11 @@ public class Request {
         this.departure = departure;
     }
 
-    public boolean isFlexibleDeparture() {
+    public Integer getFlexibleDeparture() {
         return flexibleDeparture;
     }
 
-    public void setFlexibleDeparture(boolean flexibleDeparture) {
+    public void setFlexibleDeparture(Integer flexibleDeparture) {
         this.flexibleDeparture = flexibleDeparture;
     }
 
@@ -171,11 +163,11 @@ public class Request {
         this.arrival = arrival;
     }
 
-    public Boolean getFlexibleArrival() {
+    public Integer getFlexibleArrival() {
         return flexibleArrival;
     }
 
-    public void setFlexibleArrival(Boolean flexibleArrival) {
+    public void setFlexibleArrival(Integer flexibleArrival) {
         this.flexibleArrival = flexibleArrival;
     }
 
@@ -187,6 +179,22 @@ public class Request {
         this.passengers = passengers;
     }
 
+    public String getClasses() {
+        return classes;
+    }
+
+    public void setClasses(String classes) {
+        this.classes = classes;
+    }
+
+    public String getParsers() {
+        return parsers;
+    }
+
+    public void setParsers(String parsers) {
+        this.parsers = parsers;
+    }
+
     public Integer getStatus() {
         return status;
     }
@@ -195,11 +203,11 @@ public class Request {
         this.status = status;
     }
 
-    public Boolean getError() {
+    public Integer getError() {
         return error;
     }
 
-    public void setError(Boolean error) {
+    public void setError(Integer error) {
         this.error = error;
     }
 
@@ -219,33 +227,61 @@ public class Request {
         this.updatedAt = updatedAt;
     }
 
+    public ParserAnswer getParserAnswer() {
+        return parserAnswer;
+    }
+
+    public void setParserAnswer(ParserAnswer parserAnswer) {
+        this.parserAnswer = parserAnswer;
+    }
+
+    public Set<ParserError> getParserErrors() {
+        return parserErrors;
+    }
+
+    public void setParserErrors(Set<ParserError> parserErrors) {
+        this.parserErrors = parserErrors;
+    }
+
+/*    public Set<Trip> getTrips() {
+        return trips;
+    }
+
+    public void setTrips(Set<Trip> trips) {
+        this.trips = trips;
+    }*/
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Request request = (Request) o;
+        Query query = (Query) o;
 
-        if (flexibleDeparture != request.flexibleDeparture) return false;
-        if (id != null ? !id.equals(request.id) : request.id != null) return false;
-        if (alias != null ? !alias.equals(request.alias) : request.alias != null) return false;
-        if (type != null ? !type.equals(request.type) : request.type != null) return false;
-        if (from != null ? !from.equals(request.from) : request.from != null) return false;
-        if (to != null ? !to.equals(request.to) : request.to != null) return false;
-        if (includeFromNearby != null ? !includeFromNearby.equals(request.includeFromNearby) : request.includeFromNearby != null)
+        if (alias != null ? !alias.equals(query.alias) : query.alias != null) return false;
+        if (arrival != null ? !arrival.equals(query.arrival) : query.arrival != null) return false;
+        if (classes != null ? !classes.equals(query.classes) : query.classes != null) return false;
+        if (createdAt != null ? !createdAt.equals(query.createdAt) : query.createdAt != null) return false;
+        if (departure != null ? !departure.equals(query.departure) : query.departure != null) return false;
+        if (error != null ? !error.equals(query.error) : query.error != null) return false;
+        if (flexibleArrival != null ? !flexibleArrival.equals(query.flexibleArrival) : query.flexibleArrival != null)
             return false;
-        if (includeToNearby != null ? !includeToNearby.equals(request.includeToNearby) : request.includeToNearby != null)
+        if (flexibleDeparture != null ? !flexibleDeparture.equals(query.flexibleDeparture) : query.flexibleDeparture != null)
             return false;
-        if (departure != null ? !departure.equals(request.departure) : request.departure != null) return false;
-        if (arrival != null ? !arrival.equals(request.arrival) : request.arrival != null) return false;
-        if (flexibleArrival != null ? !flexibleArrival.equals(request.flexibleArrival) : request.flexibleArrival != null)
+        if (from != null ? !from.equals(query.from) : query.from != null) return false;
+        if (id != null ? !id.equals(query.id) : query.id != null) return false;
+        if (includeFromNearby != null ? !includeFromNearby.equals(query.includeFromNearby) : query.includeFromNearby != null)
             return false;
-        if (passengers != null ? !passengers.equals(request.passengers) : request.passengers != null) return false;
-        if (status != null ? !status.equals(request.status) : request.status != null) return false;
-        if (error != null ? !error.equals(request.error) : request.error != null) return false;
-        if (createdAt != null ? !createdAt.equals(request.createdAt) : request.createdAt != null) return false;
-        return !(updatedAt != null ? !updatedAt.equals(request.updatedAt) : request.updatedAt != null);
+        if (includeToNearby != null ? !includeToNearby.equals(query.includeToNearby) : query.includeToNearby != null)
+            return false;
+        if (parsers != null ? !parsers.equals(query.parsers) : query.parsers != null) return false;
+        if (passengers != null ? !passengers.equals(query.passengers) : query.passengers != null) return false;
+        if (status != null ? !status.equals(query.status) : query.status != null) return false;
+        if (to != null ? !to.equals(query.to) : query.to != null) return false;
+        if (type != null ? !type.equals(query.type) : query.type != null) return false;
+        if (updatedAt != null ? !updatedAt.equals(query.updatedAt) : query.updatedAt != null) return false;
 
+        return true;
     }
 
     @Override
@@ -258,10 +294,12 @@ public class Request {
         result = 31 * result + (includeFromNearby != null ? includeFromNearby.hashCode() : 0);
         result = 31 * result + (includeToNearby != null ? includeToNearby.hashCode() : 0);
         result = 31 * result + (departure != null ? departure.hashCode() : 0);
-        result = 31 * result + (flexibleDeparture ? 1 : 0);
+        result = 31 * result + (flexibleDeparture != null ? flexibleDeparture.hashCode() : 0);
         result = 31 * result + (arrival != null ? arrival.hashCode() : 0);
         result = 31 * result + (flexibleArrival != null ? flexibleArrival.hashCode() : 0);
         result = 31 * result + (passengers != null ? passengers.hashCode() : 0);
+        result = 31 * result + (classes != null ? classes.hashCode() : 0);
+        result = 31 * result + (parsers != null ? parsers.hashCode() : 0);
         result = 31 * result + (status != null ? status.hashCode() : 0);
         result = 31 * result + (error != null ? error.hashCode() : 0);
         result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
@@ -271,7 +309,7 @@ public class Request {
 
     @Override
     public String toString() {
-        return "Request{" +
+        return "Query{" +
                 "id=" + id +
                 ", alias='" + alias + '\'' +
                 ", type='" + type + '\'' +
@@ -284,6 +322,8 @@ public class Request {
                 ", arrival=" + arrival +
                 ", flexibleArrival=" + flexibleArrival +
                 ", passengers=" + passengers +
+                ", classes='" + classes + '\'' +
+                ", parsers='" + parsers + '\'' +
                 ", status=" + status +
                 ", error=" + error +
                 ", createdAt=" + createdAt +

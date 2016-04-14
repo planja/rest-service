@@ -2,30 +2,21 @@ package domain.model;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
-import java.util.Objects;
-
-/**
- * Created by Никита on 12.04.2016.
- */
+import java.util.Date;
 
 @Entity
 @Table(name = "parser_answers")
 public class ParserAnswer {
-
 
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "request_id", nullable = false)
-    private Request request;
-
     @Column(name = "AA")
     private Integer AA;
 
-    @Column(name = "AС")
+    @Column(name = "AC")
     private Integer AC;
 
     @Column(name = "AF")
@@ -73,6 +64,20 @@ public class ParserAnswer {
     @Column(name = "UA")
     private Integer UA;
 
+    @Column(name = "created_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
+
+    @Column(name = "updated_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updatedAt;
+
+    @OneToOne
+    @JoinColumn(name = "queries_id")
+    private Query query;
+
+    public ParserAnswer() {
+    }
 
     public Long getId() {
         return id;
@@ -80,14 +85,6 @@ public class ParserAnswer {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Request getRequest() {
-        return request;
-    }
-
-    public void setRequest(Request request) {
-        this.request = request;
     }
 
     public Integer getAA() {
@@ -226,29 +223,28 @@ public class ParserAnswer {
         this.UA = UA;
     }
 
-    public ParserAnswer() {
+    public Date getCreatedAt() {
+        return createdAt;
     }
 
-    public ParserAnswer(Long id,Request request, Integer AA, Integer AC, Integer AF, Integer AS, Integer BA, Integer CX, Integer DL, Integer EK, Integer EY, Integer JL, Integer LH, Integer NH, Integer QF, Integer QR, Integer SQ, Integer VS, Integer UA) {
-        this.id = id;
-        this.request = request;
-        this.AA = AA;
-        this.AC = AC;
-        this.AF = AF;
-        this.AS = AS;
-        this.BA = BA;
-        this.CX = CX;
-        this.DL = DL;
-        this.EK = EK;
-        this.EY = EY;
-        this.JL = JL;
-        this.LH = LH;
-        this.NH = NH;
-        this.QF = QF;
-        this.QR = QR;
-        this.SQ = SQ;
-        this.VS = VS;
-        this.UA = UA;
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public Query getQuery() {
+        return query;
+    }
+
+    public void setQuery(Query query) {
+        this.query = query;
     }
 
     @Override
@@ -258,7 +254,6 @@ public class ParserAnswer {
 
         ParserAnswer that = (ParserAnswer) o;
 
-        if (id != null ? !id.equals(that.id) : that.id != null) return false;
         if (AA != null ? !AA.equals(that.AA) : that.AA != null) return false;
         if (AC != null ? !AC.equals(that.AC) : that.AC != null) return false;
         if (AF != null ? !AF.equals(that.AF) : that.AF != null) return false;
@@ -274,9 +269,14 @@ public class ParserAnswer {
         if (QF != null ? !QF.equals(that.QF) : that.QF != null) return false;
         if (QR != null ? !QR.equals(that.QR) : that.QR != null) return false;
         if (SQ != null ? !SQ.equals(that.SQ) : that.SQ != null) return false;
+        if (UA != null ? !UA.equals(that.UA) : that.UA != null) return false;
         if (VS != null ? !VS.equals(that.VS) : that.VS != null) return false;
-        return !(UA != null ? !UA.equals(that.UA) : that.UA != null);
+        if (createdAt != null ? !createdAt.equals(that.createdAt) : that.createdAt != null) return false;
+        if (id != null ? !id.equals(that.id) : that.id != null) return false;
+        if (query != null ? !query.equals(that.query) : that.query != null) return false;
+        if (updatedAt != null ? !updatedAt.equals(that.updatedAt) : that.updatedAt != null) return false;
 
+        return true;
     }
 
     @Override
@@ -299,6 +299,9 @@ public class ParserAnswer {
         result = 31 * result + (SQ != null ? SQ.hashCode() : 0);
         result = 31 * result + (VS != null ? VS.hashCode() : 0);
         result = 31 * result + (UA != null ? UA.hashCode() : 0);
+        result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
+        result = 31 * result + (updatedAt != null ? updatedAt.hashCode() : 0);
+        result = 31 * result + (query != null ? query.hashCode() : 0);
         return result;
     }
 
@@ -323,6 +326,9 @@ public class ParserAnswer {
                 ", SQ=" + SQ +
                 ", VS=" + VS +
                 ", UA=" + UA +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", query=" + query +
                 '}';
     }
 }
