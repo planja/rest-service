@@ -27,6 +27,15 @@ public class IMTInfo {
     public IMTInfo() {
     }
 
+    public IMTInfo(String name, String status, String mileage, String tax, String currency, Integer id) {
+        this.name = name;
+        this.status = status;
+        this.mileage = mileage;
+        this.tax = tax;
+        this.currency = currency;
+        this.id = id;
+    }
+
     public String getName() {
         return name;
     }

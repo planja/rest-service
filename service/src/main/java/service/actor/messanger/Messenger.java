@@ -5,7 +5,7 @@ import akka.actor.ActorSystem;
 import akka.actor.Props;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
-import domain.HelloMessage;
+
 
 public class Messenger {
     private static ActorRef remoteActor, myActor;
