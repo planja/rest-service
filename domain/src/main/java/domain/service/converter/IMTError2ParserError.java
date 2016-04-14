@@ -12,6 +12,7 @@ public class IMTError2ParserError implements Converter<IMTError,ParserError> {
 
     @Override
     public ParserError convert(IMTError imtError) throws ParseException {
-        return new ParserError(Long.valueOf("1"), null, null, imtError.getDescription());
+        //return new ParserError(Long.valueOf("1"), null, null, imtError.getDescription());
+        return null;
     }
 }
