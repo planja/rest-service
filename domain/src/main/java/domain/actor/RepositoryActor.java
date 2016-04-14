@@ -6,7 +6,7 @@ import akka.event.LoggingAdapter;
 
 import java.util.List;
 
-public class Repository extends UntypedActor {
+public class RepositoryActor extends UntypedActor {
 
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 

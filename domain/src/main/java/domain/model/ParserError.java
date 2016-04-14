@@ -2,11 +2,8 @@ package domain.model;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
-import java.util.Objects;
+import java.util.Date;
 
-/**
- * Created by Никита on 12.04.2016.
- */
 @Entity
 @Table(name = "parser_errors")
 public class ParserError {
@@ -16,15 +13,32 @@ public class ParserError {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "request_id", nullable = false)
-    private Request request;
-
     @Column(name = "parser")
     private String parser;
 
     @Column(name = "error_text")
     private String errorText;
+
+    @Column(name = "created_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
+
+    @Column(name = "updated_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updatedAt;
+
+    @ManyToOne
+    @JoinColumn(name = "queries_id", insertable = false, updatable = false)
+    private Query query;
+
+    public ParserError() {
+    }
+
+    public ParserError(Long id, String parser, String errorText) {
+        this.id = id;
+        this.parser = parser;
+        this.errorText = errorText;
+    }
 
     public Long getId() {
         return id;
@@ -32,14 +46,6 @@ public class ParserError {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Request getRequest() {
-        return request;
-    }
-
-    public void setRequest(Request request) {
-        this.request = request;
     }
 
     public String getParser() {
@@ -58,14 +64,28 @@ public class ParserError {
         this.errorText = errorText;
     }
 
-    public ParserError() {
+    public Date getCreatedAt() {
+        return createdAt;
     }
 
-    public ParserError(Long id, Request request, String parser, String errorText) {
-        this.id = id;
-        this.request = request;
-        this.parser = parser;
-        this.errorText = errorText;
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public Query getQuery() {
+        return query;
+    }
+
+    public void setQuery(Query query) {
+        this.query = query;
     }
 
     @Override
@@ -75,10 +95,13 @@ public class ParserError {
 
         ParserError that = (ParserError) o;
 
+        if (createdAt != null ? !createdAt.equals(that.createdAt) : that.createdAt != null) return false;
+        if (errorText != null ? !errorText.equals(that.errorText) : that.errorText != null) return false;
         if (id != null ? !id.equals(that.id) : that.id != null) return false;
         if (parser != null ? !parser.equals(that.parser) : that.parser != null) return false;
-        return !(errorText != null ? !errorText.equals(that.errorText) : that.errorText != null);
+        if (updatedAt != null ? !updatedAt.equals(that.updatedAt) : that.updatedAt != null) return false;
 
+        return true;
     }
 
     @Override
@@ -86,6 +109,8 @@ public class ParserError {
         int result = id != null ? id.hashCode() : 0;
         result = 31 * result + (parser != null ? parser.hashCode() : 0);
         result = 31 * result + (errorText != null ? errorText.hashCode() : 0);
+        result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
+        result = 31 * result + (updatedAt != null ? updatedAt.hashCode() : 0);
         return result;
     }
 
@@ -93,9 +118,11 @@ public class ParserError {
     public String toString() {
         return "ParserError{" +
                 "id=" + id +
-                ", request=" + request +
                 ", parser='" + parser + '\'' +
                 ", errorText='" + errorText + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", query=" + query +
                 '}';
     }
 }

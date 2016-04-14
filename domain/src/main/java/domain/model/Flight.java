@@ -18,10 +18,6 @@ public class Flight {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "trip_id", nullable = false)
-    private Trip trip;
-
     @Column(name = "position")
     private Integer position;
 
@@ -53,7 +49,6 @@ public class Flight {
     @Column(name = "depart_code")
     private String departCode;
 
-
     @Column(name = "arrive_time")
     private String arriveTime;
 
@@ -84,9 +79,14 @@ public class Flight {
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "trips_id", nullable = false)
+    private Trip trip;
 
+    public Flight() {
+    }
 
-    public Flight(Long id,Trip trip, Integer position, String parser, String carrierCode, String carrierName, String flightDuration, String cabin, String departTime, Date departDate, String departPlace, String departCode, String arriveTime, Date arriveDate, String arrivePlace, String arriveCode, String flightNumber, String layover, String aircraft, Date createdAt, Date updatedAt) {
+    public Flight(Long id, Trip trip, Integer position, String parser, String carrierCode, String carrierName, String flightDuration, String cabin, String departTime, Date departDate, String departPlace, String departCode, String arriveTime, Date arriveDate, String arrivePlace, String arriveCode, String flightNumber, String layover, String aircraft, Date createdAt, Date updatedAt) {
         this.id = id;
         this.trip = trip;
         this.position = position;

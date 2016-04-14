@@ -7,7 +7,7 @@ import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import akka.pattern.Patterns;
 import akka.util.Timeout;
-import domain.actor.Repository;
+import domain.actor.RepositoryActor;
 import parser.ParserType;
 import scala.concurrent.Await;
 import scala.concurrent.Future;
@@ -51,7 +51,7 @@ public class RequestActor extends UntypedActor {
         //final Config config = ConfigFactory.load().getConfig("repositoryActor");
         //ActorSystem system = ActorSystem.create("RemoteSystem", config);
         //final String path = "akka.tcp://RepositorySystem@127.0.0.1:2554/user/repositoryActor";
-        repositoryActor = context().system().actorOf(Props.create(Repository.class));
+        repositoryActor = context().system().actorOf(Props.create(RepositoryActor.class));
     }
 
     private ParserType getType(RequestData requestData) {
