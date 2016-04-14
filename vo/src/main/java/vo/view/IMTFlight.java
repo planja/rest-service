@@ -24,6 +24,24 @@ public class IMTFlight {
     public IMTFlight() {
     }
 
+    public IMTFlight(String departTime, String departDate, String departPlace, String departCode, String arriveTime, String arriveDate, String arrivePlace, String arriveCode, String travelTime, String flightNumber, String airlineCompany, String aircraft, String meal, String flightCabin, Integer id) {
+        this.departTime = departTime;
+        this.departDate = departDate;
+        this.departPlace = departPlace;
+        this.departCode = departCode;
+        this.arriveTime = arriveTime;
+        this.arriveDate = arriveDate;
+        this.arrivePlace = arrivePlace;
+        this.arriveCode = arriveCode;
+        this.travelTime = travelTime;
+        this.flightNumber = flightNumber;
+        this.airlineCompany = airlineCompany;
+        this.aircraft = aircraft;
+        this.meal = meal;
+        this.flightCabin = flightCabin;
+        this.id = id;
+    }
+
     public String getDepartTime() {
         return departTime;
     }

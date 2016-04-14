@@ -6,7 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface MileCostRepository extends CrudRepository<MileCost, Integer> {
+public interface MileCostRepository extends CrudRepository<MileCost, Long> {
 
     //MileCost findById(Integer id);
 }

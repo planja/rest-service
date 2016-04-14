@@ -8,6 +8,11 @@ public class IMTError {
     public IMTError() {
     }
 
+    public IMTError(Integer code, String description) {
+        this.code = code;
+        this.description = description;
+    }
+
     public Integer getCode() {
         return code;
     }

@@ -1,17 +1,18 @@
 package domain.model;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
 import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
-@Table(name = "mile_costs")
+@Table(name = "mile_cst")
 public class MileCost {
 
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column(name = "parser")
     private String parser;
@@ -25,16 +26,24 @@ public class MileCost {
 
     @Column(name = "updated_at")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date updatesAt;
+    private Date updatedAt;
 
     public MileCost() {
     }
 
-    public Integer getId() {
+    public MileCost(Long id, String parser, BigDecimal cost, Date createdAt, Date updatedAt) {
+        this.id = id;
+        this.parser = parser;
+        this.cost = cost;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -62,12 +71,12 @@ public class MileCost {
         this.createdAt = createdAt;
     }
 
-    public Date getUpdatesAt() {
-        return updatesAt;
+    public Date getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setUpdatesAt(Date updatesAt) {
-        this.updatesAt = updatesAt;
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     @Override
@@ -81,7 +90,7 @@ public class MileCost {
         if (createdAt != null ? !createdAt.equals(mileCost.createdAt) : mileCost.createdAt != null) return false;
         if (id != null ? !id.equals(mileCost.id) : mileCost.id != null) return false;
         if (parser != null ? !parser.equals(mileCost.parser) : mileCost.parser != null) return false;
-        if (updatesAt != null ? !updatesAt.equals(mileCost.updatesAt) : mileCost.updatesAt != null) return false;
+        if (updatedAt != null ? !updatedAt.equals(mileCost.updatedAt) : mileCost.updatedAt != null) return false;
 
         return true;
     }
@@ -92,7 +101,7 @@ public class MileCost {
         result = 31 * result + (parser != null ? parser.hashCode() : 0);
         result = 31 * result + (cost != null ? cost.hashCode() : 0);
         result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
-        result = 31 * result + (updatesAt != null ? updatesAt.hashCode() : 0);
+        result = 31 * result + (updatedAt != null ? updatedAt.hashCode() : 0);
         return result;
     }
 
@@ -103,7 +112,7 @@ public class MileCost {
                 ", parser='" + parser + '\'' +
                 ", cost=" + cost +
                 ", createdAt=" + createdAt +
-                ", updatesAt=" + updatesAt +
+                ", updatedAt=" + updatedAt +
                 '}';
     }
 }
