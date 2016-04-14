@@ -2,9 +2,12 @@ package domain.service.converter;
 
 
 import domain.model.Flight;
+import domain.model.Mile;
 import domain.model.ParserError;
+import domain.model.Request;
 import vo.view.IMTError;
 import vo.view.IMTFlight;
+import vo.view.IMTInfo;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -31,10 +34,10 @@ public class ConvertModel {
         return new IMTError(/*????*/404, error.getErrorText());
     }
 
-/*    public static IMTInfo convert2IMTInfo(Request request, Mile mile) {
+    public static IMTInfo convert2IMTInfo(Request request, Mile mile) {
         return new IMTInfo("name", String.valueOf(request.getStatus()), "mileage", String.valueOf(mile.getTax()),
                 "currency", 1);
-    }*/
+    }
 
     public static Flight convert2Flight(IMTFlight imtFlight) throws ParseException {
         return new Flight(Long.valueOf(imtFlight.getId()),
@@ -47,8 +50,7 @@ public class ConvertModel {
     }
 
     public static ParserError convert2ParserError(IMTError imtError) {
-        //return new ParserError(Long.valueOf("1"), null, null, imtError.getDescription());
-        return null;
+        return new ParserError(Long.valueOf("1"), null, null, imtError.getDescription());
     }
 
 }
