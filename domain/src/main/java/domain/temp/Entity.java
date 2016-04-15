@@ -1,7 +1,6 @@
-package domain.model;
+package domain.temp;
 
 import javax.persistence.*;
-import java.util.Objects;
 
 /**
  * Created by Никита on 14.04.2016.

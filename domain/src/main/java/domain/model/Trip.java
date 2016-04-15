@@ -39,8 +39,33 @@ public class Trip {
     private BigDecimal cost;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "request_id", nullable = false)
+    @JoinColumn(name = "queries_id", nullable = false)
     private Query query;
+
+    @Column(name = "request_id")
+    private Long requestId;
+
+    @Column(name = "created_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
+
+    @Column(name = "updated_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updatedAt;
+
+    @Column(name = "stops")
+    private String stops;
+
+    @Column(name = "cabins")
+    private String cabins;
+    @Column(name = "carriers")
+    private String carriers;
+    @Column(name = "layovers")
+    private String layovers;
+    @Column(name = "flight_legs")
+    private String flightLegs;
+    @Column(name = "flight_numbers")
+    private String flightNumbers;
 
     public Trip() {
     }
@@ -120,6 +145,86 @@ public class Trip {
         this.cost = cost;
     }
 
+    public Query getQuery() {
+        return query;
+    }
+
+    public void setQuery(Query query) {
+        this.query = query;
+    }
+
+    public Long getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(Long requestId) {
+        this.requestId = requestId;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public String getStops() {
+        return stops;
+    }
+
+    public void setStops(String stops) {
+        this.stops = stops;
+    }
+
+    public String getCabins() {
+        return cabins;
+    }
+
+    public void setCabins(String cabins) {
+        this.cabins = cabins;
+    }
+
+    public String getCarriers() {
+        return carriers;
+    }
+
+    public void setCarriers(String carriers) {
+        this.carriers = carriers;
+    }
+
+    public String getLayovers() {
+        return layovers;
+    }
+
+    public void setLayovers(String layovers) {
+        this.layovers = layovers;
+    }
+
+    public String getFlightLegs() {
+        return flightLegs;
+    }
+
+    public void setFlightLegs(String flightLegs) {
+        this.flightLegs = flightLegs;
+    }
+
+    public String getFlightNumbers() {
+        return flightNumbers;
+    }
+
+    public void setFlightNumbers(String flightNumbers) {
+        this.flightNumbers = flightNumbers;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -134,7 +239,16 @@ public class Trip {
         if (arrivePlace != null ? !arrivePlace.equals(trip.arrivePlace) : trip.arrivePlace != null) return false;
         if (tripDate != null ? !tripDate.equals(trip.tripDate) : trip.tripDate != null) return false;
         if (tripDuration != null ? !tripDuration.equals(trip.tripDuration) : trip.tripDuration != null) return false;
-        return !(cost != null ? !cost.equals(trip.cost) : trip.cost != null);
+        if (cost != null ? !cost.equals(trip.cost) : trip.cost != null) return false;
+        if (requestId != null ? !requestId.equals(trip.requestId) : trip.requestId != null) return false;
+        if (createdAt != null ? !createdAt.equals(trip.createdAt) : trip.createdAt != null) return false;
+        if (updatedAt != null ? !updatedAt.equals(trip.updatedAt) : trip.updatedAt != null) return false;
+        if (stops != null ? !stops.equals(trip.stops) : trip.stops != null) return false;
+        if (cabins != null ? !cabins.equals(trip.cabins) : trip.cabins != null) return false;
+        if (carriers != null ? !carriers.equals(trip.carriers) : trip.carriers != null) return false;
+        if (layovers != null ? !layovers.equals(trip.layovers) : trip.layovers != null) return false;
+        if (flightLegs != null ? !flightLegs.equals(trip.flightLegs) : trip.flightLegs != null) return false;
+        return !(flightNumbers != null ? !flightNumbers.equals(trip.flightNumbers) : trip.flightNumbers != null);
 
     }
 
@@ -148,6 +262,15 @@ public class Trip {
         result = 31 * result + (tripDate != null ? tripDate.hashCode() : 0);
         result = 31 * result + (tripDuration != null ? tripDuration.hashCode() : 0);
         result = 31 * result + (cost != null ? cost.hashCode() : 0);
+        result = 31 * result + (requestId != null ? requestId.hashCode() : 0);
+        result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
+        result = 31 * result + (updatedAt != null ? updatedAt.hashCode() : 0);
+        result = 31 * result + (stops != null ? stops.hashCode() : 0);
+        result = 31 * result + (cabins != null ? cabins.hashCode() : 0);
+        result = 31 * result + (carriers != null ? carriers.hashCode() : 0);
+        result = 31 * result + (layovers != null ? layovers.hashCode() : 0);
+        result = 31 * result + (flightLegs != null ? flightLegs.hashCode() : 0);
+        result = 31 * result + (flightNumbers != null ? flightNumbers.hashCode() : 0);
         return result;
     }
 
@@ -162,6 +285,15 @@ public class Trip {
                 ", tripDate=" + tripDate +
                 ", tripDuration='" + tripDuration + '\'' +
                 ", cost=" + cost +
+                ", requestId=" + requestId +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", stops='" + stops + '\'' +
+                ", cabins='" + cabins + '\'' +
+                ", carriers='" + carriers + '\'' +
+                ", layovers='" + layovers + '\'' +
+                ", flightLegs='" + flightLegs + '\'' +
+                ", flightNumbers='" + flightNumbers + '\'' +
                 '}';
     }
 }

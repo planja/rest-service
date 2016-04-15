@@ -1,4 +1,6 @@
-package domain.model;
+package domain.temp;
+
+import domain.model.Trip;
 
 import javax.persistence.*;
 import javax.persistence.Entity;

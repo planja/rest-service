@@ -1,4 +1,4 @@
-package domain.model;
+package domain.temp;
 
 import javax.persistence.*;
 import javax.persistence.Entity;

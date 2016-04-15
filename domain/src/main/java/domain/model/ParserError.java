@@ -27,7 +27,7 @@ public class ParserError {
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "queries_id", insertable = false, updatable = false)
     private Query query;
 
