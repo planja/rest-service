@@ -55,41 +55,30 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jersey.version>2.17</jersey.version>
+
+        <jersey.version>2.22.2</jersey.version>
         <spring.version>4.2.5.RELEASE</spring.version>
-        <!--<spring.version>4.1.6.RELEASE</spring.version>-->
         <hibernate.version>4.2.20.Final</hibernate.version>
-        <!--<hibernate.version>5.1.0.Final</hibernate.version>-->
         <akka.version>2.4.3</akka.version>
+        <jackson.version>2.6.4</jackson.version>
     </properties>
 
 
     <dependencyManagement>
         <dependencies>
 
-            <dependency>
-                <groupId>org.glassfish.jersey</groupId>
-                <artifactId>jersey-bom</artifactId>
-                <version>${jersey.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.glassfish.grizzly</groupId>
-                <artifactId>grizzly-http-server</artifactId>
-                <version>2.3.22</version>
-            </dependency>
-
+            <!-- Grizzly HTTP -->
             <dependency>
                 <groupId>org.glassfish.jersey.containers</groupId>
                 <artifactId>jersey-container-grizzly2-http</artifactId>
-                <version>2.22.2</version>
+                <version>${jersey.version}</version>
             </dependency>
-            <!--  <dependency>
-                  <groupId>org.glassfish.jersey.media</groupId>
-                  <artifactId>jersey-media-json-jackson</artifactId>
-              </dependency>-->
+
+            <dependency>
+                <groupId>org.glassfish.jersey.media</groupId>
+                <artifactId>jersey-media-json-jackson</artifactId>
+                <version>${jersey.version}</version>
+            </dependency>
 
               <dependency>
                   <groupId>junit</groupId>
@@ -99,7 +88,6 @@
               </dependency>
 
               <!-- Akka -->
-
             <dependency>
                 <groupId>com.typesafe.akka</groupId>
                 <artifactId>akka-actor_2.11</artifactId>
@@ -113,7 +101,6 @@
             </dependency>
 
             <!-- Spring -->
-
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-context</artifactId>
@@ -136,11 +123,9 @@
                 <groupId>org.springframework.data</groupId>
                 <artifactId>spring-data-jpa</artifactId>
                 <version>1.10.1.RELEASE</version>
-                <!--<version>1.4.3.RELEASE</version>-->
             </dependency>
 
             <!-- Hibernate -->
-
             <dependency>
                 <groupId>org.hibernate</groupId>
                 <artifactId>hibernate-entitymanager</artifactId>
@@ -163,35 +148,34 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-core</artifactId>
-                <version>2.6.4</version>
+                <version>${jackson.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
-                <version>2.6.4</version>
+                <version>${jackson.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-annotations</artifactId>
-                <version>2.6.4</version>
+                <version>${jackson.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.fasterxml.jackson.datatype</groupId>
                 <artifactId>jackson-datatype-jsr310</artifactId>
-                <version>2.6.4</version>
+                <version>${jackson.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.fasterxml.jackson.dataformat</groupId>
                 <artifactId>jackson-dataformat-xml</artifactId>
-                <version>2.6.4</version>
+                <version>${jackson.version}</version>
             </dependency>
 
         </dependencies>
-
     </dependencyManagement>
 
 </project>
