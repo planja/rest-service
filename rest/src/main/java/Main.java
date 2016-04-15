@@ -75,7 +75,6 @@ public class Main {
      * @throws IOException
      */
     public static void main(String[] args) throws IOException {
-
         try {
             Messenger.create();
             final HttpServer server = startServer();

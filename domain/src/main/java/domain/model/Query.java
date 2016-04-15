@@ -1,7 +1,6 @@
 package domain.model;
 
 import javax.persistence.*;
-import javax.persistence.Entity;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
@@ -71,14 +70,14 @@ public class Query implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
 
-    /*@OneToOne(mappedBy = "query")
-    private ParserAnswer parserAnswer;
+    @OneToMany(mappedBy = "query", fetch = FetchType.EAGER)
+    private Set<ParserAnswer> parserAnswers = new HashSet<>();
 
-    @OneToMany(mappedBy = "query")
-    private Set<ParserError> parserErrors = new HashSet<>();*/
+    @OneToMany(mappedBy = "query", fetch = FetchType.EAGER)
+    private Set<ParserError> parserErrors = new HashSet<>();
 
-/*    @OneToMany
-    private Set<Trip> trips = new HashSet<>();*/
+   // @OneToMany(fetch = FetchType.EAGER, mappedBy = "query")
+   // private Set<Trip> trips = new HashSet<>();
 
     public Query() {
     }
@@ -227,12 +226,12 @@ public class Query implements Serializable {
         this.updatedAt = updatedAt;
     }
 
-   /* public ParserAnswer getParserAnswer() {
-        return parserAnswer;
+    public Set<ParserAnswer> getParserAnswers() {
+        return parserAnswers;
     }
 
-    public void setParserAnswer(ParserAnswer parserAnswer) {
-        this.parserAnswer = parserAnswer;
+    public void setParserAnswers(Set<ParserAnswer> parserAnswers) {
+        this.parserAnswers = parserAnswers;
     }
 
     public Set<ParserError> getParserErrors() {
@@ -243,7 +242,7 @@ public class Query implements Serializable {
         this.parserErrors = parserErrors;
     }
 
-/*    public Set<Trip> getTrips() {
+  /*  public Set<Trip> getTrips() {
         return trips;
     }
 
