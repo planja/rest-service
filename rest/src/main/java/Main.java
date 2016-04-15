@@ -31,7 +31,7 @@ public class Main {
 
         try {
             Properties props = new Properties();
-            props.load(new FileInputStream(new File("service/src/main/resources/config.properties")));
+            props.load(new FileInputStream(new File("rest/src/main/resources/config.properties")));
             Main.BASE_URI = Main.BASE_URI + props.getProperty("port") + "/";
         } catch (IOException io) {
             //System.out.println(io);
