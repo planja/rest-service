@@ -40,10 +40,6 @@ public class Trip {
     @Column(name = "cost")
     private BigDecimal cost;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "queries_id", nullable = false)
-    private Query query;
-
     @Column(name = "request_id")
     private Long requestId;
 
@@ -60,17 +56,22 @@ public class Trip {
 
     @Column(name = "cabins")
     private String cabins;
+
     @Column(name = "carriers")
     private String carriers;
+
     @Column(name = "layovers")
     private String layovers;
+
     @Column(name = "flight_legs")
     private String flightLegs;
+
     @Column(name = "flight_numbers")
     private String flightNumbers;
 
-    @OneToMany(mappedBy = "query",fetch = FetchType.EAGER)
-    private Set<Query> queries = new HashSet<>();
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "queries_id", insertable = false, updatable = false)
+    private Query query;
 
     public Trip() {
     }
@@ -230,13 +231,6 @@ public class Trip {
         this.flightNumbers = flightNumbers;
     }
 
-    public Set<Query> getQueries() {
-        return queries;
-    }
-
-    public void setQueries(Set<Query> queries) {
-        this.queries = queries;
-    }
 
     @Override
     public boolean equals(Object o) {

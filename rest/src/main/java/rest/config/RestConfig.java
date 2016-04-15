@@ -10,5 +10,4 @@ import service.config.ServiceConfig;
 @Import( {ServiceConfig.class} )
 public class RestConfig {
 
-
 }
