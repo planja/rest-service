@@ -1,10 +1,16 @@
 
+import domain.config.DataConfig;
+import domain.model.*;
+import domain.repository.*;
 import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import service.actor.messanger.Messenger;
 
 import java.io.File;
@@ -12,7 +18,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -67,6 +75,7 @@ public class Main {
      * @throws IOException
      */
     public static void main(String[] args) throws IOException {
+
         try {
             Messenger.create();
             final HttpServer server = startServer();
