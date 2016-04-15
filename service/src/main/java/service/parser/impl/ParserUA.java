@@ -1,9 +1,9 @@
-package parser.impl;
+package service.parser.impl;
 
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import parser.interf.ParserActor;
+import service.parser.interf.ParserActor;
 
 public class ParserUA extends UntypedActor implements ParserActor {
 

@@ -1,4 +1,4 @@
-package parser.interf;
+package service.parser.interf;
 
 import akka.actor.Actor;
 

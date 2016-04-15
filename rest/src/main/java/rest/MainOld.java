@@ -1,16 +1,11 @@
+package rest;
 
-import domain.config.DataConfig;
-import domain.model.*;
-import domain.repository.*;
 import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
-import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
-import org.glassfish.jersey.server.ResourceConfig;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+//import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
+//import org.glassfish.jersey.server.ResourceConfig;
 import service.actor.messanger.Messenger;
 
 import java.io.File;
@@ -18,23 +13,21 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Properties;
 
 /**
- * Main class.
+ * rest.Main class.
  */
-public class Main {
+public class MainOld {
     // Base URI the Grizzly HTTP server will listen on
-    public static String BASE_URI = "http://localhost:";
+/*    public static String BASE_URI = "http://localhost:";
 
-    /**
+    *//**
      * Starts Grizzly HTTP server exposing JAX-RS resources defined in this application.
      *
      * @return Grizzly HTTP server.
-     */
+     *//*
     public static HttpServer startServer() {
 
         try {
@@ -68,12 +61,12 @@ public class Main {
         return server;
     }
 
-    /**
-     * Main method.
+    *//**
+     * rest.Main method.
      *
      * @param args
      * @throws IOException
-     */
+     *//*
     public static void main(String[] args) throws IOException {
         try {
             Messenger.create();
@@ -85,6 +78,6 @@ public class Main {
         } catch (Exception e) {
             System.err.println(e);
         }
-    }
+    }*/
 }
 
