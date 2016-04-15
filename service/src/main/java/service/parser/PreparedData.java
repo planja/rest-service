@@ -1,4 +1,4 @@
-package parser;
+package service.parser;
 
 public class PreparedData {
 }

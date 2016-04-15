@@ -5,20 +5,22 @@ package rest;
  */
 
 import akka.actor.ActorRef;
-import akka.actor.ActorSystem;
-import akka.actor.Props;
+import org.springframework.stereotype.Component;
 import service.RequestData;
-import service.actor.RequestActor;
 
+import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Date;
 import java.util.List;
 
+@Component
 @Path("/")
 public class RESTService {
 
+    @Inject
+    public ActorRef requestActor;
 
     @GET
     @Path("get")
@@ -40,11 +42,9 @@ public class RESTService {
                         @PathParam("request_id") int request_id,
                         @PathParam("user_id") int user_id) {
 
-        ActorSystem system = ActorSystem.create("ActorSystem");
-        ActorRef actorRef = system.actorOf(Props.create(RequestActor.class), "RequestToParserActor");
         RequestData viewModel = new RequestData(parser, user, origin, destination, ow_start_date, ow_end_date,
                 rt_start_date, rt_end_date, ow_except_dates, rt_except_dates, seats, cabins, type, request_id, user_id);
-        actorRef.tell(viewModel, actorRef);
+        requestActor.tell(viewModel, requestActor);
         return Response.status(Response.Status.OK).build();
     }
 
@@ -53,10 +53,7 @@ public class RESTService {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response post(RequestData viewModel) {
-        ActorSystem system = ActorSystem.create("ActorSystem");
-        ActorRef actorRef = system.actorOf(Props.create(RequestActor.class), "RequestToParserActor");
-        actorRef.tell(viewModel, actorRef);
+        requestActor.tell(viewModel, requestActor);
         return Response.status(Response.Status.OK).build();
     }
-
 }

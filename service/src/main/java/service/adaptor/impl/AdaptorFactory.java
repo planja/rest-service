@@ -1,7 +1,7 @@
 package service.adaptor.impl;
 
-import parser.ParserType;
 import service.adaptor.interf.Adaptor;
+import service.parser.ParserType;
 
 public class AdaptorFactory {
     public static Adaptor getAdaptor(ParserType parserType) {

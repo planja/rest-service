@@ -1,7 +1,6 @@
 package service.adaptor.interf;
 
-import parser.PreparedData;
-import service.RequestData;
+import service.parser.PreparedData;
 import vo.view.IMTAward;
 
 import java.util.List;

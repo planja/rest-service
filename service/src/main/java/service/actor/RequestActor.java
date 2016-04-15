@@ -5,16 +5,11 @@ import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import akka.pattern.Patterns;
-import akka.util.Timeout;
 import domain.actor.RepositoryActor;
-import parser.ParserType;
-import scala.concurrent.Await;
-import scala.concurrent.Future;
-import scala.concurrent.duration.Duration;
 import service.RequestData;
 import service.adaptor.impl.AdaptorFactory;
 import service.adaptor.interf.Adaptor;
+import service.parser.ParserType;
 import vo.view.IMTAward;
 
 import java.util.ArrayList;
