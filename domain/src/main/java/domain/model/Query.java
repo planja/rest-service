@@ -71,11 +71,11 @@ public class Query implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
 
-    @OneToOne(mappedBy = "query")
+    /*@OneToOne(mappedBy = "query")
     private ParserAnswer parserAnswer;
 
     @OneToMany(mappedBy = "query")
-    private Set<ParserError> parserErrors = new HashSet<>();
+    private Set<ParserError> parserErrors = new HashSet<>();*/
 
 /*    @OneToMany
     private Set<Trip> trips = new HashSet<>();*/
@@ -227,7 +227,7 @@ public class Query implements Serializable {
         this.updatedAt = updatedAt;
     }
 
-    public ParserAnswer getParserAnswer() {
+   /* public ParserAnswer getParserAnswer() {
         return parserAnswer;
     }
 

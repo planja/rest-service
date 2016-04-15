@@ -1,10 +1,9 @@
-package domain.model;
+package domain.temp;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.Objects;
 
 /**
  * Created by Никита on 12.04.2016.
