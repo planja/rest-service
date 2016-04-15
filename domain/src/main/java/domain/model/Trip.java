@@ -4,6 +4,8 @@ import javax.persistence.*;
 import javax.persistence.Entity;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by Никита on 12.04.2016.
@@ -66,6 +68,9 @@ public class Trip {
     private String flightLegs;
     @Column(name = "flight_numbers")
     private String flightNumbers;
+
+    @OneToMany(mappedBy = "query",fetch = FetchType.EAGER)
+    private Set<Query> queries = new HashSet<>();
 
     public Trip() {
     }
@@ -223,6 +228,14 @@ public class Trip {
 
     public void setFlightNumbers(String flightNumbers) {
         this.flightNumbers = flightNumbers;
+    }
+
+    public Set<Query> getQueries() {
+        return queries;
+    }
+
+    public void setQueries(Set<Query> queries) {
+        this.queries = queries;
     }
 
     @Override
