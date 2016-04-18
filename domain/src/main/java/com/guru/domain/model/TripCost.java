@@ -1,6 +1,4 @@
-package com.guru.domain.temp;
-
-import com.guru.domain.model.Trip;
+package com.guru.domain.model;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
