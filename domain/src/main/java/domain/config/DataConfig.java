@@ -21,6 +21,7 @@ import java.util.Properties;
 @EnableTransactionManagement
 @EnableJpaRepositories( {"domain" } )
 @PropertySource( {"classpath:persistence-config.properties"} )
+@Import( {Beans.class, AkkaConfig.class})
 public class DataConfig {
 
     @Inject

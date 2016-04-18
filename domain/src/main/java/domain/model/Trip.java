@@ -60,15 +60,21 @@ public class Trip {
 
     @Column(name = "cabins")
     private String cabins;
+
     @Column(name = "carriers")
     private String carriers;
+
     @Column(name = "layovers")
     private String layovers;
+
     @Column(name = "flight_legs")
     private String flightLegs;
+
     @Column(name = "flight_numbers")
     private String flightNumbers;
 
+    @OneToMany(mappedBy = "query",fetch = FetchType.EAGER)
+    private Set<Query> queries = new HashSet<>();
 
     public Trip() {
     }
@@ -226,6 +232,14 @@ public class Trip {
 
     public void setFlightNumbers(String flightNumbers) {
         this.flightNumbers = flightNumbers;
+    }
+
+    public Set<Query> getQueries() {
+        return queries;
+    }
+
+    public void setQueries(Set<Query> queries) {
+        this.queries = queries;
     }
 
     @Override

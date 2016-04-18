@@ -12,6 +12,7 @@ public class RepositoryActor extends UntypedActor {
 
     @Override
     public void onReceive(Object message) throws Exception {
+        log.info("i'm in");
         if (message instanceof List<?>) {
             log.info("create");
         }

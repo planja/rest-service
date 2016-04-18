@@ -1,8 +1,8 @@
-package parser;
+package service.parser;
 
 
-import parser.impl.ParserAA;
-import parser.impl.ParserUA;
+import service.parser.impl.ParserAA;
+import service.parser.impl.ParserUA;
 import service.adaptor.impl.AdaptorServiceAA;
 import service.adaptor.interf.Adaptor;
 
@@ -34,6 +34,6 @@ public enum ParserType {
     public abstract Class getParserClass();
 
     public String getParserName() {
-        return "parser" + this.name();
+        return "service/parser" + this.name();
     }
 }
