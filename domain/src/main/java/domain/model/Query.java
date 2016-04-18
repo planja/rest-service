@@ -70,14 +70,14 @@ public class Query implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
 
-    @OneToMany(mappedBy = "query", fetch = FetchType.EAGER)
-    private Set<ParserAnswer> parserAnswers = new HashSet<>();
+    @OneToOne(mappedBy = "query", fetch = FetchType.EAGER)
+    private ParserAnswer parserAnswers;
 
     @OneToMany(mappedBy = "query", fetch = FetchType.EAGER)
     private Set<ParserError> parserErrors = new HashSet<>();
 
-   // @OneToMany(fetch = FetchType.EAGER, mappedBy = "query")
-   // private Set<Trip> trips = new HashSet<>();
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "query")
+    private Set<Trip> trips = new HashSet<>();
 
     public Query() {
     }
@@ -226,11 +226,15 @@ public class Query implements Serializable {
         this.updatedAt = updatedAt;
     }
 
-    public Set<ParserAnswer> getParserAnswers() {
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
+
+    public ParserAnswer getParserAnswers() {
         return parserAnswers;
     }
 
-    public void setParserAnswers(Set<ParserAnswer> parserAnswers) {
+    public void setParserAnswers(ParserAnswer parserAnswers) {
         this.parserAnswers = parserAnswers;
     }
 
@@ -242,13 +246,13 @@ public class Query implements Serializable {
         this.parserErrors = parserErrors;
     }
 
-  /*  public Set<Trip> getTrips() {
+    public Set<Trip> getTrips() {
         return trips;
     }
 
     public void setTrips(Set<Trip> trips) {
         this.trips = trips;
-    }*/
+    }
 
     @Override
     public boolean equals(Object o) {
