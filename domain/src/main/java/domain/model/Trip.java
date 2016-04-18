@@ -40,6 +40,10 @@ public class Trip {
     @Column(name = "cost")
     private BigDecimal cost;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "queries_id", nullable = false)
+    private Query query;
+
     @Column(name = "request_id")
     private Long requestId;
 
@@ -69,9 +73,6 @@ public class Trip {
     @Column(name = "flight_numbers")
     private String flightNumbers;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "queries_id", insertable = false, updatable = false)
-    private Query query;
 
     public Trip() {
     }
