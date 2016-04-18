@@ -1,7 +1,8 @@
-package com.guru.domain.temp;
+package com.guru.domain.model;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
+import java.util.Date;
 
 /**
  * Created by Никита on 12.04.2016.
@@ -36,6 +37,15 @@ public class Zone {
 
     @Column(name = "lh_region")
     private String lhRegion;
+
+    @Column(name = "created_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
+
+    @Column(name = "updated_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updatedAt;
+
 
     public Zone() {
     }
@@ -115,6 +125,22 @@ public class Zone {
         this.lhRegion = lhRegion;
     }
 
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -130,7 +156,9 @@ public class Zone {
         if (aaRegion != null ? !aaRegion.equals(zone.aaRegion) : zone.aaRegion != null) return false;
         if (sqRegion != null ? !sqRegion.equals(zone.sqRegion) : zone.sqRegion != null) return false;
         if (nhRegion != null ? !nhRegion.equals(zone.nhRegion) : zone.nhRegion != null) return false;
-        return !(lhRegion != null ? !lhRegion.equals(zone.lhRegion) : zone.lhRegion != null);
+        if (lhRegion != null ? !lhRegion.equals(zone.lhRegion) : zone.lhRegion != null) return false;
+        if (createdAt != null ? !createdAt.equals(zone.createdAt) : zone.createdAt != null) return false;
+        return !(updatedAt != null ? !updatedAt.equals(zone.updatedAt) : zone.updatedAt != null);
 
     }
 
@@ -144,6 +172,8 @@ public class Zone {
         result = 31 * result + (sqRegion != null ? sqRegion.hashCode() : 0);
         result = 31 * result + (nhRegion != null ? nhRegion.hashCode() : 0);
         result = 31 * result + (lhRegion != null ? lhRegion.hashCode() : 0);
+        result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
+        result = 31 * result + (updatedAt != null ? updatedAt.hashCode() : 0);
         return result;
     }
 
@@ -158,6 +188,8 @@ public class Zone {
                 ", sqRegion='" + sqRegion + '\'' +
                 ", nhRegion='" + nhRegion + '\'' +
                 ", lhRegion='" + lhRegion + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
                 '}';
     }
 }

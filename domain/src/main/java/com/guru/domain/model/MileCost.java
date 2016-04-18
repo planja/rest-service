@@ -1,4 +1,4 @@
-package com.guru.domain.temp;
+package com.guru.domain.model;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
-@Table(name = "mile_cst")
+@Table(name = "mile_cost")
 public class MileCost {
 
     @Id
