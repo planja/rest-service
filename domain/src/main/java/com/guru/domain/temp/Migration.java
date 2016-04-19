@@ -1,4 +1,4 @@
-package com.guru.domain.model;
+package com.guru.domain.temp;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

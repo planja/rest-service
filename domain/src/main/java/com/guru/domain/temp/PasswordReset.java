@@ -1,4 +1,4 @@
-package com.guru.domain.model;
+package com.guru.domain.temp;
 
 import javax.persistence.*;
 import java.util.Date;

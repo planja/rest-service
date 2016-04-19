@@ -13,8 +13,8 @@ public class RequestData {
     public RequestData() {
     }
 
-    public RequestData(String parser, String user, String origin, String destination, Date ow_start_date, Date ow_end_date, Date rt_start_date, Date rt_end_date, List<Date> ow_except_dates, List<Date> rt_except_dates, int seats, List<String> cabins, String type, int request_id, int user_id) {
-        this.parser = parser;
+    public RequestData(List<String> parsers, String user, String origin, String destination, Date ow_start_date, Date ow_end_date, Date rt_start_date, Date rt_end_date, List<Date> ow_except_dates, List<Date> rt_except_dates, int seats, List<String> cabins, String type, int request_id, int user_id) {
+        this.parsers = parsers;
         this.user = user;
         this.origin = origin;
         this.destination = destination;
@@ -31,7 +31,7 @@ public class RequestData {
         this.user_id = user_id;
     }
 
-    private String parser;
+    private List<String> parsers;
     private String user;
     private String origin;
     private String destination;
@@ -58,12 +58,12 @@ public class RequestData {
     private List<Date> returnDates;
 
 
-    public String getParser() {
-        return parser;
+    public List<String> getParsers() {
+        return parsers;
     }
 
-    public void setParser(String parser) {
-        this.parser = parser;
+    public void setParsers(List<String> parsers) {
+        this.parsers = parsers;
     }
 
     public String getUser() {

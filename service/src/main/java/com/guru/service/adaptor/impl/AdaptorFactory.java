@@ -5,8 +5,8 @@ import com.guru.service.adaptor.interf.Adaptor;
 import com.guru.service.parser.ParserType;
 
 public class AdaptorFactory {
-    public static Adaptor getAdaptor(RequestData requestData) {
-        ParserType parserType = ParserType.valueOf(requestData.getParser().toUpperCase());
+    public static Adaptor getAdaptor(String parserName) {
+        ParserType parserType = ParserType.valueOf(parserName.toUpperCase());
         return parserType.getAdaptorService();
     }
 }
