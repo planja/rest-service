@@ -5,6 +5,7 @@ package com.guru.rest;
  */
 
 import akka.actor.ActorRef;
+import com.guru.service.ExceptDate;
 import org.springframework.stereotype.Component;
 import com.guru.service.RequestData;
 
@@ -22,7 +23,7 @@ public class RESTService {
     @Inject
     public ActorRef requestActor;
 
-    @GET
+   /* @GET
     @Path("get")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
@@ -34,19 +35,18 @@ public class RESTService {
                         @PathParam("ow_end_date") Date ow_end_date,
                         @PathParam("rt_start_date") Date rt_start_date,
                         @PathParam("rt_end_date") Date rt_end_date,
-                        @PathParam("ow_except_dates") List<Date> ow_except_dates,
-                        @PathParam("rt_except_dates") List<Date> rt_except_dates,
+                        @PathParam("ow_except_dates") List<ExceptDate> ow_except_dates,
+                        @PathParam("rt_except_dates") List<ExceptDate> rt_except_dates,
                         @PathParam("seats") int seats,
                         @PathParam("cabins") List<String> cabins,
                         @PathParam("type") String type,
                         @PathParam("request_id") int request_id,
                         @PathParam("user_id") int user_id) {
 
-        RequestData viewModel = new RequestData(parsers, user, origin, destination, ow_start_date, ow_end_date,
-                rt_start_date, rt_end_date, ow_except_dates, rt_except_dates, seats, cabins, type, request_id, user_id);
+       RequestData viewModel = new RequestData();
         requestActor.tell(viewModel, requestActor);
         return Response.status(Response.Status.OK).build();
-    }
+    }*/
 
     @POST
     @Path("search")
