@@ -25,23 +25,24 @@ public class RequestActor extends UntypedActor {
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
     private ActorRef repositoryActor;
-    private ActorRef parserActor;
 
     @Override
     public void onReceive(Object message) throws Exception {
         if (message instanceof RequestData) {
             RequestData requestData = (RequestData) message;
-
-            ActorRef parserActor = context().system().actorOf(Props.create(getParserClass(requestData)));
-
-            parserActor.tell(message, self());
+            ActorRef parserActor;
+            for (String parserName : requestData.getParsers()) {
+                System.out.println("parserName = " + parserName);
+                parserActor = context().system().actorOf(Props.create(getParserClass(parserName)));
+                parserActor.tell(message, self());
+            }
 
 /*            Timeout timeout = new Timeout(Duration.create(5, "seconds"));
             Future<Object> future = Patterns.ask(parserActor, message, timeout);*/
             //List<?> result = (List<?>) Await.result(future, timeout.duration());
             List<?> result = new ArrayList<>();
 
-            Adaptor adaptor = AdaptorFactory.getAdaptor(requestData);
+            Adaptor adaptor = AdaptorFactory.getAdaptor(requestData.getParsers().get(0));
             //List<IMTAward> awards = adaptor.adaptData(result);
             List<IMTAward> awards = new ArrayList<>();
             repositoryActor.tell(awards, self());
@@ -54,8 +55,8 @@ public class RequestActor extends UntypedActor {
         repositoryActor = context().system().actorOf(Props.create(RepositoryActor.class));
     }
 
-    private Class getParserClass(RequestData requestData) {
-        ParserType parserType = ParserType.valueOf(requestData.getParser().toUpperCase());
+    private Class getParserClass(String parserName) {
+        ParserType parserType = ParserType.valueOf(parserName.toUpperCase());
         return parserType.getParserClass();
     }
 }

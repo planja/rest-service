@@ -26,7 +26,7 @@ public class RESTService {
     @Path("get")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response get(@PathParam("parser") String parser,
+    public Response get(@PathParam("parsers") List<String> parsers,
                         @PathParam("user") String user,
                         @PathParam("origin") String origin,
                         @PathParam("destination") String destination,
@@ -42,7 +42,7 @@ public class RESTService {
                         @PathParam("request_id") int request_id,
                         @PathParam("user_id") int user_id) {
 
-        RequestData viewModel = new RequestData(parser, user, origin, destination, ow_start_date, ow_end_date,
+        RequestData viewModel = new RequestData(parsers, user, origin, destination, ow_start_date, ow_end_date,
                 rt_start_date, rt_end_date, ow_except_dates, rt_except_dates, seats, cabins, type, request_id, user_id);
         requestActor.tell(viewModel, requestActor);
         return Response.status(Response.Status.OK).build();
