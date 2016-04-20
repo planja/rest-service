@@ -13,6 +13,11 @@ public class RepositoryActor extends UntypedActor {
     @Override
     public void onReceive(Object message) throws Exception {
         log.info("i'm in");
+        if (message instanceof HelloMessage) {
+            HelloMessage recMsg = (HelloMessage) message;
+            System.out.println("Received Message: " + recMsg.getText());
+            System.out.println("***** Hello World! ******");
+        }
         if (message instanceof String) {
             log.info("get String");
         }

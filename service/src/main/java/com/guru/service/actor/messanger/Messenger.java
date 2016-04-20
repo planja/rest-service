@@ -3,6 +3,7 @@ package com.guru.service.actor.messanger;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
+import com.guru.domain.actor.HelloMessage;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
@@ -20,7 +21,7 @@ public class Messenger {
         final Config config = ConfigFactory.load().getConfig("remoteActor");
         ActorSystem system = ActorSystem.create("RemoteSystem", config);
 
-        final String path = "akka.tcp://RemoteSystem@127.0.0.1:2552/user/remoteActor";
+        final String path = "akka.tcp://RemoteApp@127.0.0.1:1719/user/RepositoryActor";
         remoteActor = system.actorFor(path);
         myActor = system.actorOf(Props.create(SenderMessageActor.class), "SenderMessageActor");
 

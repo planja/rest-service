@@ -7,6 +7,7 @@ import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import com.guru.domain.actor.RepositoryActor;
 import com.guru.service.RequestData;
+import com.guru.service.actor.messanger.Messenger;
 import com.guru.service.adaptor.impl.AdaptorFactory;
 import com.guru.service.adaptor.interf.Adaptor;
 import com.guru.service.parser.ParserType;
@@ -45,7 +46,8 @@ public class RequestActor extends UntypedActor {
             Adaptor adaptor = AdaptorFactory.getAdaptor(requestData.getParsers().get(0));
             //List<IMTAward> awards = adaptor.adaptData(result);
             List<IMTAward> awards = new ArrayList<>();
-            repositoryActor.tell(awards, self());
+            //repositoryActor.tell(awards, self());
+            Messenger.sendMessage();
         } else
             unhandled(message);
     }
