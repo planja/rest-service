@@ -1,6 +1,7 @@
 package com.guru.service.actor.messanger;
 
 import akka.actor.UntypedActor;
+import com.guru.domain.actor.HelloMessage;
 
 
 public class SenderMessageActor extends UntypedActor {

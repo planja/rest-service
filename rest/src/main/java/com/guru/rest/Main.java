@@ -1,13 +1,9 @@
 package com.guru.rest;
 
-import akka.actor.ActorSystem;
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
-import org.glassfish.grizzly.http.server.HttpHandler;
-import org.glassfish.grizzly.http.server.Request;
-import org.glassfish.grizzly.http.server.Response;
-import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
-import org.glassfish.jersey.server.ResourceConfig;
+import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
+import org.glassfish.grizzly.http.server.*;
+import org.glassfish.grizzly.servlet.ServletRegistration;
+import org.glassfish.grizzly.servlet.WebappContext;
 
 import java.io.IOException;
 import java.net.URI;
