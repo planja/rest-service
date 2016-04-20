@@ -1,4 +1,4 @@
-package com.guru.service.actor.messanger; /**
+package com.guru.domain.actor; /**
  * Created by Никита on 04.04.2016.
  */
 

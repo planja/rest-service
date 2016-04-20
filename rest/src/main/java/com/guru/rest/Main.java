@@ -1,5 +1,6 @@
 package com.guru.rest;
 
+import com.guru.service.actor.messanger.Messenger;
 import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
 import org.glassfish.grizzly.http.server.*;
 import org.glassfish.grizzly.servlet.ServletRegistration;
@@ -16,6 +17,7 @@ public class Main {
     public static final String BASE_URI = bundle.getString("base.url");
 
     public static void main(String[] args) throws IOException {
+        Messenger.create();
         startupServer();
     }
 
