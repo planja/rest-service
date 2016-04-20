@@ -10,11 +10,8 @@ import java.util.stream.Collectors;
 
 public class RequestData {
 
-    @Deprecated
     public RequestData() {
     }
-
-
 
     private List<String> parsers;
     private String user;
@@ -178,5 +175,4 @@ public class RequestData {
                 this.getRt_except_dates().stream().map(ExceptDate::getDate).collect(Collectors.toList()));
 
     }
-
 }

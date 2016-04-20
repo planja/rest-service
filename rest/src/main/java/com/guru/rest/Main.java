@@ -1,12 +1,13 @@
 package com.guru.rest;
 
-import com.guru.service.actor.messanger.Messenger;
-import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
-import org.glassfish.grizzly.http.server.*;
-import org.glassfish.grizzly.servlet.ServletRegistration;
-import org.glassfish.grizzly.servlet.WebappContext;
+import org.glassfish.grizzly.http.server.HttpHandler;
+import org.glassfish.grizzly.http.server.Request;
+import org.glassfish.grizzly.http.server.Response;
+import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
+import org.glassfish.jersey.server.ResourceConfig;
 
 import java.io.IOException;
+import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.ResourceBundle;
@@ -14,19 +15,17 @@ import java.util.ResourceBundle;
 public class Main {
 
     public static ResourceBundle bundle = ResourceBundle.getBundle("config");
-    public static final String BASE_URI = bundle.getString("base.url");
+    public static final String BASE_URI = bundle.getString("url");
+    public static final String PORT = bundle.getString("port");
 
     public static void main(String[] args) throws IOException {
-        Messenger.create();
         startupServer();
+        //startupActorSystem();
     }
 
     private static void startupServer() throws IOException {
-        HttpServer server = new HttpServer();
-        NetworkListener listener = new NetworkListener("grizzly2", BASE_URI, Integer.parseInt(bundle.getString("port")));
-        server.addListener(listener);
-        initSpringContext(server);
-
+        final ResourceConfig resourceConfig = new ResourceConfig().packages("com.guru");
+        org.glassfish.grizzly.http.server.HttpServer server = GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI + PORT + "/"), resourceConfig);
         server.getServerConfiguration().addHttpHandler(
                 new HttpHandler() {
                     public void service(Request request, Response response) throws Exception {
@@ -37,18 +36,12 @@ public class Main {
                     }
                 },
                 "/time");
-        server.start();
         System.out.println(String.format("Jersey app started with WADL available at "
                 + "%s application.wadl\nHit enter to stop it...", BASE_URI));
     }
 
-    private static void initSpringContext(HttpServer server) {
-        WebappContext context = new WebappContext("ctx","/");
-        final ServletRegistration registration = context.addServlet("spring", new SpringServlet());
-        registration.addMapping("/*");
-        context.addContextInitParameter("contextConfigLocation", "classpath:spring-context.xml");
-        context.addListener("org.springframework.web.context.ContextLoaderListener");
-        context.addListener("org.springframework.web.context.request.RequestContextListener");
-        context.deploy(server);
-    }
+/*    private static void startupActorSystem() {
+        final Config config = ConfigFactory.load().getConfig("appActor");
+        ActorSystem.create("ApplicationSystem", config);
+    }*/
 }

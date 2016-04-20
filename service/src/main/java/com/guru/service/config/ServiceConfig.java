@@ -16,12 +16,12 @@ import javax.inject.Inject;
 @ComponentScan( {"com.guru.service"} )
 @Import( {DataConfig.class} )
 public class ServiceConfig {
-
+/*
     @Inject
     private ActorSystem actorSystem;
 
     @Bean
     public ActorRef requestActor() {
         return actorSystem.actorOf(Props.create(RequestActor.class));
-    }
+    }*/
 }
