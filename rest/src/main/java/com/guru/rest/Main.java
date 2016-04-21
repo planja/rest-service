@@ -1,5 +1,6 @@
 package com.guru.rest;
 
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.guru.domain.actor.RemoteSystem;
 import com.guru.service.actor.messanger.Messenger;
 import org.glassfish.grizzly.http.server.HttpHandler;
@@ -28,6 +29,7 @@ public class Main {
 
     private static void startupServer() throws IOException {
         final ResourceConfig resourceConfig = new ResourceConfig().packages("com.guru");
+        resourceConfig.register(JacksonJsonProvider.class);
         org.glassfish.grizzly.http.server.HttpServer server = GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI + PORT + "/"), resourceConfig);
         server.getServerConfiguration().addHttpHandler(
                 new HttpHandler() {
