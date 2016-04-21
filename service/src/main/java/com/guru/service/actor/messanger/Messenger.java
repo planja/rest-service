@@ -18,12 +18,13 @@ public class Messenger {
     }
 
     private static void init() {
-        final Config config = ConfigFactory.load().getConfig("remoteActor");
+        final Config config = ConfigFactory.load().getConfig("applicationActor");
         ActorSystem system = ActorSystem.create("RemoteSystem", config);
+
+        myActor = system.actorOf(Props.create(SenderMessageActor.class), "SenderMessageActor");
 
         final String path = "akka.tcp://RemoteApp@127.0.0.1:1719/user/RepositoryActor";
         remoteActor = system.actorFor(path);
-        myActor = system.actorOf(Props.create(SenderMessageActor.class), "SenderMessageActor");
 
     }
 

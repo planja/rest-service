@@ -1,5 +1,7 @@
 package com.guru.rest;
 
+import com.guru.domain.actor.RemoteSystem;
+import com.guru.service.actor.messanger.Messenger;
 import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
@@ -19,8 +21,9 @@ public class Main {
     public static final String PORT = bundle.getString("port");
 
     public static void main(String[] args) throws IOException {
+        RemoteSystem.create();
+        Messenger.create();
         startupServer();
-        //startupActorSystem();
     }
 
     private static void startupServer() throws IOException {
