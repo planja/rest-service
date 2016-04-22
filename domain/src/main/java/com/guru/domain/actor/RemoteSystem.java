@@ -3,6 +3,7 @@ package com.guru.domain.actor;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
+import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
 /**
@@ -13,20 +14,19 @@ public class RemoteSystem {
     public static RemoteSystem instance;
 
 
-    private RemoteSystem() {
-        RemoteInit();
+    private RemoteSystem(Config config) {
+        RemoteInit(config);
     }
 
-    private static void RemoteInit() {
-        ActorSystem system = ActorSystem.create("RemoteApp", ConfigFactory.load()
-                .getConfig("RemoteConfig"));
+    private static void RemoteInit(Config config) {
+        ActorSystem system = ActorSystem.create("RemoteApp", config);
         ActorRef actor = system.actorOf(Props.create(RepositoryActor.class), "RepositoryActor");
 
     }
 
-    public static void create() {
+    public static void create(Config config) {
         if (instance == null)
-            instance = new RemoteSystem();
+            instance = new RemoteSystem(config);
     }
 
 }
