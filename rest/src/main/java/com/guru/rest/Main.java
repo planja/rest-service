@@ -1,12 +1,13 @@
 package com.guru.rest;
 
-import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.guru.domain.actor.RemoteSystem;
 import com.guru.service.actor.messanger.Messenger;
 import org.glassfish.grizzly.http.server.HttpHandler;
+import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
+import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import java.io.IOException;
@@ -29,10 +30,11 @@ public class Main {
 
     private static void startupServer() throws IOException {
         final ResourceConfig resourceConfig = new ResourceConfig().packages("com.guru");
-        resourceConfig.register(JacksonJsonProvider.class);
-        org.glassfish.grizzly.http.server.HttpServer server = GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI + PORT + "/"), resourceConfig);
+        resourceConfig.register(JacksonFeature.class);
+        HttpServer server = GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI + PORT + "/"), resourceConfig);
         server.getServerConfiguration().addHttpHandler(
                 new HttpHandler() {
+                    @Override
                     public void service(Request request, Response response) throws Exception {
                         final SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
                         final String date = format.format(new Date(System.currentTimeMillis()));
@@ -44,9 +46,4 @@ public class Main {
         System.out.println(String.format("Jersey app started with WADL available at "
                 + "%s application.wadl\nHit enter to stop it...", BASE_URI));
     }
-
-/*    private static void startupActorSystem() {
-        final Config config = ConfigFactory.load().getConfig("appActor");
-        ActorSystem.create("ApplicationSystem", config);
-    }*/
 }
