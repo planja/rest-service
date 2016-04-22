@@ -7,8 +7,9 @@
    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd   
    http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd
    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd">
-		<context:component-scan base-package="rest"/>
 
-    <bean class="rest.config.RestConfig"/>
+<!--		<context:component-scan base-package="com.guru"/>
+
+    <bean class="com.guru.rest.config.RestConfig"/>-->
 		                                                     
 </beans>
