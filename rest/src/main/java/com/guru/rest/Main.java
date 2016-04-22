@@ -3,6 +3,8 @@ package com.guru.rest;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.guru.domain.actor.RemoteSystem;
 import com.guru.service.actor.messanger.Messenger;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
@@ -22,7 +24,7 @@ public class Main {
     public static final String PORT = bundle.getString("port");
 
     public static void main(String[] args) throws IOException {
-        RemoteSystem.create();
+        RemoteSystem.create(ConfigFactory.load().getConfig("RemoteConfig"));
         Messenger.create();
         startupServer();
     }
