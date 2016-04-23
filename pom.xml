@@ -99,7 +99,7 @@
     <dependencyManagement>
         <dependencies>
 
-            <!--Jersey -->
+            <!--Jersey & Grizzly -->
             <dependency>
                 <groupId>org.glassfish.jersey</groupId>
                 <artifactId>jersey-bom</artifactId>
@@ -200,12 +200,5 @@
 
         </dependencies>
     </dependencyManagement>
-
-<!--    <dependencies>
-        <dependency>
-            <groupId>org.glassfish.jersey.media</groupId>
-            <artifactId>jersey-media-json-jackson</artifactId>
-        </dependency>
-    </dependencies>-->
 
 </project>

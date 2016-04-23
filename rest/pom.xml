@@ -33,12 +33,6 @@
             <artifactId>spring-web</artifactId>
         </dependency>
 
-<!--        <dependency>
-            <groupId>org.glassfish.jersey.ext</groupId>
-            <artifactId>jersey-spring3</artifactId>
-        </dependency>-->
-
-
         <!--Jersey & Spring intergration-->
         <dependency>
             <groupId>com.sun.jersey.contribs</groupId>
@@ -83,39 +77,17 @@
             <groupId>org.glassfish.jersey.containers</groupId>
             <artifactId>jersey-container-grizzly2-http</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.glassfish.jersey.media</groupId>
             <artifactId>jersey-media-json-jackson</artifactId>
         </dependency>
+        
         <dependency>
             <groupId>org.glassfish.jersey.containers</groupId>
             <artifactId>jersey-container-grizzly2-servlet</artifactId>
         </dependency>
-
-
-<!--        <dependency>
-            <groupId>org.glassfish.jersey.containers</groupId>
-            &lt;!&ndash; if your container implements Servlet API older than 3.0, use "jersey-container-servlet-core"  &ndash;&gt;
-            <artifactId>jersey-container-servlet-core</artifactId>
-        </dependency>-->
-
-<!--        <dependency>
-            <groupId>org.glassfish.jersey.core</groupId>
-            <artifactId>jersey-server</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.jersey.containers</groupId>
-            <artifactId>jersey-container-servlet-core</artifactId>
-        </dependency>-->
-
-        <dependency>
-            <groupId>org.glassfish.jersey.core</groupId>
-            <artifactId>jersey-common</artifactId>
-        </dependency>
-
-
-
-
+        
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
