@@ -4,6 +4,7 @@ import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
 import com.guru.domain.config.DataConfig;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -16,12 +17,12 @@ import javax.inject.Inject;
 @ComponentScan( {"com.guru.service"} )
 @Import( {DataConfig.class} )
 public class ServiceConfig {
-/*
-    @Inject
-    private ActorSystem actorSystem;
+
+    @Autowired
+    private ActorSystem applicationSystem;
 
     @Bean
     public ActorRef requestActor() {
-        return actorSystem.actorOf(Props.create(RequestActor.class));
-    }*/
+        return applicationSystem.actorOf(Props.create(RequestActor.class));
+    }
 }

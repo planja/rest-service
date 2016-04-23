@@ -9,17 +9,20 @@ import akka.actor.ActorSystem;
 import akka.actor.Props;
 import com.guru.service.RequestData;
 import com.guru.service.actor.RequestActor;
+import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+@Component
 @Path("/")
 public class RESTService {
 
-/*    @Inject
-    public ActorRef requestActor;*/
+    @Inject
+    public ActorRef requestActor;
 
    /* @GET
     @Path("get")
@@ -51,8 +54,8 @@ public class RESTService {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response post(RequestData requestData) {
-        ActorSystem system = ActorSystem.create("ApplicationSystem");
-        ActorRef requestActor = system.actorOf(Props.create(RequestActor.class));
+        //ActorSystem system = ActorSystem.create("ApplicationSystem");
+        //ActorRef requestActor = system.actorOf(Props.create(RequestActor.class));
         requestActor.tell(requestData, requestActor);
         return Response.status(Response.Status.OK).build();
     }

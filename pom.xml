@@ -71,7 +71,7 @@
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <manifestEntries>
-                                        <Main-Class>com.guru.rest.Main</Main-Class>
+                                        <Main-Class>com.guru.rest.MainSpring</Main-Class>
                                     </manifestEntries>
                                 </transformer>
                             </transformers>
@@ -99,7 +99,7 @@
     <dependencyManagement>
         <dependencies>
 
-            <!--Jersey & Grizzly-->
+            <!--Jersey & Grizzly -->
             <dependency>
                 <groupId>org.glassfish.jersey</groupId>
                 <artifactId>jersey-bom</artifactId>
@@ -109,14 +109,14 @@
             </dependency>
 
             <!-- Test -->
-              <dependency>
-                  <groupId>junit</groupId>
-                  <artifactId>junit</artifactId>
-                  <version>4.9</version>
-                  <scope>test</scope>
-              </dependency>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>4.9</version>
+                <scope>test</scope>
+            </dependency>
 
-              <!-- Akka -->
+            <!-- Akka -->
             <dependency>
                 <groupId>com.typesafe.akka</groupId>
                 <artifactId>akka-actor_2.11</artifactId>
@@ -177,6 +177,12 @@
                 <groupId>javax.inject</groupId>
                 <artifactId>javax.inject</artifactId>
                 <version>1</version>
+            </dependency>
+
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>javax.servlet-api</artifactId>
+                <version>3.1.0</version>
             </dependency>
 
             <dependency>
