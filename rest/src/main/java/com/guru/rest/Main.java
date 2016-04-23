@@ -1,14 +1,13 @@
 package com.guru.rest;
 
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.guru.domain.actor.RemoteSystem;
 import com.guru.service.actor.messanger.Messenger;
 import com.typesafe.config.ConfigFactory;
 import org.glassfish.grizzly.http.server.HttpHandler;
-import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
-import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import java.io.IOException;
