@@ -9,12 +9,14 @@ import akka.actor.ActorSystem;
 import akka.actor.Props;
 import com.guru.service.RequestData;
 import com.guru.service.actor.RequestActor;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Singleton;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+@Component
 @Path("/")
 public class RESTService {
 

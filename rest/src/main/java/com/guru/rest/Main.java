@@ -1,9 +1,7 @@
 package com.guru.rest;
 
-import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.guru.domain.actor.RemoteSystem;
 import com.guru.service.actor.messanger.Messenger;
-import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.Request;
@@ -31,7 +29,6 @@ public class Main {
 
     private static void startupServer() throws IOException {
         final ResourceConfig resourceConfig = new ResourceConfig().packages("com.guru");
-        resourceConfig.register(JacksonJsonProvider.class);
         org.glassfish.grizzly.http.server.HttpServer server = GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI + PORT + "/"), resourceConfig);
         server.getServerConfiguration().addHttpHandler(
                 new HttpHandler() {
@@ -46,9 +43,4 @@ public class Main {
         System.out.println(String.format("Jersey app started with WADL available at "
                 + "%s application.wadl\nHit enter to stop it...", BASE_URI));
     }
-
-/*    private static void startupActorSystem() {
-        final Config config = ConfigFactory.load().getConfig("appActor");
-        ActorSystem.create("ApplicationSystem", config);
-    }*/
 }
