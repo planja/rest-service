@@ -11,13 +11,13 @@ public class AkkaConfig {
 
     @Bean
     public ActorSystem applicationSystem() {
-        return ActorSystem.create("ApplicationSystem", akkaConfiguration());
+        return ActorSystem.create("ApplicationSystem", ConfigFactory.load().getConfig("applicationConfig"));
     }
 
-/*    @Bean(name = "domainSystem")
+    @Bean
     public ActorSystem domainSystem() {
-        return ActorSystem.create("DomainSystem", akkaConfiguration());
-    }*/
+        return ActorSystem.create("DomainSystem", ConfigFactory.load().getConfig("repositoryConfig"));
+    }
 
     @Bean
     public Config akkaConfiguration() {

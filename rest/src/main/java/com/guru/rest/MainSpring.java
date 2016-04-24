@@ -20,8 +20,8 @@ public class MainSpring {
     public static final int PORT = Integer.parseInt(bundle.getString("port"));
 
     public static void main(String[] args) throws IOException {
-        RemoteSystem.create(ConfigFactory.load().getConfig("RemoteConfig"));
-        Messenger.create();
+        //RemoteSystem.create(ConfigFactory.load().getConfig("RemoteConfig"));
+        //Messenger.create();
         startupServer();
     }
 
@@ -58,11 +58,6 @@ public class MainSpring {
         context.addContextInitParameter("contextConfigLocation", "com.guru.rest.config.RestConfig");
         context.addListener("org.springframework.web.context.ContextLoaderListener");
         context.addListener("org.springframework.web.context.request.RequestContextListener");
-        initActorSystem();
         context.deploy(server);
-    }
-
-    private static void initActorSystem() {
-
     }
 }
