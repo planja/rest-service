@@ -58,11 +58,6 @@ public class MainSpring {
         context.addContextInitParameter("contextConfigLocation", "com.guru.rest.config.RestConfig");
         context.addListener("org.springframework.web.context.ContextLoaderListener");
         context.addListener("org.springframework.web.context.request.RequestContextListener");
-        initActorSystem();
         context.deploy(server);
-    }
-
-    private static void initActorSystem() {
-
     }
 }
