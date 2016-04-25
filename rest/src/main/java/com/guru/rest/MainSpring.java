@@ -1,9 +1,6 @@
 package com.guru.rest;
 
-import com.guru.domain.actor.RemoteSystem;
-import com.guru.service.actor.messanger.Messenger;
 import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
-import com.typesafe.config.ConfigFactory;
 import org.glassfish.grizzly.http.server.*;
 import org.glassfish.grizzly.servlet.ServletRegistration;
 import org.glassfish.grizzly.servlet.WebappContext;
@@ -49,7 +46,7 @@ public class MainSpring {
     }
 
     private static void initSpringContext(HttpServer server) {
-        WebappContext context = new WebappContext("ctx","/");
+        WebappContext context = new WebappContext("ctx", "/");
         final ServletRegistration registration = context.addServlet("spring", new SpringServlet());
         registration.addMapping("/*");
         registration.setInitParameter("javax.ws.rs.Application", "com.guru.rest.config.JerseyConfig");

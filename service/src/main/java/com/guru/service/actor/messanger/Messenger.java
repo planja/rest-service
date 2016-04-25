@@ -9,9 +9,9 @@ import com.typesafe.config.ConfigFactory;
 
 
 public class Messenger {
-    private static ActorRef remoteActor, myActor;
     public static Messenger instance;
     public static int count = 0;
+    private static ActorRef remoteActor, myActor;
 
     private Messenger() {
         init();

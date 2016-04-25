@@ -1,15 +1,16 @@
 package com.guru.service.adaptor.impl;
 
-import com.guru.vo.view.Award;
-import com.guru.vo.view.Flight;
-import com.guru.vo.view.Info;
-import com.guru.service.adaptor.db.DatabaseManager;
+
 import com.guru.service.adaptor.interf.Adaptor;
-import com.guru.service.adaptor.utils.Utils;
+import com.guru.vo.utils.Utils;
 import com.guru.vo.view.ExtraData;
 import com.guru.vo.view.IMTAward;
 import com.guru.vo.view.IMTFlight;
 import com.guru.vo.view.IMTInfo;
+import factory.db.manager.DatabaseManager;
+import parser.model.Award;
+import parser.model.Flight;
+import parser.model.Info;
 
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -80,7 +81,8 @@ public class AdaptorServiceAA implements Adaptor {
                     firstDate = depDate;
                 }
                 try {
-                    imtf.setLayoverTime(Utils.getHoursBetweenDays(previousDate, depDate));
+
+                    //  imtf.setLayoverTime(Utils.getHoursBetweenDays(previousDate, depDate));
 
 
                     previousDate = arrDate;

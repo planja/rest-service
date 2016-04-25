@@ -1,6 +1,5 @@
 package com.guru.service.adaptor.impl;
 
-import com.guru.service.RequestData;
 import com.guru.service.adaptor.interf.Adaptor;
 import com.guru.service.parser.ParserType;
 

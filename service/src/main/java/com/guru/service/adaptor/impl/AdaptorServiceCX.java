@@ -1,15 +1,16 @@
-package service.adaptor.impl;
+package com.guru.service.adaptor.impl;
 
+
+import com.guru.service.adaptor.interf.Adaptor;
+import com.guru.vo.utils.Utils;
+import com.guru.vo.view.ExtraData;
+import com.guru.vo.view.IMTAward;
+import com.guru.vo.view.IMTFlight;
+import com.guru.vo.view.IMTInfo;
+import factory.db.manager.DatabaseManager;
 import parser.model.Award;
 import parser.model.Flight;
 import parser.model.Info;
-import service.adaptor.db.DatabaseManager;
-import service.adaptor.interf.Adaptor;
-import service.adaptor.utils.Utils;
-import vo.view.ExtraData;
-import vo.view.IMTAward;
-import vo.view.IMTFlight;
-import vo.view.IMTInfo;
 
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -20,7 +21,6 @@ import java.util.List;
 import java.util.Locale;
 
 import static parser.Parser.*;
-
 
 /**
  * Created by Anton on 13.04.2016.
@@ -65,7 +65,7 @@ public class AdaptorServiceCX implements Adaptor {
 
                     Date depDate = dt_format_or.parse(flight.getDepartDate() + " " + flight.getDepartTime());
 
-                    imtf.setLayoverTime(Utils.getHoursBetweenDays(previousDate, depDate));
+                    //     imtf.setLayoverTime(Utils.getHoursBetweenDays(previousDate, depDate));
                     previousDate = arrDate;
 
                     imtf.setDepartDate(date_format_res.format(depDate));
