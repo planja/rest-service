@@ -1,7 +1,7 @@
 package com.guru.service.actor.processingresult;
 
-import com.guru.service.actor.messanger.Messenger;
 import akka.actor.UntypedActor;
+import com.guru.service.actor.messanger.Messenger;
 import com.guru.vo.transfer.ParserResult;
 
 public class ProcessingResultOfParserActor extends UntypedActor {
