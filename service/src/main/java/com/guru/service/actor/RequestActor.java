@@ -25,7 +25,7 @@ public class RequestActor extends UntypedActor {
 
     @Override
     public void onReceive(Object message) throws Exception {
-        if (message instanceof List) {
+        if (message instanceof List<?>) {
             List list = (List) message;
             repositoryActor.tell(list, self());
         }

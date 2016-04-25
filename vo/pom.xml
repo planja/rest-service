@@ -17,9 +17,6 @@
         <dependency>
             <groupId>com.guru.parser</groupId>
             <artifactId>factory</artifactId>
-            <version>1</version>
-            <scope>system</scope>
-            <systemPath>C:/Users/Anton/Desktop/restService1/com.guru.factory-1.jar</systemPath>
         </dependency>
     </dependencies>
 
