@@ -12,6 +12,7 @@ public class AdaptorServiceAF implements Adaptor {
 
     @Override
     public List<IMTAward> adaptData(List<?> parserData, String... args) {
+        System.out.println("");
         return null;
     }
 }
