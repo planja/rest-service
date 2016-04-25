@@ -18,7 +18,7 @@ public class Messenger {
     }
 
     private static void init() {
-        final Config config = ConfigFactory.load().getConfig("applicationActor");
+        final Config config = ConfigFactory.load().getConfig("applicationConfig");
         ActorSystem system = ActorSystem.create("RemoteSystem", config);
 
         myActor = system.actorOf(Props.create(SenderMessageActor.class), "SenderMessageActor");
