@@ -1,27 +1,18 @@
 package com.guru.service.actor;
 
-import akka.actor.*;
+import akka.actor.ActorRef;
+import akka.actor.ActorSelection;
+import akka.actor.Props;
+import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import akka.pattern.Patterns;
-import akka.util.Timeout;
-import com.guru.domain.actor.RepositoryActor;
 import com.guru.service.RequestData;
-import com.guru.service.actor.messanger.Messenger;
 import com.guru.service.adaptor.impl.AdaptorFactory;
 import com.guru.service.adaptor.interf.Adaptor;
 import com.guru.service.parser.ParserType;
 import com.guru.vo.view.IMTAward;
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
-import scala.concurrent.Await;
-import scala.concurrent.Future;
-import scala.concurrent.duration.Duration;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +25,10 @@ public class RequestActor extends UntypedActor {
 
     @Override
     public void onReceive(Object message) throws Exception {
+        if (message instanceof List) {
+            List list = (List) message;
+            repositoryActor.tell(list, self());
+        }
         if (message instanceof RequestData) {
             RequestData requestData = (RequestData) message;
             ActorRef parserActor = null;
@@ -45,17 +40,17 @@ public class RequestActor extends UntypedActor {
 
 /*            Timeout timeout = new Timeout(Duration.create(5, "seconds"));
             Future<Object> future = Patterns.ask(parserActor, message, timeout);
-            List<?> result = (List<?>) Await.result(future, timeout.duration());*/
+            List<?> result = (List<?>) Await.result(future, timeout.duration());
             List<?> result = new ArrayList<>();
 
             Adaptor adaptor = AdaptorFactory.getAdaptor(requestData.getParsers().get(0));
             //List<IMTAward> awards = adaptor.adaptData(result);
             List<IMTAward> awards = new ArrayList<>();
-            repositoryActor.tell(awards, self());
+            repositoryActor.tell(awards, self());*/
             //Messenger.sendMessage();
         } else if (message instanceof String) {
             log.info("got answer from repository");
-        }else
+        } else
             unhandled(message);
     }
 
