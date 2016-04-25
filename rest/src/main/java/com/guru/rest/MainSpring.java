@@ -1,16 +1,16 @@
 package com.guru.rest;
 
-import com.guru.domain.actor.RemoteSystem;
-import com.guru.service.actor.messanger.Messenger;
 import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
-import com.typesafe.config.ConfigFactory;
 import org.glassfish.grizzly.http.server.*;
 import org.glassfish.grizzly.servlet.ServletRegistration;
 import org.glassfish.grizzly.servlet.WebappContext;
+import parser.ua.UAParser;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class MainSpring {
@@ -19,7 +19,12 @@ public class MainSpring {
     public static final String BASE_URI = bundle.getString("url");
     public static final int PORT = Integer.parseInt(bundle.getString("port"));
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException,ParseException,InterruptedException {
+         String date = "04/25/2016";
+        String origin = "SYD";
+        String destination = "FRA";
+        UAParser uaParser = new UAParser();
+        List flights1 = uaParser.getUnited(date, origin, destination, 1, "E");
         //RemoteSystem.create(ConfigFactory.load().getConfig("RemoteConfig"));
         //Messenger.create();
         startupServer();
