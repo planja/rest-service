@@ -4,6 +4,7 @@ import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
 import org.glassfish.grizzly.http.server.*;
 import org.glassfish.grizzly.servlet.ServletRegistration;
 import org.glassfish.grizzly.servlet.WebappContext;
+import parser.ua.UANParser;
 import parser.ua.UAParser;
 
 import java.io.IOException;
@@ -23,7 +24,7 @@ public class MainSpring {
          String date = "04/25/2016";
         String origin = "SYD";
         String destination = "FRA";
-        UAParser uaParser = new UAParser();
+        UANParser uaParser = new UANParser();
         List flights1 = uaParser.getUnited(date, origin, destination, 1, "E");
         //RemoteSystem.create(ConfigFactory.load().getConfig("RemoteConfig"));
         //Messenger.create();
