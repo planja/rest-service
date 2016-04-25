@@ -25,6 +25,10 @@ public class RequestActor extends UntypedActor {
 
     @Override
     public void onReceive(Object message) throws Exception {
+        if (message instanceof List<?>) {
+            List list = (List) message;
+            repositoryActor.tell(list, self());
+        }
         if (message instanceof RequestData) {
             RequestData requestData = (RequestData) message;
             ActorRef parserActor = null;
@@ -36,13 +40,13 @@ public class RequestActor extends UntypedActor {
 
 /*            Timeout timeout = new Timeout(Duration.create(5, "seconds"));
             Future<Object> future = Patterns.ask(parserActor, message, timeout);
-            List<?> result = (List<?>) Await.result(future, timeout.duration());*/
+            List<?> result = (List<?>) Await.result(future, timeout.duration());
             List<?> result = new ArrayList<>();
 
             Adaptor adaptor = AdaptorFactory.getAdaptor(requestData.getParsers().get(0));
             //List<IMTAward> awards = adaptor.adaptData(result);
             List<IMTAward> awards = new ArrayList<>();
-            repositoryActor.tell(awards, self());
+            repositoryActor.tell(awards, self());*/
             //Messenger.sendMessage();
         } else if (message instanceof String) {
             log.info("got answer from repository");

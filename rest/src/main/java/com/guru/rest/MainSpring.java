@@ -5,7 +5,6 @@ import org.glassfish.grizzly.http.server.*;
 import org.glassfish.grizzly.servlet.ServletRegistration;
 import org.glassfish.grizzly.servlet.WebappContext;
 import parser.ua.UANParser;
-import parser.ua.UAParser;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -21,13 +20,13 @@ public class MainSpring {
     public static final int PORT = Integer.parseInt(bundle.getString("port"));
 
     public static void main(String[] args) throws IOException,ParseException,InterruptedException {
-         String date = "04/25/2016";
-        String origin = "SYD";
-        String destination = "FRA";
+        /* String date = "04/25/2016";
+        String origin = "EZE";
+        String destination = "ABZ";
         UANParser uaParser = new UANParser();
         List flights1 = uaParser.getUnited(date, origin, destination, 1, "E");
         //RemoteSystem.create(ConfigFactory.load().getConfig("RemoteConfig"));
-        //Messenger.create();
+        //Messenger.create();*/
         startupServer();
     }
 
@@ -55,7 +54,7 @@ public class MainSpring {
     }
 
     private static void initSpringContext(HttpServer server) {
-        WebappContext context = new WebappContext("ctx", "/");
+        WebappContext context = new WebappContext("ctx","/");
         final ServletRegistration registration = context.addServlet("spring", new SpringServlet());
         registration.addMapping("/*");
         registration.setInitParameter("javax.ws.rs.Application", "com.guru.rest.config.JerseyConfig");
