@@ -1,7 +1,6 @@
 package com.guru.domain.model;
 
 import javax.persistence.*;
-import javax.persistence.Entity;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -50,7 +49,7 @@ public class Mile {
     public Mile() {
     }
 
-    public Mile(Long id,String from, String to, String airCompany, String clas, BigDecimal cost, BigDecimal tax, BigDecimal taxOut, Date createdAt, Date updatesAt) {
+    public Mile(Long id, String from, String to, String airCompany, String clas, BigDecimal cost, BigDecimal tax, BigDecimal taxOut, Date createdAt, Date updatesAt) {
         this.id = id;
         this.from = from;
         this.to = to;

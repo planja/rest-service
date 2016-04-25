@@ -1,7 +1,6 @@
 package com.guru.domain.model;
 
 import javax.persistence.*;
-import javax.persistence.Entity;
 import java.util.Date;
 
 /**

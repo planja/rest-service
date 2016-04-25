@@ -25,7 +25,7 @@ public class MainSpring {
         String destination = "ABZ";
         UANParser uaParser = new UANParser();
         List flights1 = uaParser.getUnited(date, origin, destination, 1, "E");
-        //RemoteSystem.create(ConfigFactory.load().getConfig("RemoteConfig"));*/
+        //RemoteSystem.create(ConfigFactory.load().getConfig("RemoteConfig"));
         //Messenger.create();
         startupServer();
     }

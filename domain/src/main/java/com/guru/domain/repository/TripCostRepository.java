@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
  * Created by Никита on 18.04.2016.
  */
 @Repository
-public interface TripCostRepository extends CrudRepository<TripCost,Long> {
+public interface TripCostRepository extends CrudRepository<TripCost, Long> {
 }
