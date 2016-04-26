@@ -21,14 +21,10 @@ public class RequestActor extends UntypedActor {
 
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
-    private ActorSelection repositoryActor;
+
 
     @Override
     public void onReceive(Object message) throws Exception {
-        if (message instanceof List<?>) {
-            List list = (List) message;
-            repositoryActor.tell(list, self());
-        }
         if (message instanceof RequestData) {
             RequestData requestData = (RequestData) message;
             ActorRef parserActor = null;
@@ -52,11 +48,6 @@ public class RequestActor extends UntypedActor {
             log.info("got answer from repository");
         } else
             unhandled(message);
-    }
-
-    @Override
-    public void preStart() throws Exception {
-        repositoryActor = context().system().actorSelection("akka.tcp://DomainSystem@127.0.0.1:1719/user/repositoryConfig");
     }
 
     private Class getParserClass(String parserName) {
