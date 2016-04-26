@@ -1,9 +1,12 @@
 package com.guru.service.parser.impl;
 
+import akka.actor.ActorRef;
+import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import com.guru.service.RequestData;
+import com.guru.service.actor.processingresult.ProcessingResultOfParserActor;
 import com.guru.service.parser.interf.ParserActor;
 import parser.ek.EKParser;
 
@@ -35,7 +38,8 @@ public class ParserEK extends UntypedActor implements ParserActor {
             List flights = emParser.getEmirates(client, from,
                     to, date, 1, "E");
 
-            getSender().tell(flights, getSelf());
+            ActorRef processingResultOfParserActor = context().system().actorOf(Props.create(ProcessingResultOfParserActor.class));
+            processingResultOfParserActor.tell(flights, self());
         } else unhandled(message);
 
 

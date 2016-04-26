@@ -1,19 +1,27 @@
 package com.guru.service.actor.processingresult;
 
+import akka.actor.ActorSelection;
 import akka.actor.UntypedActor;
-import com.guru.service.actor.messanger.Messenger;
 import com.guru.vo.transfer.ParserResult;
+
+import java.util.List;
 
 public class ProcessingResultOfParserActor extends UntypedActor {
 
-    @Override
-    public void onReceive(Object msg) throws Exception {
-        if (msg instanceof ParserResult) {
-            System.out.println("Processing result of parser");
-            Messenger.sendMessage();
-            getContext().system().shutdown();
+    private ActorSelection repositoryActor;
 
+    @Override
+    public void onReceive(Object message) throws Exception {
+        if (message instanceof List<?>) {
+            List list = (List) message;
+            repositoryActor.tell(list, self());
         } else
-            unhandled(msg);
+            unhandled(message);
     }
+
+    @Override
+    public void preStart() throws Exception {
+        repositoryActor = context().system().actorSelection("akka.tcp://DomainSystem@127.0.0.1:1719/user/repositoryConfig");
+    }
+
 }
