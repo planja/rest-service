@@ -11,7 +11,6 @@ import com.guru.service.parser.interf.ParserActor;
 import parser.model.Award;
 import parser.ua.UANParser;
 
-import java.lang.reflect.Field;
 import java.util.List;
 
 public class ParserUA extends UntypedActor implements ParserActor {
