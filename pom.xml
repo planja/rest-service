@@ -203,8 +203,6 @@
                 <groupId>com.guru.parser</groupId>
                 <artifactId>factory</artifactId>
                 <version>1</version>
-                <scope>system</scope>
-                <systemPath>d:/env/mavenRepository/com/guru/parser/factory/1/factory-1.jar</systemPath>
             </dependency>
 
             <dependency>

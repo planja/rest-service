@@ -2,9 +2,7 @@ package com.guru.domain.model;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by Никита on 12.04.2016.
@@ -73,14 +71,13 @@ public class Trip {
     private String flightNumbers;
 
     @OneToMany(mappedBy = "trip", fetch = FetchType.EAGER)
-    private Set<Flight> flights = new HashSet<>();
+    private List<Flight> flights = new ArrayList<>();
 
 
     public Trip() {
     }
 
-    public Trip(Long id, String departCode, String arriveCode, String departPlace, String arrivePlace, Date tripDate, String tripDuration, BigDecimal cost) {
-        this.id = id;
+    public Trip(String departCode, String arriveCode, String departPlace, String arrivePlace, Date tripDate, String tripDuration, BigDecimal cost, Query query, Long requestId, Date createdAt, Date updatedAt, String stops, String cabins, String carriers, String layovers, String flightLegs, String flightNumbers, List<Flight> flights) {
         this.departCode = departCode;
         this.arriveCode = arriveCode;
         this.departPlace = departPlace;
@@ -88,6 +85,17 @@ public class Trip {
         this.tripDate = tripDate;
         this.tripDuration = tripDuration;
         this.cost = cost;
+        this.query = query;
+        this.requestId = requestId;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.stops = stops;
+        this.cabins = cabins;
+        this.carriers = carriers;
+        this.layovers = layovers;
+        this.flightLegs = flightLegs;
+        this.flightNumbers = flightNumbers;
+        this.flights = flights;
     }
 
     public Long getId() {
@@ -234,11 +242,11 @@ public class Trip {
         this.flightNumbers = flightNumbers;
     }
 
-    public Set<Flight> getFlights() {
+    public List<Flight> getFlights() {
         return flights;
     }
 
-    public void setFlights(Set<Flight> flights) {
+    public void setFlights(List<Flight> flights) {
         this.flights = flights;
     }
 

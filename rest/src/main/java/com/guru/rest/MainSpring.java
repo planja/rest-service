@@ -1,18 +1,13 @@
 package com.guru.rest;
 
-import com.guru.domain.config.DataConfig;
-import com.guru.domain.model.Query;
-import com.guru.domain.model.Trip;
-import com.guru.domain.repository.QueryRepository;
-import com.guru.domain.repository.TripRepository;
+import com.guru.parser.impl.qfparser.QFParser;
 import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.glassfish.grizzly.http.server.*;
 import org.glassfish.grizzly.servlet.ServletRegistration;
 import org.glassfish.grizzly.servlet.WebappContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import parser.ua.UANParser;
+import parser.exceptions.IncorrectCredentials;
+import parser.utils.ComplexAward;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -20,6 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.ExecutionException;
 
 public class MainSpring {
 
@@ -27,7 +23,7 @@ public class MainSpring {
     public static final String BASE_URI = bundle.getString("url");
     public static final int PORT = Integer.parseInt(bundle.getString("port"));
 
-    public static void main(String[] args) throws IOException,ParseException,InterruptedException {
+    public static void main(String[] args) throws IOException, ParseException, InterruptedException, ExecutionException, IncorrectCredentials {
         /* String date = "04/25/2016";
         String origin = "EZE";
         String destination = "ABZ";
@@ -35,6 +31,12 @@ public class MainSpring {
         List flights1 = uaParser.getUnited(date, origin, destination, 1, "E");
         //RemoteSystem.create(ConfigFactory.load().getConfig("RemoteConfig"));
         //Messenger.create();*/
+        SimpleDateFormat sdf_qr = new SimpleDateFormat("MM/dd/yyyy");
+        QFParser qfParser = new QFParser();
+        List dates = parser.test.Main.getDaysBetweenDates(sdf_qr.parse("12/10/2015"), sdf_qr.parse("12/15/2015"));
+        DefaultHttpClient client = QFParser.login("1924112640", "Kin", "4152");
+        ComplexAward complexAward = qfParser.getQantas(client, sdf_qr.parse("04/28/2016"), sdf_qr.parse("04/28/2016"), "LGW", "ADL", 1);
+
         startupServer();
     }
 
@@ -62,7 +64,7 @@ public class MainSpring {
     }
 
     private static void initSpringContext(HttpServer server) {
-        WebappContext context = new WebappContext("ctx","/");
+        WebappContext context = new WebappContext("ctx", "/");
         final ServletRegistration registration = context.addServlet("spring", new SpringServlet());
         registration.addMapping("/*");
         registration.setInitParameter("javax.ws.rs.Application", "com.guru.rest.config.JerseyConfig");
