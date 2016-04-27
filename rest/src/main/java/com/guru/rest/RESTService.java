@@ -5,7 +5,7 @@ package com.guru.rest;
  */
 
 import akka.actor.ActorRef;
-import com.guru.service.RequestData;
+import com.guru.vo.transfer.RequestData;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;

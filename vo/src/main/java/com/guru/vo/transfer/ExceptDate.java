@@ -1,4 +1,4 @@
-package com.guru.service;
+package com.guru.vo.transfer;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
