@@ -191,6 +191,19 @@ public enum ParserType {
             return ParserUA.class;
         }
 
+    },
+    KE {
+        @Override
+        public Adaptor getAdaptorService() {
+            //return new AdaptorServiceAA();
+            return null;
+        }
+
+        @Override
+        public Class getParserClass() {
+            return ParserKE.class;
+        }
+
     };
 
     public abstract Adaptor getAdaptorService();

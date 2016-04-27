@@ -441,7 +441,7 @@ public class KEParser implements Parser {
         return randomBigDecimal.setScale(2, BigDecimal.ROUND_HALF_UP);
     }
 
-
+    @Override
     public Collection<Trip> parse(RequestData requestData) throws Exception {
         List<Trip> results = new ArrayList<>();
         DefaultHttpClient loggedInClient = login();
