@@ -5,13 +5,12 @@ import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import com.guru.service.RequestData;
+import com.guru.vo.transfer.RequestData;
 import com.guru.service.actor.processingresult.ProcessingResultOfParserActor;
 import com.guru.service.parser.interf.ParserActor;
 import parser.model.Award;
 import parser.ua.UANParser;
 
-import java.lang.reflect.Field;
 import java.util.List;
 
 public class ParserUA extends UntypedActor implements ParserActor {

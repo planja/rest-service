@@ -5,16 +5,11 @@ import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import com.guru.service.RequestData;
+import com.guru.vo.transfer.RequestData;
 import com.guru.service.actor.processingresult.ProcessingResultOfParserActor;
 import com.guru.service.parser.interf.ParserActor;
-import org.apache.http.impl.client.DefaultHttpClient;
-import parser.aa.AAParser;
 import parser.ey.EYParser;
-import parser.utils.Account;
-import parser.utils.AccountUtils;
 
-import java.text.SimpleDateFormat;
 import java.util.List;
 
 /**

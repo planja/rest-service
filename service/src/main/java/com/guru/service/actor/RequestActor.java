@@ -1,20 +1,13 @@
 package com.guru.service.actor;
 
 import akka.actor.ActorRef;
-import akka.actor.ActorSelection;
 import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import com.guru.service.RequestData;
-import com.guru.service.adaptor.impl.AdaptorFactory;
-import com.guru.service.adaptor.interf.Adaptor;
+import com.guru.vo.transfer.RequestData;
 import com.guru.service.parser.ParserType;
-import com.guru.vo.view.IMTAward;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Component
 public class RequestActor extends UntypedActor {
