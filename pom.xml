@@ -203,7 +203,7 @@
                 <groupId>com.guru.parser</groupId>
                 <artifactId>factory</artifactId>
                 <version>1</version>
-            </dependency>
+                   </dependency>
 
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
