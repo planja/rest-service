@@ -1,9 +1,17 @@
 package com.guru.rest;
 
+import com.guru.domain.config.DataConfig;
+import com.guru.domain.model.Query;
+import com.guru.domain.model.Trip;
+import com.guru.domain.repository.QueryRepository;
+import com.guru.domain.repository.TripRepository;
 import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
 import org.glassfish.grizzly.http.server.*;
 import org.glassfish.grizzly.servlet.ServletRegistration;
 import org.glassfish.grizzly.servlet.WebappContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import parser.ua.UANParser;
 
 import java.io.IOException;

@@ -3,6 +3,8 @@ package com.guru.domain.model;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by Никита on 12.04.2016.
@@ -69,6 +71,9 @@ public class Trip {
 
     @Column(name = "flight_numbers")
     private String flightNumbers;
+
+    @OneToMany(mappedBy = "trip", fetch = FetchType.EAGER)
+    private Set<Flight> flights = new HashSet<>();
 
 
     public Trip() {
@@ -229,6 +234,13 @@ public class Trip {
         this.flightNumbers = flightNumbers;
     }
 
+    public Set<Flight> getFlights() {
+        return flights;
+    }
+
+    public void setFlights(Set<Flight> flights) {
+        this.flights = flights;
+    }
 
     @Override
     public boolean equals(Object o) {
