@@ -83,9 +83,6 @@ public class Flight {
     @JoinColumn(name = "trips_id", nullable = false)
     private Trip trip;
 
-    @OneToMany(mappedBy = "query", fetch = FetchType.EAGER)
-    private Set<Trip> trips = new HashSet<>();
-
     public Flight() {
     }
 
@@ -280,15 +277,6 @@ public class Flight {
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
     }
-
-    public Set<Trip> getTrips() {
-        return trips;
-    }
-
-    public void setTrips(Set<Trip> trips) {
-        this.trips = trips;
-    }
-
 
     @Override
     public boolean equals(Object o) {

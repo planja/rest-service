@@ -6,8 +6,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 @Configuration
-@ComponentScan( {"com.guru.rest"} )
-@Import( {ServiceConfig.class} )
+@ComponentScan({"com.guru.rest"})
+@Import({ServiceConfig.class})
 public class RestConfig {
 
 }

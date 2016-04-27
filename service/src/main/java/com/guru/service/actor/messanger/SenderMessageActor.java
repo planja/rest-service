@@ -10,12 +10,12 @@ public class SenderMessageActor extends UntypedActor {
     public void onReceive(Object message) {
         if (message instanceof HelloMessage) {
             HelloMessage msg = (HelloMessage) message;
-            if (msg.getReceiver() !=null){
+            if (msg.getReceiver() != null) {
                 msg.setText("Hello");
                 msg.getReceiver().tell(msg, getSelf());
             }
         } else {
-            System.out.println("UnHandled Message Received" );
+            System.out.println("UnHandled Message Received");
             unhandled(message);
         }
     }

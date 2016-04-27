@@ -1,9 +1,8 @@
 package com.guru.domain.model;
 
 import javax.persistence.*;
-import javax.persistence.Entity;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.util.*;
 
 /**
  * Created by Никита on 12.04.2016.
@@ -70,6 +69,9 @@ public class Trip {
 
     @Column(name = "flight_numbers")
     private String flightNumbers;
+
+    @OneToMany(mappedBy = "trip", fetch = FetchType.EAGER)
+    private List<Flight> flights = new ArrayList<>();
 
 
     public Trip() {
@@ -230,6 +232,13 @@ public class Trip {
         this.flightNumbers = flightNumbers;
     }
 
+    public List<Flight> getFlights() {
+        return flights;
+    }
+
+    public void setFlights(List<Flight> flights) {
+        this.flights = flights;
+    }
 
     @Override
     public boolean equals(Object o) {

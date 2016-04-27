@@ -1,7 +1,8 @@
-package com.guru.service;
+package com.guru.vo.transfer;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.guru.service.processrequest.ProcessRequestHelperService;
+import com.guru.vo.transfer.ExceptDate;
+import com.guru.vo.utils.ProcessRequestHelperService;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -9,9 +10,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class RequestData {
-
-    public RequestData() {
-    }
 
     private List<String> parsers;
     private String user;
@@ -25,20 +23,17 @@ public class RequestData {
     private Date rt_start_date;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     private Date rt_end_date;
-
     private List<ExceptDate> ow_except_dates;
     private List<ExceptDate> rt_except_dates;
-
     private int seats;
     private List<String> cabins;
     private String type;
     private int request_id;
     private int user_id;
-
-
     private List<Date> owDates;
     private List<Date> returnDates;
-
+    public RequestData() {
+    }
 
     public List<String> getParsers() {
         return parsers;

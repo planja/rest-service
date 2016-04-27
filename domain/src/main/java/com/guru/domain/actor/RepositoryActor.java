@@ -3,9 +3,11 @@ package com.guru.domain.actor;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public class RepositoryActor extends UntypedActor {
 
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
@@ -23,6 +25,7 @@ public class RepositoryActor extends UntypedActor {
         }
         if (message instanceof List<?>) {
             log.info("create");
+            sender().tell("ok", self());
         }
         unhandled(message);
     }

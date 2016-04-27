@@ -8,7 +8,7 @@ import java.text.ParseException;
 /**
  * Created by Никита on 14.04.2016.
  */
-public class IMTError2ParserError implements Converter<IMTError,ParserError> {
+public class IMTError2ParserError implements Converter<IMTError, ParserError> {
 
     @Override
     public ParserError convert(IMTError imtError) throws ParseException {
