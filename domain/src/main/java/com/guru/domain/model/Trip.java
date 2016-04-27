@@ -2,9 +2,7 @@ package com.guru.domain.model;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by Никита on 12.04.2016.
@@ -73,7 +71,7 @@ public class Trip {
     private String flightNumbers;
 
     @OneToMany(mappedBy = "trip", fetch = FetchType.EAGER)
-    private Set<Flight> flights = new HashSet<>();
+    private List<Flight> flights = new ArrayList<>();
 
 
     public Trip() {
@@ -234,11 +232,11 @@ public class Trip {
         this.flightNumbers = flightNumbers;
     }
 
-    public Set<Flight> getFlights() {
+    public List<Flight> getFlights() {
         return flights;
     }
 
-    public void setFlights(Set<Flight> flights) {
+    public void setFlights(List<Flight> flights) {
         this.flights = flights;
     }
 
