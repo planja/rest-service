@@ -28,15 +28,7 @@ public class MainSpring {
     public static final int PORT = Integer.parseInt(bundle.getString("port"));
 
     public static void main(String[] args) throws IOException,ParseException,InterruptedException {
-        /* String date = "04/25/2016";
-        String origin = "EZE";
-        String destination = "ABZ";
-        UANParser uaParser = new UANParser();
-        List flights1 = uaParser.getUnited(date, origin, destination, 1, "E");
-        //RemoteSystem.create(ConfigFactory.load().getConfig("RemoteConfig"));
-        //Messenger.create();*/
         startupServer();
-
     }
 
     private static void startupServer() throws IOException {
