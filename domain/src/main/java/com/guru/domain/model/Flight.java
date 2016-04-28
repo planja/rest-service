@@ -1,5 +1,7 @@
 package com.guru.domain.model;
 
+import scala.Serializable;
+
 import javax.persistence.*;
 import java.util.Date;
 import java.util.HashSet;
@@ -11,7 +13,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "flights")
-public class Flight {
+public class Flight implements Serializable {
 
     @Id
     @Column(name = "id")

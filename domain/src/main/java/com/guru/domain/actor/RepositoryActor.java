@@ -1,37 +1,35 @@
 package com.guru.domain.actor;
 
+import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
+import com.guru.domain.model.Trip;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+
+import static com.guru.domain.config.SpringExtension.SpringExtProvider;
 
 @Component
 public class RepositoryActor extends UntypedActor {
 
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
+    private ActorRef serviceRepositoryActor;
+
     @Override
     public void onReceive(Object message) throws Exception {
-        log.info("i'm in");
-        if (message instanceof HelloMessage) {
-            HelloMessage recMsg = (HelloMessage) message;
-            System.out.println("Received Message: " + recMsg.getText());
-            System.out.println("***** Hello World! ******");
-        }
-        if (message instanceof String) {
-            log.info("get String");
-        }
         if (message instanceof List<?>) {
             log.info("create");
-            sender().tell("ok", self());
+            serviceRepositoryActor.tell(message, self());
         }
         unhandled(message);
     }
 
     @Override
     public void preStart() throws Exception {
+        serviceRepositoryActor = getContext().actorOf(SpringExtProvider.get(getContext().system()).props("serviceRepositoryActor"));
     }
 
     @Override
