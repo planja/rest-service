@@ -76,8 +76,10 @@ public class Query implements Serializable {
     @OneToMany(mappedBy = "query", fetch = FetchType.EAGER)
     private Set<ParserError> parserErrors = new HashSet<>();
 
+/*
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "query")
     private Set<Trip> trips = new HashSet<>();
+*/
 
     public Query() {
     }
@@ -235,13 +237,13 @@ public class Query implements Serializable {
         this.parserAnswers = parserAnswers;
     }
 
-    public Set<Trip> getTrips() {
+/*    public Set<Trip> getTrips() {
         return trips;
     }
 
     public void setTrips(Set<Trip> trips) {
         this.trips = trips;
-    }
+    }*/
 
     public Set<ParserError> getParserErrors() {
         return parserErrors;

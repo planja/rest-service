@@ -37,11 +37,9 @@ public class ParserKE extends UntypedActor implements ParserActor {
     public void onReceive(Object message) throws Exception {
         if (message instanceof RequestData) {
             log.info("got it KE");
-            //Parser parser = new KEParser();
-            //Collection<Trip> trips = parser.parse((RequestData) message);
-            ArrayList<Trip> trips = new ArrayList<>();
-            trips.add(new Trip());
-            System.out.println("trips.size() = " + trips.size());
+            Parser parser = new KEParser();
+            Collection<Trip> trips = parser.parse((RequestData) message);
+            log.info("find " + trips.size() + " trips");
 
             ActorRef processingResultOfParserActor = context().system().actorOf(Props.create(ProcessingResultOfParserActor.class));
             processingResultOfParserActor.tell(trips, self());
