@@ -2,6 +2,7 @@ package com.guru.vo.utils;
 
 import java.text.ParseException;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class ProcessRequestHelperService {
@@ -38,17 +39,17 @@ public class ProcessRequestHelperService {
     public static List<Date> getODates(List<Date> dates, List<Date> returnDates, List<Date> exceptDates) {
         List<Date> owDates = new ArrayList<>();
         if (dates.size() > returnDates.size()) {
-            dates.stream().map(o -> exceptDates.contains(o) ? owDates.add(null) : owDates.add(o));
+            dates.stream().map( o -> exceptDates.contains(o) ? owDates.add(null) : owDates.add(o)).collect(Collectors.toList());
+
         }
         if (returnDates.size() > dates.size()) {
             int dSize = (returnDates.size() - dates.size()) / 2;
-            dates.stream().map(o -> exceptDates.contains(o) ? owDates.add(null) : owDates.add(o));
+            dates.stream().map(o -> exceptDates.contains(o) ? owDates.add(null) : owDates.add(o)).collect(Collectors.toList());
             IntStream.range(dates.size() - dSize, dates.size()).forEach(o -> owDates.add(null));
         }
 
         if (returnDates.size() == dates.size()) {
-            dates.stream().map(o -> exceptDates.contains(o) ? owDates.add(null) : owDates.add(o));
-
+            dates.stream().map(o -> exceptDates.contains(o) ? owDates.add(null) : owDates.add(o)).collect(Collectors.toList());
         }
         return owDates;
     }
@@ -58,18 +59,17 @@ public class ProcessRequestHelperService {
         if (dates.size() > returnDates.size()) {
             int dSize = (dates.size() - returnDates.size()) / 2;
             IntStream.range(0, dSize).forEach(o -> rDates.add(null));
-            returnDates.stream().map(o -> exceptReturnDates.contains(o) ? rDates.add(null) : rDates.add(o));
+            returnDates.stream().map(o -> exceptReturnDates.contains(o) ? rDates.add(null) : rDates.add(o)).collect(Collectors.toList());
             IntStream.range(dates.size() - dSize, dates.size()).forEach(o -> rDates.add(null));
         }
         if (returnDates.size() > dates.size()) {
             int dSize = (returnDates.size() - dates.size()) / 2;
             IntStream.range(0, dSize).forEach(o -> rDates.add(null));
-            returnDates.stream().map(o -> exceptReturnDates.contains(o) ? rDates.add(null) : rDates.add(o));
+            returnDates.stream().map(o -> exceptReturnDates.contains(o) ? rDates.add(null) : rDates.add(o)).collect(Collectors.toList());
         }
 
         if (returnDates.size() == dates.size()) {
-            returnDates.stream().map(o -> exceptReturnDates.contains(o) ? rDates.add(null) : rDates.add(o));
-
+            returnDates.stream().map(o -> exceptReturnDates.contains(o) ? rDates.add(null) : rDates.add(o)).collect(Collectors.toList());
         }
         return rDates;
     }
