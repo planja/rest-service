@@ -38,11 +38,11 @@ public class Trip implements scala.Serializable {
     @Column(name = "cost")
     private BigDecimal cost;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+/*    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "queries_id", nullable = false)
-    private Query query;
+    private Query query;*/
 
-    @Column(name = "request_id")
+    @Column(name = "queries_id")
     private Long requestId;
 
     @Column(name = "created_at")
@@ -71,9 +71,8 @@ public class Trip implements scala.Serializable {
     @Column(name = "flight_numbers")
     private String flightNumbers;
 
-    @OneToMany(mappedBy = "trip", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "trip", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Flight> flights = new ArrayList<>();
-
 
     public Trip() {
     }
@@ -153,13 +152,13 @@ public class Trip implements scala.Serializable {
         this.cost = cost;
     }
 
-    public Query getQuery() {
+/*    public Query getQuery() {
         return query;
     }
 
     public void setQuery(Query query) {
         this.query = query;
-    }
+    }*/
 
     public Long getRequestId() {
         return requestId;

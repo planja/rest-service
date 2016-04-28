@@ -13,7 +13,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "flights")
-public class Flight implements Serializable {
+public class Flight implements scala.Serializable {
 
     @Id
     @Column(name = "id")

@@ -23,8 +23,9 @@ public class RepositoryActor extends UntypedActor {
         if (message instanceof List<?>) {
             log.info("create");
             serviceRepositoryActor.tell(message, self());
+        } else {
+            unhandled(message);
         }
-        unhandled(message);
     }
 
     @Override
