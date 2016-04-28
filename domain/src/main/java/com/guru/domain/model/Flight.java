@@ -83,6 +83,9 @@ public class Flight {
     @JoinColumn(name = "trips_id", nullable = false)
     private Trip trip;
 
+
+    private String url;
+
     public Flight() {
     }
 
@@ -276,6 +279,14 @@ public class Flight {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     @Override

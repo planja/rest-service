@@ -1,11 +1,13 @@
 package com.guru.rest;
 
+import com.guru.domain.model.Trip;
 import com.guru.parser.impl.qfparser.QFParser;
 import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.glassfish.grizzly.http.server.*;
 import org.glassfish.grizzly.servlet.ServletRegistration;
 import org.glassfish.grizzly.servlet.WebappContext;
+import org.springframework.beans.factory.annotation.Autowired;
 import parser.exceptions.IncorrectCredentials;
 import parser.utils.ComplexAward;
 
@@ -19,24 +21,22 @@ import java.util.concurrent.ExecutionException;
 
 public class MainSpring {
 
+
+
     public static ResourceBundle bundle = ResourceBundle.getBundle("config");
     public static final String BASE_URI = bundle.getString("url");
     public static final int PORT = Integer.parseInt(bundle.getString("port"));
 
     public static void main(String[] args) throws IOException, ParseException, InterruptedException, ExecutionException, IncorrectCredentials {
-        /* String date = "04/25/2016";
-        String origin = "EZE";
-        String destination = "ABZ";
-        UANParser uaParser = new UANParser();
-        List flights1 = uaParser.getUnited(date, origin, destination, 1, "E");
-        //RemoteSystem.create(ConfigFactory.load().getConfig("RemoteConfig"));
-        //Messenger.create();*/
         SimpleDateFormat sdf_qr = new SimpleDateFormat("MM/dd/yyyy");
-        QFParser qfParser = new QFParser();
+       QFParser qfParser = new QFParser();
         List dates = parser.test.Main.getDaysBetweenDates(sdf_qr.parse("12/10/2015"), sdf_qr.parse("12/15/2015"));
-        DefaultHttpClient client = QFParser.login("1924112640", "Kin", "4152");
-        ComplexAward complexAward = qfParser.getQantas(client, sdf_qr.parse("04/28/2016"), sdf_qr.parse("04/28/2016"), "LGW", "ADL", 1);
+        List<Trip> trips = qfParser.getQantas(sdf_qr.parse("04/30/2016"), sdf_qr.parse("04/30/2016"), "LGW", "ADL", 1);
 
+     /* parser.qf.QFParser qfParser1 = new parser.qf.QFParser();
+        DefaultHttpClient client = parser.qf.QFParser.login("1905029755", "Myasnyankin", "7759");
+      ComplexAward complexAward =   qfParser1.getQantas(client, sdf_qr.parse("04/30/2016"), sdf_qr.parse("04/30/2016"), "LGW", "ADL", 1);
+*/
         startupServer();
     }
 
