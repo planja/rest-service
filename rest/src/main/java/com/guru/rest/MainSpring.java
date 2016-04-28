@@ -36,6 +36,7 @@ public class MainSpring {
         //RemoteSystem.create(ConfigFactory.load().getConfig("RemoteConfig"));
         //Messenger.create();*/
         startupServer();
+
     }
 
     private static void startupServer() throws IOException {

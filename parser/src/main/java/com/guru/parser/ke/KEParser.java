@@ -1,5 +1,7 @@
 package com.guru.parser.ke;
 
+import akka.event.Logging;
+import akka.event.LoggingAdapter;
 import com.guru.domain.model.Flight;
 import com.guru.domain.model.Trip;
 import com.guru.parser.interf.Parser;
@@ -260,8 +262,18 @@ public class KEParser implements Parser {
 
         String url = "https://www.koreanair.com/api/fly/award/from/" + origin + "/to/" + destination + "/on/" + date + "?";
         List<NameValuePair> nameValuePairs = new ArrayList<>();
-        if (cabin.equals("BUSINESS")) {
-            cabin = "PRESTIGE";
+        switch(cabin){
+            case "E":
+                cabin = "ECONOMY";
+                break;
+            case "B":
+                cabin = "PRESTIGE";
+                break;
+            case "F":
+                cabin = "FIRST";
+                break;
+            default:
+                return new ArrayList<Trip>();
         }
         nameValuePairs.add(new BasicNameValuePair("flexDays", "0"));
         nameValuePairs.add(new BasicNameValuePair("scheduleDriven", "false"));
@@ -281,7 +293,6 @@ public class KEParser implements Parser {
         nameValuePairs.add(new BasicNameValuePair("infantInboundDiscounts", ""));
         nameValuePairs.add(new BasicNameValuePair("_", new Date().getTime() + ""));
         url = url + URLEncodedUtils.format(nameValuePairs, "utf-8");
-        System.out.println(url);
         httpGet = new HttpGet(url);
 
         response = httpclient.execute(httpGet);
@@ -292,7 +303,6 @@ public class KEParser implements Parser {
             return resultList;
         }
         JSONObject jsonObj = new JSONObject(html);
-        System.out.println(jsonObj);
         JSONArray outBound = jsonObj.getJSONArray("outbound");
         for (int i = 0; i < outBound.length(); i++) {
             Trip trip = new Trip();

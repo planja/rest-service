@@ -12,7 +12,7 @@ public class KEMain {
     public static void main(String[] args) throws  Exception{
         KEParser keParser = new KEParser();
         DefaultHttpClient client = keParser.login();
-        List<Trip> results = keParser.getKE(1,"ICN","TYO","06-01-2016",1,"ECONOMY",client);
+        List<Trip> results = keParser.getKE(1,"ICN","TYO","06-01-2016",1,"E",client);
         System.out.println(results);
     }
 }
