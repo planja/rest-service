@@ -82,8 +82,11 @@ public class Flight implements scala.Serializable {
     private Date updatedAt;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "trips_id", nullable = false)
+    @JoinColumn(name = "trip_id", nullable = false)
     private Trip trip;
+
+    @Transient
+    private String url;
 
     public Flight() {
     }
@@ -278,6 +281,14 @@ public class Flight implements scala.Serializable {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     @Override

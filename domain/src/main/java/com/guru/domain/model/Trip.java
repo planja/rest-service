@@ -10,7 +10,7 @@ import java.util.*;
  */
 @Entity
 @Table(name = "trips")
-public class Trip implements scala.Serializable {
+public class Trip implements scala.Serializable{
 
     @Id
     @Column(name = "id")
@@ -38,12 +38,12 @@ public class Trip implements scala.Serializable {
     @Column(name = "cost")
     private BigDecimal cost;
 
-/*    @ManyToOne(fetch = FetchType.EAGER)
+   /* @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "queries_id", nullable = false)
     private Query query;*/
 
-    @Column(name = "queries_id")
-    private Long requestId;
+    @Column(name = "query_id")
+    private Long queryId;
 
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
@@ -73,6 +73,9 @@ public class Trip implements scala.Serializable {
 
     @OneToMany(mappedBy = "trip", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Flight> flights = new ArrayList<>();
+
+    @Transient
+    private int direction;
 
     public Trip() {
     }
@@ -152,20 +155,13 @@ public class Trip implements scala.Serializable {
         this.cost = cost;
     }
 
-/*    public Query getQuery() {
-        return query;
+
+    public Long getQueryId() {
+        return queryId;
     }
 
-    public void setQuery(Query query) {
-        this.query = query;
-    }*/
-
-    public Long getRequestId() {
-        return requestId;
-    }
-
-    public void setRequestId(Long requestId) {
-        this.requestId = requestId;
+    public void setQueryId(Long queryId) {
+        this.queryId = queryId;
     }
 
     public Date getCreatedAt() {
@@ -240,6 +236,14 @@ public class Trip implements scala.Serializable {
         this.flights = flights;
     }
 
+    public int getDirection() {
+        return direction;
+    }
+
+    public void setDirection(int direction) {
+        this.direction = direction;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -255,7 +259,7 @@ public class Trip implements scala.Serializable {
         if (tripDate != null ? !tripDate.equals(trip.tripDate) : trip.tripDate != null) return false;
         if (tripDuration != null ? !tripDuration.equals(trip.tripDuration) : trip.tripDuration != null) return false;
         if (cost != null ? !cost.equals(trip.cost) : trip.cost != null) return false;
-        if (requestId != null ? !requestId.equals(trip.requestId) : trip.requestId != null) return false;
+        if (queryId != null ? !queryId.equals(trip.queryId) : trip.queryId != null) return false;
         if (createdAt != null ? !createdAt.equals(trip.createdAt) : trip.createdAt != null) return false;
         if (updatedAt != null ? !updatedAt.equals(trip.updatedAt) : trip.updatedAt != null) return false;
         if (stops != null ? !stops.equals(trip.stops) : trip.stops != null) return false;
@@ -277,7 +281,7 @@ public class Trip implements scala.Serializable {
         result = 31 * result + (tripDate != null ? tripDate.hashCode() : 0);
         result = 31 * result + (tripDuration != null ? tripDuration.hashCode() : 0);
         result = 31 * result + (cost != null ? cost.hashCode() : 0);
-        result = 31 * result + (requestId != null ? requestId.hashCode() : 0);
+        result = 31 * result + (queryId != null ? queryId.hashCode() : 0);
         result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
         result = 31 * result + (updatedAt != null ? updatedAt.hashCode() : 0);
         result = 31 * result + (stops != null ? stops.hashCode() : 0);
@@ -300,7 +304,7 @@ public class Trip implements scala.Serializable {
                 ", tripDate=" + tripDate +
                 ", tripDuration='" + tripDuration + '\'' +
                 ", cost=" + cost +
-                ", requestId=" + requestId +
+                ", requestId=" + queryId +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 ", stops='" + stops + '\'' +
