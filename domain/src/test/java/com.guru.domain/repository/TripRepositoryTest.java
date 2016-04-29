@@ -11,9 +11,9 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = TestDataConfig.class)
-@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DbUnitTestExecutionListener.class })
+//@RunWith(SpringJUnit4ClassRunner.class)
+//@ContextConfiguration(classes = TestDataConfig.class)
+//@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DbUnitTestExecutionListener.class })
 //@DatabaseSetup("classpath:TripRepoTest.xml")
 public class TripRepositoryTest {
 

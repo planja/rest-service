@@ -9,7 +9,8 @@ public enum ParserType {
     AA {
         @Override
         public Adaptor getAdaptorService() {
-            return new AdaptorServiceAA();
+            //return new AdaptorServiceAA();
+            return null;
         }
 
         @Override
@@ -19,7 +20,8 @@ public enum ParserType {
     }, AC {
         @Override
         public Adaptor getAdaptorService() {
-            return new AdaptorServiceAC();
+          //  return new AdaptorServiceAC();
+            return null;
         }
 
         @Override
@@ -29,7 +31,8 @@ public enum ParserType {
     }, AF {
         @Override
         public Adaptor getAdaptorService() {
-            return new AdaptorServiceAF();
+          //  return new AdaptorServiceAF();
+            return null;
         }
 
         @Override
@@ -40,7 +43,8 @@ public enum ParserType {
     AS {
         @Override
         public Adaptor getAdaptorService() {
-            return new AdaptorServiceAS();
+            //return new AdaptorServiceAS();
+            return null;
         }
 
         @Override
@@ -51,7 +55,8 @@ public enum ParserType {
     BA {
         @Override
         public Adaptor getAdaptorService() {
-            return new AdaptorServiceBA();
+            //return new AdaptorServiceBA();
+            return null;
         }
 
         @Override
@@ -62,7 +67,8 @@ public enum ParserType {
     CX {
         @Override
         public Adaptor getAdaptorService() {
-            return new AdaptorServiceCX();
+          //  return new AdaptorServiceCX();
+            return null;
         }
 
         @Override
@@ -73,7 +79,8 @@ public enum ParserType {
     DL {
         @Override
         public Adaptor getAdaptorService() {
-            return new AdaptorServiceDL();
+         //   return new AdaptorServiceDL();
+            return null;
         }
 
         @Override
@@ -84,7 +91,8 @@ public enum ParserType {
     EK {
         @Override
         public Adaptor getAdaptorService() {
-            return new AdaptorServiceEK();
+           // return new AdaptorServiceEK();
+            return null;
         }
 
         @Override
@@ -95,7 +103,8 @@ public enum ParserType {
     EY {
         @Override
         public Adaptor getAdaptorService() {
-            return new AdaptorServiceEY();
+         //   return new AdaptorServiceEY();
+            return null;
         }
 
         @Override
@@ -106,7 +115,8 @@ public enum ParserType {
     JL {
         @Override
         public Adaptor getAdaptorService() {
-            return new AdaptorServiceJL();
+          //  return new AdaptorServiceJL();
+            return null;
         }
 
         @Override
@@ -117,7 +127,8 @@ public enum ParserType {
     LH {
         @Override
         public Adaptor getAdaptorService() {
-            return new AdaptorServiceLH();
+       //     return new AdaptorServiceLH();
+            return null;
         }
 
         @Override
@@ -128,7 +139,8 @@ public enum ParserType {
     NH {
         @Override
         public Adaptor getAdaptorService() {
-            return new AdaptorServiceNH();
+         //   return new AdaptorServiceNH();
+            return null;
         }
 
         @Override
@@ -139,7 +151,8 @@ public enum ParserType {
     QF {
         @Override
         public Adaptor getAdaptorService() {
-            return new AdaptorServiceQF();
+          //  return new AdaptorServiceQF();
+            return null;
         }
 
         @Override
@@ -150,7 +163,8 @@ public enum ParserType {
     QR {
         @Override
         public Adaptor getAdaptorService() {
-            return new AdaptorServiceQR();
+            //return new AdaptorServiceQR();
+            return null;
         }
 
         @Override
@@ -161,7 +175,8 @@ public enum ParserType {
     SQ {
         @Override
         public Adaptor getAdaptorService() {
-            return new AdaptorServiceSQ();
+           // return new AdaptorServiceSQ();
+            return null;
         }
 
         @Override
@@ -172,7 +187,8 @@ public enum ParserType {
     VS {
         @Override
         public Adaptor getAdaptorService() {
-            return new AdaptorServiceVS();
+         //   return new AdaptorServiceVS();
+            return null;
         }
 
         @Override
@@ -183,7 +199,8 @@ public enum ParserType {
     UA {
         @Override
         public Adaptor getAdaptorService() {
-            return new AdaptorServiceAA();
+           // return new AdaptorServiceAA();
+            return null;
         }
 
         @Override

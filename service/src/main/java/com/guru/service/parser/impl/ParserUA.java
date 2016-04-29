@@ -8,9 +8,6 @@ import akka.event.LoggingAdapter;
 import com.guru.vo.transfer.RequestData;
 import com.guru.service.actor.processingresult.ProcessingResultOfParserActor;
 import com.guru.service.parser.interf.ParserActor;
-import parser.model.Award;
-import parser.ua.UANParser;
-
 import java.util.List;
 
 public class ParserUA extends UntypedActor implements ParserActor {
@@ -19,7 +16,7 @@ public class ParserUA extends UntypedActor implements ParserActor {
 
     @Override
     public void onReceive(Object message) throws Exception {
-        if (message instanceof RequestData) {
+     /*   if (message instanceof RequestData) {
             RequestData requestData = (RequestData) message;
             log.info("got it UA");
             String date = "05/26/2016";
@@ -29,7 +26,7 @@ public class ParserUA extends UntypedActor implements ParserActor {
             List<Award> flights = uaParser.getUnited(date, origin, destination, 1, "E");
             ActorRef processingResultOfParserActor = context().system().actorOf(Props.create(ProcessingResultOfParserActor.class));
             processingResultOfParserActor.tell(flights, self());
-        } else unhandled(message);
+        } else unhandled(message);*/
     }
 
     @Override

@@ -13,18 +13,18 @@ import org.springframework.context.annotation.Scope;
 
 import static com.guru.domain.config.SpringExtension.SpringExtProvider;
 
-@Configuration
-@ComponentScan("com.guru.domain.actor")
+//@Configuration
+//@ComponentScan("com.guru.domain.actor")
 public class Actors {
 
-    @Autowired
+/*    @Autowired
     private ActorSystem domainSystem;
 
 
     @Bean
     public ActorRef repositoryActor() {
         return domainSystem.actorOf(Props.create(RepositoryActor.class), "repositoryConfig");
-    }
+    }*/
 
 /*    @Bean(name = "serviceActor")
     public ActorRef serviceActor() {
