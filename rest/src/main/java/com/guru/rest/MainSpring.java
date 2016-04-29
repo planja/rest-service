@@ -27,13 +27,7 @@ public class MainSpring {
     public static final String BASE_URI = bundle.getString("url");
     public static final int PORT = Integer.parseInt(bundle.getString("port"));
 
-    public static void main(String[] args) throws IOException, ParseException, InterruptedException, ExecutionException, IncorrectCredentials {
-
-
-     /* parser.qf.QFParser qfParser1 = new parser.qf.QFParser();
-        DefaultHttpClient client = parser.qf.QFParser.login("1905029755", "Myasnyankin", "7759");
-      ComplexAward complexAward =   qfParser1.getQantas(client, sdf_qr.parse("04/30/2016"), sdf_qr.parse("04/30/2016"), "LGW", "ADL", 1);
-*/
+    public static void main(String[] args) throws IOException, ParseException, InterruptedException {
         startupServer();
     }
 

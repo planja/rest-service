@@ -84,6 +84,28 @@ public class Query implements Serializable {
     public Query() {
     }
 
+    public Query(String alias, String type, String from, String to, Integer includeFromNearby, Integer includeToNearby, Date departure, Integer flexibleDeparture, Date arrival, Integer flexibleArrival, Integer passengers, String classes, String parsers, Integer status, Integer error, Date createdAt, Date updatedAt, ParserAnswer parserAnswers, Set<ParserError> parserErrors) {
+        this.alias = alias;
+        this.type = type;
+        this.from = from;
+        this.to = to;
+        this.includeFromNearby = includeFromNearby;
+        this.includeToNearby = includeToNearby;
+        this.departure = departure;
+        this.flexibleDeparture = flexibleDeparture;
+        this.arrival = arrival;
+        this.flexibleArrival = flexibleArrival;
+        this.passengers = passengers;
+        this.classes = classes;
+        this.parsers = parsers;
+        this.status = status;
+        this.error = error;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.parserAnswers = parserAnswers;
+        this.parserErrors = parserErrors;
+    }
+
     public Long getId() {
         return id;
     }

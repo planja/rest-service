@@ -15,7 +15,6 @@ import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.apache.http.message.BasicNameValuePair;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.springframework.stereotype.Component;
 import parser.exceptions.IncorrectCredentials;
 
 import java.io.IOException;
@@ -37,7 +36,7 @@ public class QFParser implements Parser {
 
     @Override
     public Collection<Trip> parse(RequestData requestData) throws Exception {
-        return null;
+        return getQantas(requestData);
     }
 
     private DefaultHttpClient login(String user, String surname, String password) throws IOException, InterruptedException, ExecutionException, IncorrectCredentials {
@@ -59,11 +58,13 @@ public class QFParser implements Parser {
         return logDoc.getElementById("errormsgs") != null ? null : httpclient;
     }
 
-    public List<Trip> getQantas(Date date, Date returnDate, String origin, String destination, int seats) throws IncorrectCredentials, IOException, InterruptedException, ExecutionException, ParseException {
+    private List<Trip> getQantas(RequestData requestData) throws IncorrectCredentials, IOException, InterruptedException, ExecutionException, ParseException {
         DefaultHttpClient httpclient = this.login("1924112640", "Kin", "4152");
         SimpleDateFormat sdf1 = new SimpleDateFormat("yyyyMMdd");
         List<Trip> awardList = new ArrayList<>
-                ((new ParserThread(httpclient, sdf1.format(date), sdf1.format(returnDate), origin, destination, seats, this)).call());
+                ((new ParserThread(httpclient, sdf1.format(requestData.getOw_start_date()),
+                        sdf1.format(requestData.getOw_end_date()), requestData.getOrigin(),
+                        requestData.getDestination(), requestData.getSeats(), this)).call());
         ExecutorService executor = Executors.newCachedThreadPool();
         LinkedList resultList = new LinkedList();
         HashSet callables = new HashSet();
@@ -95,16 +96,18 @@ public class QFParser implements Parser {
         return trips;
     }
 
+
     private void getTrips(List<Trip> trips) {
         trips.stream().forEach(o -> {
+            o.setQueryId((long)(new Random().nextDouble()*123L));
             o.setArriveCode(o.getFlights().get(0).getArriveCode());
-            o.setDepartCode(o.getFlights().get(o.getFlights().size()-1).getDepartCode());
+            o.setDepartCode(o.getFlights().get(o.getFlights().size() - 1).getDepartCode());
 
             o.setArrivePlace(o.getFlights().get(0).getArrivePlace());
-            o.setDepartPlace(o.getFlights().get(o.getFlights().size()-1).getArrivePlace());
+            o.setDepartPlace(o.getFlights().get(o.getFlights().size() - 1).getArrivePlace());
 
             o.setTripDate(o.getFlights().get(0).getDepartDate());
-            o.setStops("stops");
+            o.setStops("[\"stops\"]");
             o.setCabins(getCabins(o.getFlights()));
             o.setCarriers(getCarriers(o.getFlights()));
             o.setLayovers(null);
@@ -113,20 +116,35 @@ public class QFParser implements Parser {
             o.setCost(BigDecimal.valueOf(2000));
             o.setUpdatedAt(new Date());
             o.setCreatedAt(new Date());
+            o.getFlights().forEach(k -> k.setTrip(o));
+            o.setLayovers("[\"layovers\"]");
         });
     }
 
     private String getCabins(List<Flight> flights) {
-        return "[" + flights.stream().map(o -> "\"" + o.getCabin() + ",\"").collect(Collectors.joining()) + "]";//Переделать
-    }
-    private String getCarriers(List<Flight> flights){
-        return "[" + flights.stream().map(o -> "\"" + o.getCarrierCode() + ",\"").collect(Collectors.joining()) + "]";//??????
-    }
-    private String getFlightLegs(List<Flight> flights){
-        return "[" + flights.stream().map(o -> "\"" + o.getFlightDuration() + ",\"").collect(Collectors.joining()) + "]";
+        String str = "[" + flights.stream().map(o -> "\"" + o.getCabin() + "\",").collect(Collectors.joining()) + "]";
+        int index = str.lastIndexOf(',');//Переделать
+        return str.substring(0, index) + str.substring(index + 1, str.length());
+
+
     }
 
-    private String getFlightNumbers(List<Flight> flights){
-        return "[" + flights.stream().map(o -> "\"" + o.getFlightNumber() + ",\"").collect(Collectors.joining()) + "]";
+    private String getCarriers(List<Flight> flights) {
+        String str = "[" + flights.stream().map(o -> "\"" + o.getCarrierCode() + "\",").collect(Collectors.joining()) + "]";//??????
+        int index = str.lastIndexOf(',');//Переделать
+        return str.substring(0, index) + str.substring(index + 1, str.length());
+    }
+
+    private String getFlightLegs(List<Flight> flights) {
+        String str = "[" + flights.stream().map(o -> "\"" + o.getFlightDuration() + "\",").collect(Collectors.joining()) + "]";
+        int index = str.lastIndexOf(',');//Переделать
+        return str.substring(0, index) + str.substring(index + 1, str.length());
+    }
+
+
+    private String getFlightNumbers(List<Flight> flights) {
+        String str = "[" + flights.stream().map(o -> "\"" + o.getFlightNumber() + "\",").collect(Collectors.joining()) + "]";
+        int index = str.lastIndexOf(',');//Переделать
+        return str.substring(0, index) + str.substring(index + 1, str.length());
     }
 }

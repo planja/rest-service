@@ -10,7 +10,7 @@ import java.util.*;
  */
 @Entity
 @Table(name = "trips")
-public class Trip {
+public class Trip implements scala.Serializable{
 
     @Id
     @Column(name = "id")
@@ -38,12 +38,12 @@ public class Trip {
     @Column(name = "cost")
     private BigDecimal cost;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+   /* @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "queries_id", nullable = false)
-    private Query query;
+    private Query query;*/
 
-    @Column(name = "request_id")
-    private Long requestId;
+    @Column(name = "query_id")
+    private Long queryId;
 
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
@@ -86,17 +86,6 @@ public class Trip {
         this.tripDate = tripDate;
         this.tripDuration = tripDuration;
         this.cost = cost;
-        this.query = query;
-        this.requestId = requestId;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.stops = stops;
-        this.cabins = cabins;
-        this.carriers = carriers;
-        this.layovers = layovers;
-        this.flightLegs = flightLegs;
-        this.flightNumbers = flightNumbers;
-        this.flights = flights;
     }
 
     public Long getId() {
@@ -163,20 +152,13 @@ public class Trip {
         this.cost = cost;
     }
 
-    public Query getQuery() {
-        return query;
+
+    public Long getQueryId() {
+        return queryId;
     }
 
-    public void setQuery(Query query) {
-        this.query = query;
-    }
-
-    public Long getRequestId() {
-        return requestId;
-    }
-
-    public void setRequestId(Long requestId) {
-        this.requestId = requestId;
+    public void setQueryId(Long queryId) {
+        this.queryId = queryId;
     }
 
     public Date getCreatedAt() {
@@ -266,7 +248,7 @@ public class Trip {
         if (tripDate != null ? !tripDate.equals(trip.tripDate) : trip.tripDate != null) return false;
         if (tripDuration != null ? !tripDuration.equals(trip.tripDuration) : trip.tripDuration != null) return false;
         if (cost != null ? !cost.equals(trip.cost) : trip.cost != null) return false;
-        if (requestId != null ? !requestId.equals(trip.requestId) : trip.requestId != null) return false;
+        if (queryId != null ? !queryId.equals(trip.queryId) : trip.queryId != null) return false;
         if (createdAt != null ? !createdAt.equals(trip.createdAt) : trip.createdAt != null) return false;
         if (updatedAt != null ? !updatedAt.equals(trip.updatedAt) : trip.updatedAt != null) return false;
         if (stops != null ? !stops.equals(trip.stops) : trip.stops != null) return false;
@@ -288,7 +270,7 @@ public class Trip {
         result = 31 * result + (tripDate != null ? tripDate.hashCode() : 0);
         result = 31 * result + (tripDuration != null ? tripDuration.hashCode() : 0);
         result = 31 * result + (cost != null ? cost.hashCode() : 0);
-        result = 31 * result + (requestId != null ? requestId.hashCode() : 0);
+        result = 31 * result + (queryId != null ? queryId.hashCode() : 0);
         result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
         result = 31 * result + (updatedAt != null ? updatedAt.hashCode() : 0);
         result = 31 * result + (stops != null ? stops.hashCode() : 0);
@@ -311,7 +293,7 @@ public class Trip {
                 ", tripDate=" + tripDate +
                 ", tripDuration='" + tripDuration + '\'' +
                 ", cost=" + cost +
-                ", requestId=" + requestId +
+                ", requestId=" + queryId +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 ", stops='" + stops + '\'' +
