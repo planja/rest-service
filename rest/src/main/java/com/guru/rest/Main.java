@@ -10,10 +10,7 @@ import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
-import parser.ey.EYMain;
-import parser.ey.EYParser;
-import parser.ua.UANParser;
-import parser.ua.UAParser;
+
 
 
 import java.io.IOException;
