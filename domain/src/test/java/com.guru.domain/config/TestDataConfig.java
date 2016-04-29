@@ -1,9 +1,9 @@
 package com.guru.domain.config;
 
+
 import org.hibernate.ejb.HibernatePersistence;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -19,10 +19,9 @@ import java.util.Properties;
 
 @Configuration
 @EnableTransactionManagement
-@EnableJpaRepositories({"com.guru.domain.repository"})
-@PropertySource({"classpath:persistence-config.properties"})
-@Import({Actors.class, AkkaConfig.class})
-public class DataConfig {
+@EnableJpaRepositories( {"com.guru.domain"} )
+@PropertySource({"persistence-config-test.properties"})
+public class TestDataConfig {
 
     @Inject
     private Environment env;
@@ -58,9 +57,9 @@ public class DataConfig {
 
     private Properties getHibernateProperties() {
         Properties properties = new Properties();
-        properties.put(
-                "hibernate.dialect",
-                "org.hibernate.dialect.MySQLDialect");
+        properties.put("hibernate.dialect", env.getProperty("hibernate.dialect"));
+        properties.put("hibernate.show_sql", env.getProperty("hibernate.show_sql"));
+        //properties.put("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"));
         return properties;
     }
 }

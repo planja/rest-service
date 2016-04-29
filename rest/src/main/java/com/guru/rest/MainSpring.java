@@ -1,15 +1,18 @@
 package com.guru.rest;
 
+import com.guru.domain.config.DataConfig;
+import com.guru.domain.model.Query;
 import com.guru.domain.model.Trip;
-import com.guru.parser.impl.qfparser.QFParser;
+import com.guru.domain.repository.QueryRepository;
+import com.guru.domain.repository.TripRepository;
 import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.glassfish.grizzly.http.server.*;
 import org.glassfish.grizzly.servlet.ServletRegistration;
 import org.glassfish.grizzly.servlet.WebappContext;
-import org.springframework.beans.factory.annotation.Autowired;
-import parser.exceptions.IncorrectCredentials;
-import parser.utils.ComplexAward;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import parser.ua.UANParser;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -17,11 +20,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.concurrent.ExecutionException;
 
 public class MainSpring {
-
-
 
     public static ResourceBundle bundle = ResourceBundle.getBundle("config");
     public static final String BASE_URI = bundle.getString("url");

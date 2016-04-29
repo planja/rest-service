@@ -10,7 +10,7 @@ import java.util.*;
  */
 @Entity
 @Table(name = "trips")
-public class Trip implements Serializable{
+public class Trip {
 
     @Id
     @Column(name = "id")
@@ -71,14 +71,14 @@ public class Trip implements Serializable{
     @Column(name = "flight_numbers")
     private String flightNumbers;
 
-    @OneToMany(mappedBy = "trip", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "trip", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Flight> flights = new ArrayList<>();
-
 
     public Trip() {
     }
 
-    public Trip(String departCode, String arriveCode, String departPlace, String arrivePlace, Date tripDate, String tripDuration, BigDecimal cost, Query query, Long requestId, Date createdAt, Date updatedAt, String stops, String cabins, String carriers, String layovers, String flightLegs, String flightNumbers, List<Flight> flights) {
+    public Trip(Long id, String departCode, String arriveCode, String departPlace, String arrivePlace, Date tripDate, String tripDuration, BigDecimal cost) {
+        this.id = id;
         this.departCode = departCode;
         this.arriveCode = arriveCode;
         this.departPlace = departPlace;
