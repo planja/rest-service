@@ -17,7 +17,7 @@ public class MainSpring {
     public static final String BASE_URI = bundle.getString("url");
     public static final int PORT = Integer.parseInt(bundle.getString("port"));
 
-    public static void main(String[] args) throws IOException,ParseException,InterruptedException {
+    public static void main(String[] args) throws IOException, ParseException, InterruptedException {
         startupServer();
     }
 
@@ -45,7 +45,7 @@ public class MainSpring {
     }
 
     private static void initSpringContext(HttpServer server) {
-        WebappContext context = new WebappContext("ctx","/");
+        WebappContext context = new WebappContext("ctx", "/");
         final ServletRegistration registration = context.addServlet("spring", new SpringServlet());
         registration.addMapping("/*");
         registration.setInitParameter("javax.ws.rs.Application", "com.guru.rest.config.JerseyConfig");

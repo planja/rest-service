@@ -4,6 +4,7 @@ import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import com.guru.domain.model.Trip;
+import com.guru.domain.repository.QueryRepository;
 import com.guru.domain.repository.TripRepository;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,8 @@ public class ServiceRepositoryActor extends UntypedActor {
 
     @Inject
     private TripRepository tripRepository;
+    @Inject
+    private QueryRepository queryRepository;
 
     @Override
     public void onReceive(Object message) throws Exception {

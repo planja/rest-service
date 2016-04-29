@@ -388,7 +388,7 @@ public class KEParser implements Parser {
 
             }
             trip.setFlights(flightList);
-            trip.setRequestId((long) requestId);
+           // trip.setRequestId((long) requestId);
             trip.setDepartCode(flightList.get(0).getDepartCode());
             trip.setArriveCode(flightList.get(flightList.size() - 1).getArriveCode());
             trip.setDepartPlace(flightList.get(0).getDepartPlace());
