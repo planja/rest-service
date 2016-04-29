@@ -11,6 +11,8 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import parser.info.InfoParser;
+import parser.model.FInfo;
 import parser.utils.Utils;
 
 import java.text.SimpleDateFormat;
@@ -73,6 +75,12 @@ import java.util.concurrent.Callable;
             String company = jObject.getString("operatedBy");
             String tripType = jObject.getString("tripType");
             String flightNumber = jObject.getString("flightCode");
+
+            String code = jObject.getString("flightCode");
+
+            Date var27 = format.parse(departureDate + " " + departureTime);
+            Date arrDate = format.parse(arrivalDate + " " + arrivalTime);
+            FInfo info = InfoParser.getFlightInfo(code, var27, arrDate);
 
 
             flight.setPosition(this.counter);

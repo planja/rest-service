@@ -15,7 +15,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import parser.utils.Utils;
+
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -104,7 +104,7 @@ class ParserThread implements Callable<List<Trip>> {
             httget.setEntity(new UrlEncodedFormEntity(nameValuePairs));
             response = this.httpclient.execute(httget);
             entity = response.getEntity();
-            String result1 = Utils.responseToString(entity.getContent());
+            String result1 = IOUtils.toString(entity.getContent());
             Document resultDoc1 = Jsoup.parse(result1);
             String json;
             if (resultDoc1.getElementById("wdserror-list") != null && resultDoc1.getElementById("flightBack") != null) {
@@ -119,7 +119,7 @@ class ParserThread implements Callable<List<Trip>> {
                 httget.setEntity(new UrlEncodedFormEntity(nameValuePairs));
                 response = this.httpclient.execute(httget);
                 entity = response.getEntity();
-                data = Utils.responseToString(entity.getContent());
+                data = IOUtils.toString(entity.getContent());
                 doc = Jsoup.parse(data);
                 form = doc.getElementsByAttributeValue("name", "SubmissionDetails");
 
@@ -139,19 +139,54 @@ class ParserThread implements Callable<List<Trip>> {
                     httget.setEntity(new UrlEncodedFormEntity(nameValuePairs));
                     response = this.httpclient.execute(httget);
                     entity = response.getEntity();
-                    result1 = Utils.responseToString(entity.getContent());
+                    result1 = IOUtils.toString(entity.getContent());
                 }
             }
 
             Element table = resultDoc1.getElementById("idAvailabilty0");
-            this.getAwards(table, flights);
+            this.getAwards(table, flights, 0);
+            Element table1 = resultDoc1.getElementById("idAvailabilty1");
+            this.getAwards(table1, flights, 1);
         }
 
 
         return true;
     }
 
-    private void getAwards(Element table, List<Trip> flights) throws ParseException, IllegalStateException, JSONException, IOException, InterruptedException {
+    private void getAwards(Element table, List<Trip> flights, int direction) throws ParseException, IllegalStateException, JSONException, IOException, InterruptedException {
+        int awardIndex = 0;
+        boolean newTrip;
+
+        for (Iterator var13 = table.getElementsByTag("tbody").iterator(); var13.hasNext(); ++awardIndex) {
+            Element tbody = (Element) var13.next();
+            Trip trip = new Trip();
+            newTrip = true;
+            Iterator ex = tbody.select(" > tr").iterator();
+
+            while (ex.hasNext()) {
+                Element tr = (Element) ex.next();
+                if (tr.attr("id").contains("idLine")) {
+                    Flight flight = new Flight();
+                    Elements tdhList = tr.select(" > th");
+                    if (newTrip) {
+                        tdhList.get(1).getElementsByClass("stops").text();
+                        newTrip = false;
+                    }
+                    trip.setTripDuration(ParserUtils.getTotalTime(tdhList.get(0).getElementsByClass("duration").first().ownText(), this.qfParser));
+                    String data_url = tdhList.get(2).getElementsByTag("a").first().attr("data-url");
+                    flight.setUrl(data_url);
+                    trip.getFlights().add(flight);
+                } else {
+                    trip.setTripDuration(ParserUtils.getTotalTime(tr.getElementsByClass("total-duration").text(), this.qfParser));
+                }
+            }
+            trip.setDirection(direction);
+            flights.add(trip);
+        }
+
+    }
+
+    /*private void getAwards(Element table, List<Trip> flights, int direction) throws ParseException, IllegalStateException, JSONException, IOException, InterruptedException {
         int awardIndex = 0;
         boolean newTrip;
 
@@ -181,6 +216,6 @@ class ParserThread implements Callable<List<Trip>> {
             flights.add(trip);
         }
 
-    }
+    }*/
 
 }

@@ -74,6 +74,9 @@ public class Trip implements scala.Serializable{
     @OneToMany(mappedBy = "trip", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Flight> flights = new ArrayList<>();
 
+    @Transient
+    private int direction;
+
     public Trip() {
     }
 
@@ -231,6 +234,14 @@ public class Trip implements scala.Serializable{
 
     public void setFlights(List<Flight> flights) {
         this.flights = flights;
+    }
+
+    public int getDirection() {
+        return direction;
+    }
+
+    public void setDirection(int direction) {
+        this.direction = direction;
     }
 
     @Override

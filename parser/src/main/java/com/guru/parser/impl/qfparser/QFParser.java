@@ -86,12 +86,28 @@ public class QFParser implements Parser {
         award2 = resultList.iterator();
 
         List<Trip> trips = new ArrayList<>();
+        List<Trip> ow = new ArrayList<>();
+        List<Trip> rt = new ArrayList<>();
+
 
         while (award2.hasNext()) {
-            Trip award3 = (Trip) award2.next();
-            trips.add(award3);
+            Trip next = (Trip) award2.next();
+            if (next.getDirection() == 0) {
+                ow.add(next);
+            } else {
+                rt.add(next);
+            }
         }
+        rt.forEach(o->o.setQueryId(Long.valueOf("0")));
+        trips.addAll(ow);
+        trips.addAll(rt);
 
+
+        /*SimpleDateFormat sdf_qr = new SimpleDateFormat("MM/dd/yyyy");
+        parser.qf.QFParser qfParser = new parser.qf.QFParser();
+        DefaultHttpClient client = parser.qf.QFParser.login("1905029755", "Myasnyankin", "7759");
+       ComplexAward complexAward = qfParser.getQantas(client, sdf_qr.parse("05/01/2016"), sdf_qr.parse("05/01/2016"), "LGW", "ADL", 1);
+ */
         getTrips(trips);
         return trips;
     }
@@ -99,7 +115,7 @@ public class QFParser implements Parser {
 
     private void getTrips(List<Trip> trips) {
         trips.stream().forEach(o -> {
-            o.setQueryId((long)(new Random().nextDouble()*123L));
+            o.setQueryId((long) (new Random().nextDouble() * 123L));
             o.setArriveCode(o.getFlights().get(0).getArriveCode());
             o.setDepartCode(o.getFlights().get(o.getFlights().size() - 1).getDepartCode());
 
