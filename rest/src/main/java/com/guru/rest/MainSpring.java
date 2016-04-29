@@ -28,10 +28,7 @@ public class MainSpring {
     public static final int PORT = Integer.parseInt(bundle.getString("port"));
 
     public static void main(String[] args) throws IOException, ParseException, InterruptedException, ExecutionException, IncorrectCredentials {
-        SimpleDateFormat sdf_qr = new SimpleDateFormat("MM/dd/yyyy");
-       QFParser qfParser = new QFParser();
-        List dates = parser.test.Main.getDaysBetweenDates(sdf_qr.parse("12/10/2015"), sdf_qr.parse("12/15/2015"));
-        List<Trip> trips = qfParser.getQantas(sdf_qr.parse("04/30/2016"), sdf_qr.parse("04/30/2016"), "LGW", "ADL", 1);
+
 
      /* parser.qf.QFParser qfParser1 = new parser.qf.QFParser();
         DefaultHttpClient client = parser.qf.QFParser.login("1905029755", "Myasnyankin", "7759");

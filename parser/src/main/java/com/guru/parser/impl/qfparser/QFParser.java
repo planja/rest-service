@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 /**
  * Created by Никита on 27.04.2016.
  */
-@Component
+
 public class QFParser implements Parser {
 
     @Override

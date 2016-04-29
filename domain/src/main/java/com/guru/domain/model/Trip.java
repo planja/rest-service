@@ -1,6 +1,7 @@
 package com.guru.domain.model;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -9,7 +10,7 @@ import java.util.*;
  */
 @Entity
 @Table(name = "trips")
-public class Trip {
+public class Trip implements Serializable{
 
     @Id
     @Column(name = "id")
