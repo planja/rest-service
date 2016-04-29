@@ -21,9 +21,4 @@ public class Actors {
     public ActorRef requestActor() {
         return applicationSystem.actorOf(Props.create(RequestActor.class), "applicationConfig");
     }
-
-    @Bean
-    public ActorRef parserActorKE() {
-        return applicationSystem.actorOf(Props.create(ParserKE.class));
-    }
 }
