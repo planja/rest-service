@@ -8,7 +8,7 @@ import akka.event.LoggingAdapter;
 import com.guru.vo.transfer.RequestData;
 import com.guru.service.actor.processingresult.ProcessingResultOfParserActor;
 import com.guru.service.parser.interf.ParserActor;
-import parser.ek.EKParser;
+
 
 import java.util.List;
 
@@ -21,7 +21,7 @@ public class ParserEK extends UntypedActor implements ParserActor {
 
     @Override
     public void onReceive(Object message) throws Exception {
-
+/*
         if (message instanceof RequestData) {
             RequestData requestData = (RequestData) message;
             log.info("got it EK");
@@ -33,8 +33,8 @@ public class ParserEK extends UntypedActor implements ParserActor {
             String date = "03/14/2016";
             EKParser.Client client = emParser.login("ruslan.nurtdinov@gmail.com", "test1985");
             emParser.getEmirates(client, from, to, date, 1, "E");
-            /*List flights = emParser.getEmirates(client, requestData.getOrigin(),
-                    requestData.getDestination(), date, 1, "E");*/
+            List flights = emParser.getEmirates(client, requestData.getOrigin(),
+                    requestData.getDestination(), date, 1, "E");
             List flights = emParser.getEmirates(client, from,
                     to, date, 1, "E");
 
@@ -42,7 +42,7 @@ public class ParserEK extends UntypedActor implements ParserActor {
             processingResultOfParserActor.tell(flights, self());
         } else unhandled(message);
 
-
+*/
     }
 
     @Override

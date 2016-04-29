@@ -100,11 +100,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.guru.parser</groupId>
-            <artifactId>factory</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
         </dependency>
