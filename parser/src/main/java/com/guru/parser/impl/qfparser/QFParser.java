@@ -15,7 +15,6 @@ import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.apache.http.message.BasicNameValuePair;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import parser.exceptions.IncorrectCredentials;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -39,7 +38,7 @@ public class QFParser implements Parser {
         return getQantas(requestData);
     }
 
-    private DefaultHttpClient login(String user, String surname, String password) throws IOException, InterruptedException, ExecutionException, IncorrectCredentials {
+    private DefaultHttpClient login(String user, String surname, String password) throws IOException, InterruptedException, ExecutionException {
         DefaultHttpClient httpclient = new DefaultHttpClient();
         httpclient.getParams().setParameter("http.protocol.cookie-policy", "compatibility");
         httpclient.setCookieStore(new BasicCookieStore());
@@ -58,7 +57,7 @@ public class QFParser implements Parser {
         return logDoc.getElementById("errormsgs") != null ? null : httpclient;
     }
 
-    private List<Trip> getQantas(RequestData requestData) throws IncorrectCredentials, IOException, InterruptedException, ExecutionException, ParseException {
+    private List<Trip> getQantas(RequestData requestData) throws IOException, InterruptedException, ExecutionException, ParseException {
         DefaultHttpClient httpclient = this.login("1924112640", "Kin", "4152");
         SimpleDateFormat sdf1 = new SimpleDateFormat("yyyyMMdd");
         List<Trip> awardList = new ArrayList<>

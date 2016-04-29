@@ -2,6 +2,7 @@ package com.guru.parser.impl.qfparser;
 
 import com.guru.domain.model.Flight;
 import com.guru.domain.model.Trip;
+import com.guru.parser.utils.ParserUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -11,9 +12,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import parser.info.InfoParser;
-import parser.model.FInfo;
-import parser.utils.Utils;
+
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -61,7 +60,7 @@ import java.util.concurrent.Callable;
 
             CloseableHttpResponse response = httpclient.execute(httGet);
             HttpEntity entity = response.getEntity();
-            String flight_info = Utils.gzipResponseToString(entity.getContent());
+            String flight_info = ParserUtils.gzipResponseToString(entity.getContent());
             JSONObject jObject = (new JSONObject(flight_info)).getJSONObject("model");
             String departureLocation = jObject.getString("departureLocation");
             String arrivalLocation = jObject.getString("arrivalLocation");
@@ -80,7 +79,7 @@ import java.util.concurrent.Callable;
 
             Date var27 = format.parse(departureDate + " " + departureTime);
             Date arrDate = format.parse(arrivalDate + " " + arrivalTime);
-            FInfo info = InfoParser.getFlightInfo(code, var27, arrDate);
+           // FInfo info = InfoParser.getFlightInfo(code, var27, arrDate);
 
 
             flight.setPosition(this.counter);

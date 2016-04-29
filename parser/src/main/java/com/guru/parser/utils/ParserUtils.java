@@ -1,6 +1,7 @@
 package com.guru.parser.utils;
 
 import com.guru.parser.impl.qfparser.QFParser;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -13,26 +14,9 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import parser.ac.ACParser;
-import parser.af.AFParser;
-import parser.ana.ANAParser;
-import parser.as.ASParser;
-import parser.ba.BAMParser;
-import parser.ba.BAParser;
-import parser.dl.DLParser;
-import parser.ek.EKParser;
-import parser.ey.EYParser;
-import parser.jl.JLParser;
-import parser.mm.MMParser;
-import parser.model.FInfo;
-import parser.qr.QRParser;
-import parser.sq.SQParser;
-import parser.ua.UAParser;
-import parser.utils.Utils;
-import parser.vs.VSParser;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+
+import java.io.*;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -41,6 +25,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.GZIPInputStream;
 
 /**
  * Created by Никита on 27.04.2016.
@@ -50,44 +35,9 @@ public class ParserUtils {
     public static String getTotalTime(String totalTime, Object parser) throws ParseException {
         System.out.println(totalTime);
         String regexp = "";
-        if(parser instanceof ACParser) {
-            regexp = "((\\d*)[h]\\s)?(\\d*)[min]";
-        } else if(parser instanceof AFParser) {
-            regexp = "((\\d*)[h])?(\\d*)[m]";
-        } else if(parser instanceof DLParser) {
-            regexp = "((\\d*)[h]\\s)?(\\d*)[m]";
-        } else if(parser instanceof EYParser) {
-            regexp = "((\\d*)hr\\s)?(\\d*)min";
-        } else if(parser instanceof JLParser) {
-            regexp = "((\\d*)\\D+\\s?)?(\\d*)\\D+";
-        } else if(parser instanceof SQParser) {
-            regexp = "((\\d*)\\D+\\s?)?(\\d*)\\D+";
-        } else if(parser instanceof MMParser) {
-            regexp = "((\\d*)\\D+)?(\\d*)";
-        } else if(parser instanceof QFParser) {
+         if(parser instanceof QFParser)
             regexp = "((\\d*)h\\s)?(\\d*)m";
-        } else if(parser instanceof QRParser) {
-            regexp = "((\\d*):)?(\\d*)\\s\\D+";
-        } else if(parser instanceof VSParser) {
-            regexp = "((\\d*)h\\D*)(\\d*)\\D+";
-        } else if(parser instanceof UAParser) {
-            regexp = "Travel Time:\\s((\\d*)\\D+\\s+)?(\\d*)\\D+";
-        } else if(parser instanceof ASParser) {
-            regexp = "((\\d*)\\D+\\s?)?(\\d*)\\D+";
-        } else if(parser instanceof EKParser) {
-            if(totalTime.contains("Duration")) {
-                totalTime = totalTime.replaceAll("Duration", "").trim();
-            }
 
-            System.out.println("EK Parser");
-            regexp = "((\\d*)\\D+\\s?)?(\\d*)\\D+";
-        } else if(parser instanceof ANAParser) {
-            regexp = "time\\s((\\d*)h)?(\\d*)min";
-        } else if(parser instanceof BAParser) {
-            regexp = "((\\d*)\\D+\\s?)?(\\d*)\\D+";
-        } else if(parser instanceof BAMParser) {
-            regexp = "((\\d*)\\D+\\s?)?(\\d*)\\D+";
-        }
 
         Pattern pattern = Pattern.compile(regexp);
         Matcher matcher = pattern.matcher(totalTime);
@@ -101,7 +51,7 @@ public class ParserUtils {
         }
     }
 
-    public static FInfo getFlightInfo(String fNumber, Date date, Date dateTo) throws UnsupportedEncodingException, IOException {
+  /*  public static FInfo getFlightInfo(String fNumber, Date date, Date dateTo) throws UnsupportedEncodingException, IOException {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
         SimpleDateFormat time = new SimpleDateFormat("h:mm aaa");
         FInfo info = new FInfo();
@@ -129,7 +79,7 @@ public class ParserUtils {
             ex.setEntity(new UrlEncodedFormEntity(nameValuePairs));
             response = httpclient.execute(ex);
             entity = response.getEntity();
-            String html = Utils.responseToString(entity.getContent());
+            String html = IOUtils.toString(entity.getContent());
             Document document = Jsoup.parse(html);
             if(document.getElementsByClass("FlightTrackerList").size() > 0) {
                 String timeF = time.format(date);
@@ -225,6 +175,32 @@ public class ParserUtils {
         }
 
         return info;
+    }*/
+
+    public static String gzipResponseToString(InputStream inputStream) {
+        StringBuffer buffer = new StringBuffer();
+
+        try {
+            GZIPInputStream ex = new GZIPInputStream(inputStream);
+            DataInputStream dataInputStream = new DataInputStream(ex);
+            InputStreamReader inputStreamReader = new InputStreamReader(dataInputStream);
+            BufferedReader buff = new BufferedReader(inputStreamReader);
+
+            String line;
+            do {
+                line = buff.readLine();
+                if(line != null) {
+                    buffer.append(line);
+                }
+            } while(line != null);
+
+            inputStreamReader.close();
+            inputStream.close();
+        } catch (Exception var7) {
+            var7.printStackTrace();
+        }
+
+        return buffer.toString();
     }
 
 
