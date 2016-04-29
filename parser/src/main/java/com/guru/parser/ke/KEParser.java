@@ -1,10 +1,11 @@
 package com.guru.parser.ke;
 
-import akka.event.Logging;
-import akka.event.LoggingAdapter;
 import com.guru.domain.model.Flight;
 import com.guru.domain.model.Trip;
 import com.guru.parser.interf.Parser;
+import com.guru.vo.temp.Account;
+import com.guru.vo.temp.AccountUtils;
+import com.guru.vo.temp.Utils;
 import com.guru.vo.transfer.RequestData;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -26,9 +27,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import parser.utils.Account;
-import parser.utils.AccountUtils;
-import parser.utils.Utils;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -262,7 +260,7 @@ public class KEParser implements Parser {
 
         String url = "https://www.koreanair.com/api/fly/award/from/" + origin + "/to/" + destination + "/on/" + date + "?";
         List<NameValuePair> nameValuePairs = new ArrayList<>();
-        switch(cabin){
+        switch (cabin) {
             case "E":
                 cabin = "ECONOMY";
                 break;
@@ -362,20 +360,29 @@ public class KEParser implements Parser {
                 String[] arriveInfo = PLACES.get(arriveCode).split(", ");
                 String[] departInfo = PLACES.get(departCode).split(", ");
                 //   flight.setArriveAirport(arriveInfo[1]);
-                flight.setArrivePlace(PLACES.get(arriveCode));
+                flight.setArrivePlace(arriveInfo[0]);
                 //   flight.setArriveCity(arriveInfo[0]);
                 //   flight.setDepartAirport(departInfo[1]);
-                flight.setDepartPlace(PLACES.get(departCode));
+                flight.setDepartPlace(departInfo[0]);
                 flight.setArriveCode(arriveCode);
                 flight.setDepartCode(departCode);
                 //   flight.setDepartCity(departInfo[0]);
                 flight.setFlightNumber((String) jsonFlight.get("flightNumber"));
                 //     flight.setMeal("");
-                flight.setFlightDuration((String) jsonFlight.get("flightTime"));
+                long longFlightDuration = (flight.getArriveDate().getTime() - flight.getDepartDate().getTime());
+                String flightDuration = String.format("%02d:%02d",
+                        TimeUnit.MILLISECONDS.toHours(longFlightDuration),
+                        TimeUnit.MILLISECONDS.toMinutes(longFlightDuration) -
+                                TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(longFlightDuration))
+                );
+                flight.setFlightDuration(flightDuration);
                 flight.setCarrierCode(flight.getFlightNumber().substring(0, 2));
+                flight.setCarrierName(flight.getFlightNumber().substring(0, 2));
                 flight.setTrip(trip);
+                flight.setCabin(cabin);
                 flight.setPosition(flightList.size());
                 flight.setParser(PARSER_CODE);
+                flight.setLayover("00:00");
                 flightList.add(flight);
                 //without cabin info
 
@@ -391,20 +398,37 @@ public class KEParser implements Parser {
                 StringBuilder stops = new StringBuilder("[");
                 for (int index = 1; index < flightList.size(); index++) {
                     stops.append("\"" + flightList.get(i).getDepartCode() + "\",");
+                    Date depDate = flightList.get(index).getDepartDate();
+                    Date arrDate = flightList.get(index - 1).getArriveDate();
+                    long longLayoverDuration = (depDate.getTime() - arrDate.getTime());
+                    String layoverDuration = String.format("%02d:%02d",
+                            TimeUnit.MILLISECONDS.toHours(longLayoverDuration),
+                            TimeUnit.MILLISECONDS.toMinutes(longLayoverDuration) -
+                                    TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(longLayoverDuration))
+                    );
+                    flightList.get(index).setLayover(layoverDuration);
                 }
                 stops.deleteCharAt(stops.length() - 1);
                 stops.append("]");
                 trip.setStops(stops.toString());
+
             } else {
                 trip.setStops("[]");
+                trip.getFlights().get(0).setLayover("00:00");
             }
             StringBuilder carriers = new StringBuilder("[");
             StringBuilder flightLegs = new StringBuilder("[");
             StringBuilder flightNumbers = new StringBuilder("[");
+            StringBuilder cabins = new StringBuilder("[");
+            StringBuilder layovers = new StringBuilder("[");
             for (Flight flight : flightList) {
                 carriers.append("\"" + flight.getCarrierCode() + "\",");
                 flightLegs.append("\"" + flight.getFlightDuration() + "\",");
                 flightNumbers.append("\"" + flight.getFlightNumber() + "\",");
+                cabins.append("\"" + flight.getCabin() + "\",");
+                if (!flight.getLayover().equals("00:00")) {
+                    layovers.append("\"" + flight.getLayover() + "\",");
+                }
             }
             carriers.deleteCharAt(carriers.length() - 1);
             carriers.append("]");
@@ -412,10 +436,17 @@ public class KEParser implements Parser {
             flightLegs.append("]");
             flightNumbers.deleteCharAt(flightNumbers.length() - 1);
             flightNumbers.append("]");
+            cabins.deleteCharAt(cabins.length() - 1);
+            cabins.append("]");
+            if (layovers.length() > 1)
+                layovers.deleteCharAt(layovers.length() - 1);
+            layovers.append("]");
             trip.setCarriers(carriers.toString());
             trip.setFlightLegs(flightLegs.toString());
             trip.setFlightNumbers(flightNumbers.toString());
-            //without layover
+            trip.setCabins(cabin.toString());
+            trip.setLayovers(layovers.toString());
+
 
             resultList.add(trip);
         }
