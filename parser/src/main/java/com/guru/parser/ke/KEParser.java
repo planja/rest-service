@@ -339,6 +339,17 @@ public class KEParser implements Parser {
                 award.setFirst(info);
             }
 */
+            switch (cabin) {
+                case "ECONOMY":
+                    cabin = "E";
+                    break;
+                case "PRESTIGE":
+                    cabin = "B";
+                    break;
+                case "FIRST":
+                    cabin = "F";
+                    break;
+            }
 
             List<Flight> flightList = trip.getFlights();
             JSONArray flights = jsonAward.getJSONArray("flights");
@@ -365,6 +376,7 @@ public class KEParser implements Parser {
                 //   flight.setDepartAirport(departInfo[1]);
                 flight.setDepartPlace(departInfo[0]);
                 flight.setArriveCode(arriveCode);
+                flight.setArriveCode(arriveCode);
                 flight.setDepartCode(departCode);
                 //   flight.setDepartCity(departInfo[0]);
                 flight.setFlightNumber((String) jsonFlight.get("flightNumber"));
@@ -388,12 +400,13 @@ public class KEParser implements Parser {
 
             }
             trip.setFlights(flightList);
-           // trip.setRequestId((long) requestId);
+            // trip.setRequestId((long) requestId);
             trip.setDepartCode(flightList.get(0).getDepartCode());
             trip.setArriveCode(flightList.get(flightList.size() - 1).getArriveCode());
             trip.setDepartPlace(flightList.get(0).getDepartPlace());
             trip.setArrivePlace(flightList.get(flightList.size() - 1).getArrivePlace());
             trip.setTripDate(flightList.get(0).getDepartDate());
+            trip.setQueryId((long) requestId);
             if (flightList.size() > 1) {
                 StringBuilder stops = new StringBuilder("[");
                 for (int index = 1; index < flightList.size(); index++) {
@@ -416,6 +429,8 @@ public class KEParser implements Parser {
                 trip.setStops("[]");
                 trip.getFlights().get(0).setLayover("00:00");
             }
+
+
             StringBuilder carriers = new StringBuilder("[");
             StringBuilder flightLegs = new StringBuilder("[");
             StringBuilder flightNumbers = new StringBuilder("[");
@@ -444,7 +459,7 @@ public class KEParser implements Parser {
             trip.setCarriers(carriers.toString());
             trip.setFlightLegs(flightLegs.toString());
             trip.setFlightNumbers(flightNumbers.toString());
-            trip.setCabins(cabin.toString());
+            trip.setCabins(cabins.toString());
             trip.setLayovers(layovers.toString());
 
 
