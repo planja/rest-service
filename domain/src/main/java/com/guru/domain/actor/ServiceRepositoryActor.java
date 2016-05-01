@@ -12,28 +12,24 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import java.util.List;
 
-/*@Service("serviceRepositoryActor")
-@Scope("prototype")*/
 public class ServiceRepositoryActor extends UntypedActor {
 
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
     @Inject
     private TripRepository tripRepository;
-    @Inject
-    private QueryRepository queryRepository;
 
     @Override
     public void onReceive(Object message) throws Exception {
-        if (message instanceof List<?>) {
-            List<Trip> trips = (List<Trip>) message;
-            for (Trip trip : trips) {
-                int size = trip.getFlights().size();
-                log.info(trip.getFlightNumbers() + " flights in this trip: " + trip.getFlights().get(0));
+        try {
+            if (message instanceof List<?>) {
+                List<Trip> trips = (List<Trip>) message;
+                tripRepository.save(trips);
+            } else {
+                unhandled(message);
             }
-            tripRepository.save(trips);
-        } else {
-            unhandled(message);
+        } catch (Exception e) {
+            log.error(e, "Cannot insert parse data to the database");
         }
     }
 
