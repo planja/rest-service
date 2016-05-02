@@ -20,7 +20,8 @@ public class ServiceRepositoryActor extends UntypedActor {
 
     @Inject
     private TripRepository tripRepository;
-
+    @Inject
+    private QueryRepository queryRepository;
 
     @Override
     public void onReceive(Object message) throws Exception {
