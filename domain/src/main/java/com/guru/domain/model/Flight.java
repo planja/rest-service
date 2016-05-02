@@ -88,6 +88,11 @@ public class Flight implements scala.Serializable {
     @Transient
     private String url;
 
+    @Transient
+    private Date fullStartDate;
+    @Transient
+    private Date fullEndDate;
+
     public Flight() {
     }
 
@@ -289,6 +294,22 @@ public class Flight implements scala.Serializable {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public Date getFullStartDate() {
+        return fullStartDate;
+    }
+
+    public void setFullStartDate(Date fullStartDate) {
+        this.fullStartDate = fullStartDate;
+    }
+
+    public Date getFullEndDate() {
+        return fullEndDate;
+    }
+
+    public void setFullEndDate(Date fullEndDate) {
+        this.fullEndDate = fullEndDate;
     }
 
     @Override

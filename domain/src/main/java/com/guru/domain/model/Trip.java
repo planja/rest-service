@@ -77,6 +77,9 @@ public class Trip implements scala.Serializable{
     @Transient
     private int direction;
 
+    @Transient
+    private List<ClasInfo> clasInfo = new ArrayList<>();
+
     public Trip() {
     }
 
@@ -242,6 +245,14 @@ public class Trip implements scala.Serializable{
 
     public void setDirection(int direction) {
         this.direction = direction;
+    }
+
+    public List<ClasInfo> getClasInfo() {
+        return clasInfo;
+    }
+
+    public void setClasInfo(List<ClasInfo> clasInfo) {
+        this.clasInfo = clasInfo;
     }
 
     @Override

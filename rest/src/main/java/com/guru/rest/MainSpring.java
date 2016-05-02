@@ -18,6 +18,7 @@ public class MainSpring {
     public static final int PORT = Integer.parseInt(bundle.getString("port"));
 
     public static void main(String[] args) throws IOException, ParseException, InterruptedException {
+
         startupServer();
     }
 

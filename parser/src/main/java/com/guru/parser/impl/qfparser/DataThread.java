@@ -13,17 +13,16 @@ import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.Locale;
+import java.util.*;
 import java.util.concurrent.Callable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by Никита on 28.04.2016.
  */
- class DataThread implements Callable<Trip> {
+class DataThread implements Callable<Trip> {
     private Trip trip;
     private DefaultHttpClient httpclient;
     private int counter = 0;
@@ -77,27 +76,41 @@ import java.util.concurrent.Callable;
 
             String code = jObject.getString("flightCode");
 
-            Date var27 = format.parse(departureDate + " " + departureTime);
-            Date arrDate = format.parse(arrivalDate + " " + arrivalTime);
-           // FInfo info = InfoParser.getFlightInfo(code, var27, arrDate);
+            SimpleDateFormat var28 = new SimpleDateFormat("EEE dd MMM yy HH:mm", Locale.US);
+            Date var27 = var28.parse(departureDate + " " + departureTime);
+            Date arrDate = var28.parse(arrivalDate + " " + arrivalTime);
+            Info info = ParserUtils.getInfo(code, var27, arrDate);
+            flight.setFullStartDate(var27);
+            flight.setFullEndDate(arrDate);
+
+            Pattern pat = Pattern.compile("[-]?[0-9]+(.[0-9]+)?");
+            Matcher matcher = pat.matcher(totalDuration);
+            List<Integer> integerList = new ArrayList<>();
+            while (matcher.find()) {
+
+                integerList.add(Integer.valueOf(matcher.group()));
+            }
+            ;
+            int mins = integerList.get(0) * 60 + integerList.get(1);
+            totalDuration = ParserUtils.convertMinutes(mins);
 
 
             flight.setPosition(this.counter);
             flight.setParser("QF");
-            flight.setCarrierName(company);
-            flight.setCarrierCode(company);
+            flight.setCarrierName(flightNumber.substring(0,2));
+            flight.setCarrierCode(flightNumber.substring(0,2));
             flight.setFlightDuration(totalDuration);
             flight.setCabin(tripType);
             flight.setDepartDate(format.parse(departureDate));
             flight.setDepartPlace(departureLocation);
             flight.setDepartTime(departureTime);
-            flight.setDepartCode("123");
+            flight.setDepartCode(info.getDepart());
             flight.setArriveDate(format.parse(arrivalDate));
             flight.setArrivePlace(arrivalLocation);
             flight.setArriveTime(arrivalTime);
-            flight.setArriveCode("123");
+            flight.setArriveCode(info.getArrive());
             flight.setFlightNumber(flightNumber);
-            flight.setLayover("layover");
+            flight.setLayover("[]");
             flight.setAircraft(airCraft);
             flight.setUpdatedAt(new Date());
             flight.setCreatedAt(new Date());
