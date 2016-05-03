@@ -1,5 +1,6 @@
 package com.guru.parser.impl.qfparser;
 
+import com.guru.domain.model.ClasInfo;
 import com.guru.domain.model.Flight;
 import com.guru.domain.model.Trip;
 import com.guru.parser.utils.ParserUtils;
@@ -12,7 +13,9 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import parser.utils.Utils;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.Callable;
@@ -32,7 +35,7 @@ class DataThread implements Callable<Trip> {
         this.httpclient = httpclient;
     }
 
-    public Trip call() throws Exception {
+    public Trip call() throws IOException,Exception {
         SimpleDateFormat format = new SimpleDateFormat("EEE dd MMM yy", Locale.US);
         DefaultHttpClient httpclient = new DefaultHttpClient();
         httpclient.getParams().setParameter("http.protocol.cookie-policy", "compatibility");
@@ -90,7 +93,7 @@ class DataThread implements Callable<Trip> {
 
                 integerList.add(Integer.valueOf(matcher.group()));
             }
-            ;
+
             int mins = integerList.get(0) * 60 + integerList.get(1);
             totalDuration = ParserUtils.convertMinutes(mins);
 
@@ -117,6 +120,59 @@ class DataThread implements Callable<Trip> {
 
             this.counter++;
         }
+       // this.trip.getFlights().s
+        //this.getMiles(this.award.getSaverEconomy() == null?null:this.award.getSaverEconomy().getUrl(), this.award.getSaverEconomy());
+        //this.getMiles(this.award.getSaverBusiness() == null?null:this.award.getSaverBusiness().getUrl(), this.award.getSaverBusiness());
+        //this.getMiles(this.award.getSaverFirst() == null?null:this.award.getSaverFirst().getUrl(), this.award.getSaverFirst());
+        //this.getMiles(this.award.getSaverPremium() == null?null:this.award.getSaverPremium().getUrl(), this.award.getSaverPremium());
+
+        List<ClasInfo> clasInfos = new ArrayList<>();
+        for(ClasInfo info:trip.getClasInfo()){
+            clasInfos.add(getMiles(info.getUrl(),info));
+        }
+        trip.setClasInfo(clasInfos);
+
         return this.trip;
     }
+
+    private ClasInfo getMiles(String urlMiles, ClasInfo info) throws IOException {
+        DefaultHttpClient httpclient = new DefaultHttpClient();
+        httpclient.getParams().setParameter("http.protocol.cookie-policy", "compatibility");
+        httpclient.setCookieStore(new BasicCookieStore());
+        httpclient.setRedirectStrategy(new LaxRedirectStrategy());
+        httpclient.getParams().setParameter("http.useragent", "Mozilla/5.0 (Windows NT 6.2; WOW64; rv:32.0) Gecko/20100101 Firefox/32.0");
+        Iterator httGet = this.httpclient.getCookieStore().getCookies().iterator();
+
+        Cookie response;
+        while(httGet.hasNext()) {
+            response = (Cookie)httGet.next();
+            httpclient.getCookieStore().addCookie(response);
+        }
+
+        if(urlMiles != null) {
+            HttpGet httGet1 = new HttpGet(urlMiles);
+            httGet1.addHeader("Referer", "https://book.qantas.com.au/pl/QFAward/wds/OverrideServlet");
+            httGet1.addHeader("Accept", "*/*");
+            httGet1.addHeader("Accept-Encoding", "gzip, deflate");
+            response = null;
+            HttpEntity entity = null;
+            CloseableHttpResponse response1 = httpclient.execute(httGet1);
+            entity = response1.getEntity();
+            String milesJson = ParserUtils.gzipResponseToString(entity.getContent());
+            if(milesJson.contains("error")) {
+                info.setMileage("");
+            }
+
+            int fIndex = milesJson.indexOf("\"costTaxExclusiveWithDiscount\":\"") + "\"costTaxExclusiveWithDiscount\":\"".length();
+            int sIndex = milesJson.indexOf("\",", fIndex);
+            if(fIndex >= 0 && sIndex >= 0 && sIndex > fIndex) {
+                String miles = milesJson.substring(fIndex, sIndex);
+                info.setMileage(miles);
+            } else {
+                info.setMileage("");
+            }
+        }
+        return info;
+    }
+
 }

@@ -11,7 +11,9 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -21,6 +23,7 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.Callable;
 
@@ -144,18 +147,41 @@ class ParserThread implements Callable<List<Trip>> {
                     result1 = IOUtils.toString(entity.getContent());
                 }
             }
+            SimpleDateFormat dt_format_or = new SimpleDateFormat("EEE dd MMM yy HH:mm", Locale.US);
 
-            Element table = resultDoc1.getElementById("idAvailabilty0");
-            this.getAwards(table, flights, 0);
-            Element table1 = resultDoc1.getElementById("idAvailabilty1");
-            this.getAwards(table1, flights, 1);
+
+            int firstIndex1 = result1.indexOf("new RFCOForm(") + "new RFCOForm(".length();
+            int secondIndex1 = result1.indexOf(");", firstIndex1);
+            json = result1.substring(firstIndex1, secondIndex1);
+             try{
+                 JSONObject flightDataJson1 = (new JSONObject(json)).getJSONObject("availability");
+                 String urlConnector1 = flightDataJson1.getString("urlConnector");
+                 JSONObject itenJson = flightDataJson1.getJSONArray("bounds").getJSONObject(0).getJSONObject("listItineraries").getJSONObject("itinerariesAsMap");
+                 JSONObject flightJson = flightDataJson1.getJSONArray("bounds").getJSONObject(0).getJSONObject("flights");
+                 JSONObject locationJson = flightDataJson1.getJSONArray("bounds").getJSONObject(0).getJSONObject("listItineraries").getJSONObject("locations");
+                 Element table = resultDoc1.getElementById("idAvailabilty0");
+                 this.getAwards(table, dt_format_or, itenJson, locationJson, flightJson, urlConnector1, flights, 0);
+             }catch (JSONException j){
+                 return true;
+             }
+             /* try{
+                JSONObject itenJson1 = flightDataJson1.getJSONArray("bounds").getJSONObject(1).getJSONObject("listItineraries").getJSONObject("itinerariesAsMap");
+                JSONObject flightJson1 = flightDataJson1.getJSONArray("bounds").getJSONObject(1).getJSONObject("flights");
+                JSONObject locationJson1 = flightDataJson1.getJSONArray("bounds").getJSONObject(1).getJSONObject("listItineraries").getJSONObject("locations");
+                Element table1 = resultDoc1.getElementById("idAvailabilty1");
+                this.getAwards(table1, dt_format_or, itenJson1, locationJson1, flightJson1, urlConnector1, flights, 1);
+            }catch (JSONException j){
+                return true;
+            }*/
+
+
         }
 
 
         return true;
     }
 
-    private void getAwards(Element table, List<Trip> flights, int direction) throws ParseException, IllegalStateException, JSONException, IOException, InterruptedException {
+    private void getAwards(Element table, SimpleDateFormat dt_format_or, JSONObject itenJson, JSONObject locationJson, JSONObject flightJson, String urlConnector, List<Trip> flights, int direction) throws ParseException, IllegalStateException, JSONException, IOException, InterruptedException {
         int awardIndex = 0;
         boolean newTrip;
         if(table==null){
@@ -167,6 +193,16 @@ class ParserThread implements Callable<List<Trip>> {
             Element tbody = (Element) var13.next();
             Trip trip = new Trip();
             newTrip = true;
+            String stringIndex = tbody.attr("id").split("_")[2];
+            int fligtIndex = 0;
+
+            try {
+                if(stringIndex != null) {
+                    fligtIndex = Integer.parseInt(stringIndex);
+                }
+            } catch (NumberFormatException var26) {
+                var26.printStackTrace();
+            }
             Iterator ex = tbody.select(" > tr").iterator();
 
             while (ex.hasNext()) {
@@ -189,17 +225,28 @@ class ParserThread implements Callable<List<Trip>> {
                     if(thList.size() > 3 && tdList.size() > 0) {
                         if(thList.get(3).attr("id").contains("PECO")) {
                             fInfo = this.getInfo(tdList, 0,"SaverPremium","P");
-
+                            if(!fInfo.na) {
+                                fInfo.setUrl(this.getMileLink(itenJson, locationJson, flightJson, urlConnector, fligtIndex, "PECO", this.httpclient));
+                            }
                             trip.getClasInfo().add(fInfo);
                         } else if(thList.get(3).attr("id").contains("ECO")) {
                             fInfo = this.getInfo(tdList, 0,"SaverEconomy","E");
+                            if(!fInfo.na) {
+                                fInfo.setUrl(this.getMileLink(itenJson, locationJson, flightJson, urlConnector, fligtIndex, "ECO", this.httpclient));
+                            }
                             trip.getClasInfo().add(fInfo);
                         } else if(thList.get(3).attr("id").contains("BUS")) {
                             fInfo = this.getInfo(tdList, 0,"SaverBusiness","B");
+                            if(!fInfo.na) {
+                                fInfo.setUrl(this.getMileLink(itenJson, locationJson, flightJson, urlConnector, fligtIndex, "BUS", this.httpclient));
+                            }
                             trip.getClasInfo().add(fInfo);
 
                         } else if(thList.get(3).attr("id").contains("FIR")) {
                             fInfo = this.getInfo(tdList, 0,"SaverFirst","F");
+                            if(!fInfo.na) {
+                                fInfo.setUrl(this.getMileLink(itenJson, locationJson, flightJson, urlConnector, fligtIndex, "FIR", this.httpclient));
+                            }
                             trip.getClasInfo().add(fInfo);
 
                         }
@@ -208,18 +255,30 @@ class ParserThread implements Callable<List<Trip>> {
                     if(thList.size() > 4 && tdList.size() > 1) {
                         if(thList.get(4).attr("id").contains("PECO")) {
                             fInfo = this.getInfo(tdList, 1,"SaverPremium","P");
+                            if(!fInfo.na) {
+                                fInfo.setUrl(this.getMileLink(itenJson, locationJson, flightJson, urlConnector, fligtIndex, "PECO", this.httpclient));
+                            }
                             trip.getClasInfo().add(fInfo);
 
                         } else if(thList.get(4).attr("id").contains("ECO")) {
                             fInfo = this.getInfo(tdList, 1,"SaverEconomy","E");
+                            if(!fInfo.na) {
+                                fInfo.setUrl(this.getMileLink(itenJson, locationJson, flightJson, urlConnector, fligtIndex, "ECO", this.httpclient));
+                            }
                             trip.getClasInfo().add(fInfo);
 
                         } else if(thList.get(4).attr("id").contains("BUS")) {
                             fInfo = this.getInfo(tdList, 1,"SaverBusiness","B");
+                            if(!fInfo.na) {
+                                fInfo.setUrl(this.getMileLink(itenJson, locationJson, flightJson, urlConnector, fligtIndex, "BUS", this.httpclient));
+                            }
                             trip.getClasInfo().add(fInfo);
 
                         } else if(thList.get(4).attr("id").contains("FIR")) {
                             fInfo = this.getInfo(tdList, 1,"SaverFirs","F");
+                            if(!fInfo.na) {
+                                fInfo.setUrl(this.getMileLink(itenJson, locationJson, flightJson, urlConnector, fligtIndex, "FIR", this.httpclient));
+                            }
                             trip.getClasInfo().add(fInfo);
 
                         }
@@ -228,18 +287,30 @@ class ParserThread implements Callable<List<Trip>> {
                     if(thList.size() > 5 && tdList.size() > 2) {
                         if(thList.get(5).attr("id").contains("PECO")) {
                             fInfo = this.getInfo(tdList, 2,"SaverPremium","P");
+                            if(!fInfo.na) {
+                                fInfo.setUrl(this.getMileLink(itenJson, locationJson, flightJson, urlConnector, fligtIndex, "PECO", this.httpclient));
+                            }
                             trip.getClasInfo().add(fInfo);
 
                         } else if(thList.get(5).attr("id").contains("ECO")) {
                             fInfo = this.getInfo(tdList, 2,"SaverEconomy","E");
+                            if(!fInfo.na) {
+                                fInfo.setUrl(this.getMileLink(itenJson, locationJson, flightJson, urlConnector, fligtIndex, "ECO", this.httpclient));
+                            }
                             trip.getClasInfo().add(fInfo);
 
                         } else if(thList.get(5).attr("id").contains("BUS")) {
                             fInfo = this.getInfo(tdList, 2,"SaverBusiness","B");
+                            if(!fInfo.na) {
+                                fInfo.setUrl(this.getMileLink(itenJson, locationJson, flightJson, urlConnector, fligtIndex, "BUS", this.httpclient));
+                            }
                             trip.getClasInfo().add(fInfo);
 
                         } else if(thList.get(5).attr("id").contains("FIR")) {
                             fInfo = this.getInfo(tdList, 2,"SaverFirst","F");
+                            if(!fInfo.na) {
+                                fInfo.setUrl(this.getMileLink(itenJson, locationJson, flightJson, urlConnector, fligtIndex, "FIR", this.httpclient));
+                            }
                             trip.getClasInfo().add(fInfo);
 
                         }
@@ -248,18 +319,30 @@ class ParserThread implements Callable<List<Trip>> {
                     if(thList.size() > 6 && tdList.size() > 3) {
                         if(thList.get(6).attr("id").contains("PECO")) {
                             fInfo = this.getInfo(tdList, 3,"SaverPremium","P");
+                            if(!fInfo.na) {
+                                fInfo.setUrl(this.getMileLink(itenJson, locationJson, flightJson, urlConnector, fligtIndex, "PECO", this.httpclient));
+                            }
                             trip.getClasInfo().add(fInfo);
 
                         } else if(thList.get(6).attr("id").contains("ECO")) {
                             fInfo = this.getInfo(tdList, 3,"SaverEconomy","E");
+                            if(!fInfo.na) {
+                                fInfo.setUrl(this.getMileLink(itenJson, locationJson, flightJson, urlConnector, fligtIndex, "ECO", this.httpclient));
+                            }
                             trip.getClasInfo().add(fInfo);
 
                         } else if(thList.get(6).attr("id").contains("BUS")) {
                             fInfo = this.getInfo(tdList, 3,"SaverBusiness","B");
+                            if(!fInfo.na) {
+                                fInfo.setUrl(this.getMileLink(itenJson, locationJson, flightJson, urlConnector, fligtIndex, "BUS", this.httpclient));
+                            }
                             trip.getClasInfo().add(fInfo);
 
                         } else if(thList.get(6).attr("id").contains("FIR")) {
                             fInfo = this.getInfo(tdList, 3,"SaverFirst","F");
+                            if(!fInfo.na) {
+                                fInfo.setUrl(this.getMileLink(itenJson, locationJson, flightJson, urlConnector, fligtIndex, "FIR", this.httpclient));
+                            }
                             trip.getClasInfo().add(fInfo);
 
                         }
@@ -275,6 +358,73 @@ class ParserThread implements Callable<List<Trip>> {
         }
 
     }
+
+    private String getMileLink(JSONObject itenJson, JSONObject locationJson, JSONObject flightJson, String urlConnector, int awardIndex, String cabin, DefaultHttpClient httpclient) throws IOException, InterruptedException {
+        SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyyHHmm");
+        JSONArray segmentArray = itenJson.getJSONObject(awardIndex + "").getJSONArray("segments");
+        String SECTORS = "";
+        String SEGMENT_ID = "";
+        String FLIGHT_NUMBERS = "";
+        String AIRLINE_CODES = "";
+        String OPERATING_CODES = "*,*";
+        String NB_STOPS = "";
+        String DATES = "";
+        String CLASSES = "";
+        String REQUEST_ID = "10" + awardIndex;
+        boolean sLast = false;
+
+        String urlMiles;
+        for(int rdbsArray = 0; rdbsArray < segmentArray.length(); ++rdbsArray) {
+            if(rdbsArray == segmentArray.length() - 1) {
+                sLast = true;
+            }
+
+            if(sLast) {
+                OPERATING_CODES = OPERATING_CODES + "*";
+                SEGMENT_ID = SEGMENT_ID + rdbsArray + "";
+            } else {
+                OPERATING_CODES = OPERATING_CODES + "*,";
+                SEGMENT_ID = SEGMENT_ID + rdbsArray + ",";
+            }
+
+            Long rdbs = Long.valueOf(segmentArray.getJSONObject(rdbsArray).getLong("beginDate"));
+            Long rdbsLast = Long.valueOf(segmentArray.getJSONObject(rdbsArray).getLong("endDate"));
+            urlMiles = segmentArray.getJSONObject(rdbsArray).getString("flightNumber");
+            Integer nbrOfStops = Integer.valueOf(segmentArray.getJSONObject(rdbsArray).getInt("nbrOfStops"));
+            String cachedAirlineCode = segmentArray.getJSONObject(rdbsArray).getString("cachedAirlineCode");
+            String beginLocationCode = segmentArray.getJSONObject(rdbsArray).getString("beginLocationCode");
+            String endLocationCode = segmentArray.getJSONObject(rdbsArray).getString("endLocationCode");
+            String bLocation = locationJson.getJSONObject(beginLocationCode).getString("locationCode");
+            String eLocation = locationJson.getJSONObject(endLocationCode).getString("locationCode");
+            Date d1 = new Date(rdbs.longValue());
+            Date d2 = new Date(rdbsLast.longValue());
+            String bDate = sdf.format(d1);
+            String eDate = sdf.format(d2);
+            SECTORS = SECTORS + bLocation + "/" + eLocation + (!sLast?",":"");
+            FLIGHT_NUMBERS = FLIGHT_NUMBERS + urlMiles + (!sLast?",":"");
+            AIRLINE_CODES = AIRLINE_CODES + cachedAirlineCode + (!sLast?",":"");
+            NB_STOPS = NB_STOPS + nbrOfStops + (!sLast?",":"");
+            DATES = DATES + bDate + "/" + eDate + (!sLast?",":"");
+        }
+
+        JSONArray var34 = flightJson.getJSONObject(awardIndex + "").getJSONObject("listRecommendation").getJSONObject(cabin + "A").getJSONArray("rbds");
+        String var35 = "";
+        boolean var36 = false;
+
+        for(int var37 = 0; var37 < var34.length(); ++var37) {
+            if(var37 == var34.length() - 1) {
+                var36 = true;
+            }
+
+            var35 = var35 + var34.getString(var37) + (!var36?",":"");
+        }
+
+        urlMiles = urlConnector + "&SECTORS=" + SECTORS + "&SEGMENT_ID=" + SEGMENT_ID + "&FLIGHT_NUMBERS=" + FLIGHT_NUMBERS + "&AIRLINE_CODES=" + AIRLINE_CODES + "&OPERATING_CODES=" + OPERATING_CODES + "&NB_STOPS=" + NB_STOPS + "&DATES=" + DATES + "&CLASSES=" + var35 + "&REQUEST_ID=" + REQUEST_ID;
+        return urlMiles;
+    }
+
+
+
 
     private ClasInfo getInfo(Elements tdList, int index,String name,String reduction) {
         ClasInfo info = new ClasInfo();

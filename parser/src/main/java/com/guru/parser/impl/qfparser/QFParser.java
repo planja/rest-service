@@ -17,6 +17,7 @@ import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.apache.http.message.BasicNameValuePair;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import parser.utils.ComplexAward;
 
 
 import java.io.IOException;
@@ -35,7 +36,34 @@ public class QFParser implements Parser {
 
     @Override
     public Collection<Trip> parse(RequestData requestData) throws Exception {
-        return getQantas(requestData);
+        Date start, end;
+        List<Trip> result = new ArrayList<>();
+        parser.qf.QFParser qfParser = new parser.qf.QFParser();
+       /* DefaultHttpClient httpclient = this.login("1924112640", "Kin", "4152");
+        ComplexAward complexAward = qfParser.getQantas(httpclient, requestData.getOw_start_date(),
+                requestData.getOw_end_date(), requestData.getOrigin(),
+                requestData.getDestination(), requestData.getSeats());*/
+        if (Objects.equals(requestData.getType(), "ow")) {
+           // start = requestData.getRt_start_date();
+           // end = requestData.getRt_end_date();
+            List<Trip>trips = getQantas(requestData);
+            return trips;
+        } else {
+            start = requestData.getRt_start_date();
+            end = requestData.getRt_end_date();
+            List<Trip> ow = getQantas(requestData);
+            requestData.setOw_start_date(requestData.getRt_start_date());
+            requestData.setOw_end_date(requestData.getRt_end_date());
+            String destination = requestData.getDestination();
+            String origin = requestData.getOrigin();
+            requestData.setOrigin(destination);
+            requestData.setDestination(origin);
+            List<Trip> rt = getQantas(requestData);
+            result.addAll(ow);
+            result.addAll(rt);
+        }
+        return result;
+       // return getQantas(requestData);
     }
 
     private DefaultHttpClient login(String user, String surname, String password) throws IOException, InterruptedException, ExecutionException {
@@ -59,24 +87,24 @@ public class QFParser implements Parser {
 
     private List<Trip> getQantas(RequestData requestData) throws Exception, IOException, InterruptedException, ExecutionException, ParseException {
         DefaultHttpClient httpclient = this.login("1924112640", "Kin", "4152");
-        Date start, end;
+        /*Date start, end;
         if (Objects.equals(requestData.getType(), "ow")) {
             start = requestData.getOw_start_date();
             end = requestData.getOw_end_date();
         } else {
             start = requestData.getRt_start_date();
             end = requestData.getRt_end_date();
-        }
-        System.out.println(start);
-        System.out.println(end);
+        }*/
+        System.out.println(requestData.getOw_start_date());
+        System.out.println(requestData.getOw_end_date());
         System.out.println(requestData.getOrigin());
         System.out.println(requestData.getDestination());
         System.out.println(requestData.getSeats());
 
         SimpleDateFormat sdf1 = new SimpleDateFormat("yyyyMMdd");
         List<Trip> awardList = new ArrayList<>
-                ((new ParserThread(httpclient, sdf1.format(start),
-                        sdf1.format(end), requestData.getOrigin(),
+                ((new ParserThread(httpclient, sdf1.format(requestData.getOw_start_date()),
+                        sdf1.format(requestData.getOw_end_date()), requestData.getOrigin(),
                         requestData.getDestination(), requestData.getSeats(), this)).call());
         ExecutorService executor = Executors.newCachedThreadPool();
         LinkedList resultList = new LinkedList();
@@ -119,9 +147,9 @@ public class QFParser implements Parser {
             ow.forEach(o -> o.setQueryId((long) requestData.getRequest_id()));
         }
 
-       /*parser.qf.QFParser qfParser = new parser.qf.QFParser();
-        ComplexAward complexAward = qfParser.getQantas(httpclient, start,
-                end, requestData.getOrigin(),
+     /* parser.qf.QFParser qfParser = new parser.qf.QFParser();
+        ComplexAward complexAward = qfParser.getQantas(httpclient, requestData.getOw_start_date(),
+                requestData.getOw_end_date(), requestData.getOrigin(),
                 requestData.getDestination(), requestData.getSeats());*/
 
 
@@ -135,15 +163,24 @@ public class QFParser implements Parser {
 
     }
 
+    private List<Flight> getFlightDur(List<Flight> flights){
+        for(Flight flight:flights){
+            long time = getDateDiff(flight.getFullStartDate(), flight.getFullEndDate(), TimeUnit.MINUTES);
+            flight.setFlightDuration(ParserUtils.convertMinutes((int)time));
+        }
+        return flights;
+    }
+
 
     private List<Trip> getTrips(List<Trip> trips, List<String> classes) {
         trips.stream().forEach(o -> {
+            o.setFlights(getFlightDur(o.getFlights()));
             //  o.setQueryId((long) (new Random().nextDouble() * 123L));
             o.setArriveCode(o.getFlights().get(o.getFlights().size() - 1).getArriveCode());
             o.setDepartCode(o.getFlights().get(0).getDepartCode());
 
-            o.setArrivePlace(o.getFlights().get(0).getArrivePlace());
-            o.setDepartPlace(o.getFlights().get(o.getFlights().size() - 1).getArrivePlace());
+            o.setArrivePlace(o.getFlights().get(o.getFlights().size() - 1).getArrivePlace());
+            o.setDepartPlace(o.getFlights().get(0).getDepartPlace());
 
             o.setTripDate(o.getFlights().get(0).getDepartDate());
             o.setStops(getStops(o.getFlights()));
@@ -170,12 +207,9 @@ public class QFParser implements Parser {
     }
 
     private String getTripDuration(Trip trip) {
-        if (trip.getTripDuration() != null) return trip.getTripDuration();
-        else {
             long time = getDateDiff(trip.getFlights().get(0).getFullStartDate(),
                     trip.getFlights().get(trip.getFlights().size() - 1).getFullEndDate(), TimeUnit.MINUTES);
             return ParserUtils.convertMinutes((int) time);
-        }
     }
 
     private List<Trip> setCabin(List<Trip> list, List<String> classes) {
