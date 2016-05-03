@@ -1,5 +1,6 @@
 package com.guru.vo.temp;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -8,6 +9,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.json.JSONObject;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Created by Anton on 29.04.2016.
@@ -28,7 +30,7 @@ public class AccountUtils {
         HttpEntity entity = null;
         hResponse = httpclient.execute(httpGet);
         entity = hResponse.getEntity();
-        String callback = Utils.responseToString(entity.getContent());
+        String callback = responseToString(entity.getContent());
         if(callback.equals("[]")) {
             return account;
         } else {
@@ -56,6 +58,10 @@ public class AccountUtils {
         HttpEntity entity = null;
         hResponse = httpclient.execute(httpGet);
         entity = hResponse.getEntity();
-        String callback = Utils.responseToString(entity.getContent());
+        String callback = responseToString(entity.getContent());
+    }
+
+    private static String responseToString(InputStream inputStream) throws IOException {
+        return IOUtils.toString(inputStream);
     }
 }
