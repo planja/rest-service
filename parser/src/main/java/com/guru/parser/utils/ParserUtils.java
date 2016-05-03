@@ -1,6 +1,5 @@
 package com.guru.parser.utils;
 
-import com.guru.parser.impl.qfparser.Info;
 import com.guru.parser.impl.qfparser.QFParser;
 
 import org.apache.commons.io.IOUtils;
@@ -36,7 +35,7 @@ public class ParserUtils {
     public static String getTotalTime(String totalTime, Object parser) throws ParseException {
         System.out.println(totalTime);
         String regexp = "";
-        if (parser instanceof QFParser)
+         if(parser instanceof QFParser)
             regexp = "((\\d*)h\\s)?(\\d*)m";
 
 
@@ -337,6 +336,11 @@ public class ParserUtils {
 
         return buffer.toString();
     }
+
+    public static String responseToString(InputStream inputStream) throws IOException {
+        return IOUtils.toString(inputStream);
+    }
+
 
 
 }

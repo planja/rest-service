@@ -3,9 +3,9 @@ package com.guru.parser.ke;
 import com.guru.domain.model.Flight;
 import com.guru.domain.model.Trip;
 import com.guru.parser.interf.Parser;
+import com.guru.parser.utils.ParserUtils;
 import com.guru.vo.temp.Account;
 import com.guru.vo.temp.AccountUtils;
-import com.guru.vo.temp.Utils;
 import com.guru.vo.transfer.RequestData;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -31,7 +31,7 @@ import org.jsoup.nodes.Document;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * Created by Anton on 27.04.2016.
@@ -205,7 +205,7 @@ public class KEParser implements Parser {
         PLACES.put("AUH", "Abu Dhabi, Abu Dhabi International Airport");
     }
 
-    public DefaultHttpClient login() throws Exception {
+    public static DefaultHttpClient login() throws Exception {
         DefaultHttpClient httpclient = new DefaultHttpClient();
         httpclient.getParams().setParameter(ClientPNames.COOKIE_POLICY, CookiePolicy.BROWSER_COMPATIBILITY);
         httpclient.setCookieStore(new BasicCookieStore());
@@ -216,11 +216,11 @@ public class KEParser implements Parser {
         HttpGet httpGet = new HttpGet("https://www.koreanair.com/global/en.html");
         response = httpclient.execute(httpGet);
         entity = response.getEntity();
-        String html = Utils.responseToString(entity.getContent());
+        String html = ParserUtils.responseToString(entity.getContent());
         httpGet = new HttpGet("https://www.koreanair.com/content/koreanair-admin/cross-region/en/login-config/jcr:content/par/login_0.html");
         response = httpclient.execute(httpGet);
         entity = response.getEntity();
-        html = Utils.responseToString(entity.getContent());
+        html = ParserUtils.responseToString(entity.getContent());
         HttpPost httpPost = new HttpPost("https://www.koreanair.com/api/skypass");
         httpPost.setEntity(new StringEntity("{\"password\":\"" + account.getPassword() + "\",\"username\":\"" + account.getLogin() + "\"}",
                 ContentType.create("application/json")));
@@ -229,7 +229,7 @@ public class KEParser implements Parser {
             return null;
         }
         entity = response.getEntity();
-        html = Utils.responseToString(entity.getContent());
+        html = ParserUtils.responseToString(entity.getContent());
         Document loadingDoc = Jsoup.parse(html);
         if (loadingDoc.title().equals("Service Unavailable")) {
             login();
@@ -237,7 +237,7 @@ public class KEParser implements Parser {
         return httpclient;
     }
 
-    public List<Trip> getKE(int requestId, String origin, String destination, String date, int seats, String cabin, DefaultHttpClient client) throws Exception {
+    public static List<Trip> getKE(int requestId, String origin, String destination, String date, int seats, String cabin, DefaultHttpClient client) throws Exception {
         if (client == null)
             return new ArrayList<Trip>();
         DefaultHttpClient httpclient = new DefaultHttpClient();
@@ -252,11 +252,11 @@ public class KEParser implements Parser {
         HttpPost httpPost = new HttpPost("https://www.koreanair.com/api/TealeafTarget.jsp");
         response = httpclient.execute(httpPost);
         entity = response.getEntity();
-        String html = Utils.responseToString(entity.getContent());
+        String html = ParserUtils.responseToString(entity.getContent());
         HttpGet httpGet = new HttpGet("https://www.koreanair.com/global/en/booking/booking-gate.html");
         response = httpclient.execute(httpGet);
         entity = response.getEntity();
-        html = Utils.responseToString(entity.getContent());
+        html = ParserUtils.responseToString(entity.getContent());
 
         String url = "https://www.koreanair.com/api/fly/award/from/" + origin + "/to/" + destination + "/on/" + date + "?";
         List<NameValuePair> nameValuePairs = new ArrayList<>();
@@ -273,6 +273,7 @@ public class KEParser implements Parser {
             default:
                 return new ArrayList<Trip>();
         }
+        System.out.println(cabin);
         nameValuePairs.add(new BasicNameValuePair("flexDays", "0"));
         nameValuePairs.add(new BasicNameValuePair("scheduleDriven", "false"));
         nameValuePairs.add(new BasicNameValuePair("purchaseThirdPerson", "false"));
@@ -295,17 +296,35 @@ public class KEParser implements Parser {
 
         response = httpclient.execute(httpGet);
         entity = response.getEntity();
-        html = Utils.responseToString(entity.getContent());
+        html = ParserUtils.responseToString(entity.getContent());
         List<Trip> resultList = new ArrayList<>();
         if (!isJSONValid(html)) {
             return resultList;
         }
         JSONObject jsonObj = new JSONObject(html);
+
         JSONArray outBound = jsonObj.getJSONArray("outbound");
         for (int i = 0; i < outBound.length(); i++) {
+            if (cabin.length() == 1) {
+                switch (cabin) {
+                    case "E":
+                        cabin = "ECONOMY";
+                        break;
+                    case "B":
+                        cabin = "PRESTIGE";
+                        break;
+                    case "F":
+                        cabin = "FIRST";
+                        break;
+                    default:
+                        return new ArrayList<Trip>();
+                }
+            }
             Trip trip = new Trip();
             JSONObject jsonAward = (JSONObject) outBound.get(i);
             JSONObject availableSeats = (JSONObject) jsonAward.get("remainingSeatsByCabinClass");
+            System.out.println(availableSeats);
+            System.out.println(Integer.parseInt(availableSeats.get(cabin).toString()));
             if (Integer.parseInt(availableSeats.get(cabin).toString()) < seats) {
                 continue;
             }
@@ -395,6 +414,8 @@ public class KEParser implements Parser {
                 flight.setPosition(flightList.size());
                 flight.setParser(PARSER_CODE);
                 flight.setLayover("00:00");
+                flight.setCreatedAt(new Date());
+                flight.setUpdatedAt(new Date());
                 flightList.add(flight);
                 //without cabin info
 
@@ -410,7 +431,7 @@ public class KEParser implements Parser {
             if (flightList.size() > 1) {
                 StringBuilder stops = new StringBuilder("[");
                 for (int index = 1; index < flightList.size(); index++) {
-                    stops.append("\"" + flightList.get(i).getDepartCode() + "\",");
+                    stops.append("\"" + flightList.get(index).getDepartCode() + "\",");
                     Date depDate = flightList.get(index).getDepartDate();
                     Date arrDate = flightList.get(index - 1).getArriveDate();
                     long longLayoverDuration = (depDate.getTime() - arrDate.getTime());
@@ -461,15 +482,15 @@ public class KEParser implements Parser {
             trip.setFlightNumbers(flightNumbers.toString());
             trip.setCabins(cabins.toString());
             trip.setLayovers(layovers.toString());
-
-
+            trip.setCreatedAt(new Date());
+            trip.setUpdatedAt(new Date());
             resultList.add(trip);
         }
 
         return resultList;
     }
 
-    private boolean isJSONValid(String test) {
+    private static boolean isJSONValid(String test) {
         try {
 
             new JSONObject(test);
@@ -499,6 +520,7 @@ public class KEParser implements Parser {
 
     @Override
     public Collection<Trip> parse(RequestData requestData) throws Exception {
+        ExecutorService executor = Executors.newCachedThreadPool();
         List<Trip> results = new ArrayList<>();
         DefaultHttpClient loggedInClient = login();
         String origin = requestData.getOrigin();
@@ -508,19 +530,23 @@ public class KEParser implements Parser {
         int requestId = requestData.getRequest_id();
         List<Date> owDates = requestData.getOwDates();
         List<Date> returnDates = requestData.getReturnDates();
-        SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
+        Set<Callable<List<Trip>>> callables = new HashSet<Callable<List<Trip>>>();
         for (Date date : owDates) {
-            String formattedDate = sdf.format(date);
-            for (String cabin : cabins) {
-                results.addAll(getKE(requestId, origin, destination, formattedDate, seats, cabin, loggedInClient));
-            }
+            callables.add(new DataThread(date, seats, cabins, destination, origin, requestId));
         }
         for (Date date : returnDates) {
-            String formattedDate = sdf.format(date);
-            for (String cabin : cabins) {
-                results.addAll(getKE(requestId, destination, origin, formattedDate, seats, cabin, loggedInClient));
+            callables.add(new DataThread(date, seats, cabins, origin, destination, requestId));
+        }
+        List<Future<List<Trip>>> futureList = executor.invokeAll(callables);
+        for (Future<List<Trip>> futureItem : futureList) {
+            try {
+                List<Trip> trips = futureItem.get();
+                results.addAll(trips);
+            } catch (Exception ex) {
+                return results;
             }
         }
+        executor.shutdown();
         return results;
     }
 }
