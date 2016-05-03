@@ -3,7 +3,6 @@ package com.guru.parser.dl;
 import com.guru.domain.model.Flight;
 import com.guru.domain.model.Trip;
 import com.guru.vo.temp.ProxyUtils;
-import com.guru.vo.temp.Utils;
 import com.guru.vo.temp.exceptions.IncorrectCredentials;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;

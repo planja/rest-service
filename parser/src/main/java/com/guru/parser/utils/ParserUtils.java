@@ -1,5 +1,6 @@
 package com.guru.parser.utils;
 
+import com.guru.parser.dl.DLParser;
 import com.guru.parser.impl.qfparser.QFParser;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
@@ -38,6 +39,13 @@ public class ParserUtils {
          if(parser instanceof QFParser)
             regexp = "((\\d*)h\\s)?(\\d*)m";
 
+
+        if (parser instanceof DLParser) {
+
+            regexp = "((\\d*)[h]\\s)?(\\d*)[m]";
+//            regexp = "((\\d*)\\D+\\s?)?(\\d*)\\D+";
+
+        }
 
         Pattern pattern = Pattern.compile(regexp);
         Matcher matcher = pattern.matcher(totalTime);
@@ -202,6 +210,11 @@ public class ParserUtils {
 
         return buffer.toString();
     }
+
+    public static String responseToString(InputStream inputStream) throws IOException {
+        return IOUtils.toString(inputStream);
+    }
+
 
 
 }

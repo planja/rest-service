@@ -1,5 +1,6 @@
 package com.guru.vo.temp;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -10,10 +11,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.apache.http.params.CoreProtocolPNames;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -43,11 +41,11 @@ public class ProxyUtils {
         response = httpclient.execute(httpGet);
         entity = response.getEntity();
 
-        String proxyList = Utils.responseToString(entity.getContent());
+        String proxyList = responseToString(entity.getContent());
 
         String[] proxyArray = proxyList.split("\n");
 
-        int randIndex = Utils.randInt(proxyArray.length);
+        int randIndex = randInt(proxyArray.length);
 
         String proxyInfo = proxyArray[randIndex];
 
@@ -93,5 +91,15 @@ public class ProxyUtils {
 
         return false;
     }
+
+    private static String responseToString(InputStream inputStream) throws IOException {
+        return IOUtils.toString(inputStream);
+    }
+
+    private static int randInt(int max) {
+
+        return (int) (Math.random() * max);
+    }
+
 
 }
