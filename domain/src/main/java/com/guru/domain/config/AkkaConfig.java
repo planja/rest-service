@@ -42,7 +42,9 @@ public class AkkaConfig {
 
     @Bean
     public ActorSystem applicationSystem() {
-        return ActorSystem.create("ApplicationSystem", ConfigFactory.load().getConfig("applicationConfig"));
+        ActorSystem system =ActorSystem.create("ApplicationSystem", ConfigFactory.load().getConfig("applicationConfig"));
+        SpringExtProvider.get(system).initialize(applicationContext);
+        return system;
     }
 
     @Bean

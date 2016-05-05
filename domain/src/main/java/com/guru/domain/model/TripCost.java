@@ -9,7 +9,7 @@ import java.util.Date;
  */
 
 @Entity
-@Table(name = "trips_costs")
+@Table(name = "trip_costs")
 public class TripCost {
 
     @Id
@@ -57,6 +57,21 @@ public class TripCost {
     private Date updatedAt;
 
     public TripCost() {
+    }
+
+    public TripCost(Trip trip, Integer miles, BigDecimal tax, BigDecimal parserCost, BigDecimal aaCost, BigDecimal sqCost, BigDecimal nhCost, BigDecimal eyCost, BigDecimal lhCost, BigDecimal cxCost, Date createdAt, Date updatedAt) {
+        this.trip = trip;
+        this.miles = miles;
+        this.tax = tax;
+        this.parserCost = parserCost;
+        this.aaCost = aaCost;
+        this.sqCost = sqCost;
+        this.nhCost = nhCost;
+        this.eyCost = eyCost;
+        this.lhCost = lhCost;
+        this.cxCost = cxCost;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     public Date getCreatedAt() {

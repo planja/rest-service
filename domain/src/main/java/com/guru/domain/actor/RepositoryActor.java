@@ -4,7 +4,6 @@ import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import com.guru.domain.model.Trip;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

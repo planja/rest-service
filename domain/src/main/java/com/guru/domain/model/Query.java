@@ -3,7 +3,6 @@ package com.guru.domain.model;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -30,22 +29,22 @@ public class Query implements Serializable {
     private String to;
 
     @Column(name = "include_from_nearby")
-    private Integer includeFromNearby;
+    private Boolean includeFromNearby;
 
     @Column(name = "include_to_nearby")
-    private Integer includeToNearby;
+    private Boolean includeToNearby;
 
     @Column(name = "departure")
     private Date departure;
 
     @Column(name = "flexible_departure")
-    private Integer flexibleDeparture;
+    private Boolean flexibleDeparture;
 
     @Column(name = "arrival")
     private Date arrival;
 
     @Column(name = "flexible_arrival")
-    private Integer flexibleArrival;
+    private Boolean flexibleArrival;
 
     @Column(name = "passengers")
     private Integer passengers;
@@ -60,7 +59,7 @@ public class Query implements Serializable {
     private Integer status;
 
     @Column(name = "error")
-    private Integer error;
+    private Boolean error;
 
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
@@ -70,11 +69,11 @@ public class Query implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
 
-    @OneToOne(mappedBy = "query", fetch = FetchType.EAGER)
+    /*@OneToOne(mappedBy = "query", fetch = FetchType.EAGER)
     private ParserAnswer parserAnswers;
 
     @OneToMany(mappedBy = "query", fetch = FetchType.EAGER)
-    private Set<ParserError> parserErrors = new HashSet<>();
+    private Set<ParserError> parserErrors = new HashSet<>();*/
 
 /*
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "query")
@@ -84,7 +83,7 @@ public class Query implements Serializable {
     public Query() {
     }
 
-    public Query(String alias, String type, String from, String to, Integer includeFromNearby, Integer includeToNearby, Date departure, Integer flexibleDeparture, Date arrival, Integer flexibleArrival, Integer passengers, String classes, String parsers, Integer status, Integer error, Date createdAt, Date updatedAt, ParserAnswer parserAnswers, Set<ParserError> parserErrors) {
+    public Query(String alias, String type, String from, String to, Boolean includeFromNearby, Boolean includeToNearby, Date departure, Boolean flexibleDeparture, Date arrival, Boolean flexibleArrival, Integer passengers, String classes, String parsers, Integer status, Boolean error, Date createdAt, Date updatedAt, ParserAnswer parserAnswers, Set<ParserError> parserErrors) {
         this.alias = alias;
         this.type = type;
         this.from = from;
@@ -102,8 +101,8 @@ public class Query implements Serializable {
         this.error = error;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-        this.parserAnswers = parserAnswers;
-        this.parserErrors = parserErrors;
+       // this.parserAnswers = parserAnswers;
+       // this.parserErrors = parserErrors;
     }
 
     public Long getId() {
@@ -146,19 +145,19 @@ public class Query implements Serializable {
         this.to = to;
     }
 
-    public Integer getIncludeFromNearby() {
+    public Boolean getIncludeFromNearby() {
         return includeFromNearby;
     }
 
-    public void setIncludeFromNearby(Integer includeFromNearby) {
+    public void setIncludeFromNearby(Boolean includeFromNearby) {
         this.includeFromNearby = includeFromNearby;
     }
 
-    public Integer getIncludeToNearby() {
+    public Boolean getIncludeToNearby() {
         return includeToNearby;
     }
 
-    public void setIncludeToNearby(Integer includeToNearby) {
+    public void setIncludeToNearby(Boolean includeToNearby) {
         this.includeToNearby = includeToNearby;
     }
 
@@ -170,11 +169,11 @@ public class Query implements Serializable {
         this.departure = departure;
     }
 
-    public Integer getFlexibleDeparture() {
+    public Boolean getFlexibleDeparture() {
         return flexibleDeparture;
     }
 
-    public void setFlexibleDeparture(Integer flexibleDeparture) {
+    public void setFlexibleDeparture(Boolean flexibleDeparture) {
         this.flexibleDeparture = flexibleDeparture;
     }
 
@@ -186,11 +185,11 @@ public class Query implements Serializable {
         this.arrival = arrival;
     }
 
-    public Integer getFlexibleArrival() {
+    public Boolean getFlexibleArrival() {
         return flexibleArrival;
     }
 
-    public void setFlexibleArrival(Integer flexibleArrival) {
+    public void setFlexibleArrival(Boolean flexibleArrival) {
         this.flexibleArrival = flexibleArrival;
     }
 
@@ -226,11 +225,11 @@ public class Query implements Serializable {
         this.status = status;
     }
 
-    public Integer getError() {
+    public Boolean getError() {
         return error;
     }
 
-    public void setError(Integer error) {
+    public void setError(Boolean error) {
         this.error = error;
     }
 
@@ -251,7 +250,7 @@ public class Query implements Serializable {
     }
 
 
-    public ParserAnswer getParserAnswers() {
+    /*public ParserAnswer getParserAnswers() {
         return parserAnswers;
     }
 
@@ -265,7 +264,7 @@ public class Query implements Serializable {
 
     public void setTrips(Set<Trip> trips) {
         this.trips = trips;
-    }*/
+    }
 
     public Set<ParserError> getParserErrors() {
         return parserErrors;
@@ -273,7 +272,7 @@ public class Query implements Serializable {
 
     public void setParserErrors(Set<ParserError> parserErrors) {
         this.parserErrors = parserErrors;
-    }
+    }*/
 
     @Override
     public boolean equals(Object o) {

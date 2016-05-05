@@ -11,12 +11,17 @@ import com.guru.service.actor.processingresult.ProcessingResultOfParserActor;
 import com.guru.service.parser.interf.ParserActor;
 import com.guru.vo.transfer.RequestData;
 
+import javax.inject.Inject;
 import java.util.Collection;
 
 /**
  * Created by Никита on 18.04.2016.
  */
+
 public class ParserQF extends UntypedActor implements ParserActor {
+
+    @Inject
+    private QFParser qfParser;
 
     LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
@@ -25,7 +30,7 @@ public class ParserQF extends UntypedActor implements ParserActor {
         if (message instanceof RequestData) {
             RequestData requestData = (RequestData) message;
             log.info("got it QF");
-            Collection<Trip> flights = new QFParser().parse(requestData);
+            Collection<Trip> flights = qfParser.parse(requestData);
             ActorRef processingResultOfParserActor = context().system().actorOf(Props.create(ProcessingResultOfParserActor.class));
             processingResultOfParserActor.tell(flights, self());
         } else unhandled(message);
