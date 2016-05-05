@@ -13,6 +13,7 @@ import com.guru.service.parser.interf.ParserActor;
 import com.guru.vo.transfer.RequestData;
 
 import java.util.Collection;
+import java.util.Iterator;
 
 public class ParserKE extends UntypedActor implements ParserActor {
 
@@ -25,7 +26,12 @@ public class ParserKE extends UntypedActor implements ParserActor {
             Parser parser = new KEParser();
             Collection<Trip> trips = parser.parse((RequestData) message);
             log.info("find " + trips.size() + " trips");
-
+            Iterator it = trips.iterator();
+            while(it.hasNext()){
+                Trip trip =(Trip) it.next();
+                System.out.println(trip);
+                System.out.println(trip.getFlights());
+            }
             ActorRef processingResultOfParserActor = context().system().actorOf(Props.create(ProcessingResultOfParserActor.class));
             processingResultOfParserActor.tell(trips, self());
         }

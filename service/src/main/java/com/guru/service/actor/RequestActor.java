@@ -25,6 +25,7 @@ public class RequestActor extends UntypedActor {
                 System.out.println("parserName = " + parserName);
                 parserActor = context().system().actorOf(Props.create(getParserClass(parserName)));
                 parserActor.tell(message, self());
+
             }
         } else
             unhandled(message);

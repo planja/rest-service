@@ -2,8 +2,12 @@ package com.guru.parser.dl;
 
 import com.guru.domain.model.Flight;
 import com.guru.domain.model.Trip;
+import com.guru.parser.interf.Parser;
+import com.guru.parser.ke.*;
+import com.guru.parser.utils.ParserUtils;
 import com.guru.vo.temp.ProxyUtils;
 import com.guru.vo.temp.exceptions.IncorrectCredentials;
+import com.guru.vo.transfer.RequestData;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -33,21 +37,23 @@ import org.jsoup.select.Elements;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.regex.MatchResult;
 
 /**
  * Created by Anton on 02.05.2016.
  */
-public class DLParser {
-    public static final String SAVER = "SAVER";
-    public static final String STANDART = "STANDART";
-    public static final String FULL = "FULL";
-    public static final String SAVER_STANDART = "SAVER STANDART";
-    public static final String STANDART_FULL = "STANDART FULL";
+public class DLParser implements Parser {
+    public static final String Parser = "DL";
 
- /*   public static String getResultList(DefaultHttpClient httpclient, HttpPost httpPost, String session, String scriptSessionId, String currentSessionCheckSum, HttpResponse response, HttpEntity entity, List<Trip> tripList, String cacheKey, int index, boolean resum) throws IOException, FileNotFoundException, ParseException {
+    public static String getResultList(DefaultHttpClient httpclient, HttpPost httpPost, String session, String scriptSessionId, String currentSessionCheckSum, HttpResponse response, HttpEntity entity, List<Trip> tripList, String cacheKey, int index, boolean resum, int requestId) throws IOException, FileNotFoundException, ParseException {
 
         String url = "";
         String dwrInfo = "";
@@ -98,8 +104,8 @@ public class DLParser {
         httpPost.addHeader("Content-Type", "text/plain; charset=UTF-8");
         httpPost.addHeader("Referer", "https://www.delta.com/air-shopping/findFlights.action");
         httpPost.addHeader("Accept-Encoding", "gzip, deflate, Izma");
-        httpPost.addHeader("Accept", "*//**");
-/*
+        httpPost.addHeader("Accept", "*/*");
+
         StringEntity stringEntity = new StringEntity(dwrInfo, "UTF-8");
 
         httpPost.setEntity(stringEntity);
@@ -107,7 +113,7 @@ public class DLParser {
         response = httpclient.execute(httpPost);
         entity = response.getEntity();
 
-        String data = Utils.gzipResponseToString(entity.getContent());
+        String data = ParserUtils.gzipResponseToString(entity.getContent());
 
         HashMap<String, String> resultMap = new HashMap<>();
 
@@ -171,18 +177,22 @@ public class DLParser {
 
             String value = resultMap.get(itineraries + "[" + i + "]");
 
-            tripList.add(getTrip(resultMap, value));
+            tripList.add(getTrip(resultMap, value, requestId));
         }
         return numberOfPages;
     }
 
-    public static Trip getTrip(HashMap<String, String> resultMap, String itin) throws FileNotFoundException, ParseException {
-
+    public static Trip getTrip(HashMap<String, String> resultMap, String itin, int requestId) throws FileNotFoundException, ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMMMM yyyy", Locale.US);
         Trip trip = new Trip();
+        trip.setQueryId((long) requestId);
 
         String slices = resultMap.get(itin + ".slices").replaceAll("\"", "");
 
         String totalFare = resultMap.get(itin + ".totalFare").replaceAll("\"", "");
+        String tripDate = resultMap.get(slices + "[0]");
+        tripDate = resultMap.get(tripDate + ".sliceDepartureDateOutbound").replaceAll("\"", "");
+        trip.setTripDate(sdf.parse(tripDate));
 
         List<String> sliceList = getSliceList(resultMap, slices);
 
@@ -192,6 +202,72 @@ public class DLParser {
         }
 
         getFare(resultMap, trip, totalFare);
+
+        StringBuilder cabins = new StringBuilder("[");
+        for (Flight flight : trip.getFlights()) {
+            cabins.append("\"" + flight.getCabin() + "\",");
+        }
+        cabins.deleteCharAt(cabins.length() - 1);
+        cabins.append("]");
+        trip.setCabins(cabins.toString());
+        StringBuilder layovers = new StringBuilder();
+        try {
+            layovers = new StringBuilder(trip.getLayovers());
+        } catch (Exception e) {
+        }
+        if (layovers.length() > 1) {
+            layovers.deleteCharAt(layovers.length() - 1);
+            layovers.append("]");
+            trip.setLayovers(layovers.toString());
+        } else {
+            layovers = new StringBuilder("[]");
+            trip.setLayovers(layovers.toString());
+        }
+        trip.setTripDate(trip.getFlights().get(0).getDepartDate());
+        if (trip.getFlights().size() > 1) {
+            StringBuilder stops = new StringBuilder("[");
+            String tempLayovers = trip.getLayovers().replace("[", "").replace("]", "");
+            String[] arrLayovers = tempLayovers.split(",");
+            for (int i = 1; i < trip.getFlights().size(); i++) {
+                stops.append("\"" + trip.getFlights().get(i).getDepartCode() + "\",");
+                trip.getFlights().get(i).setLayover(arrLayovers[i - 1].replaceAll("\"", ""));
+            }
+            stops.deleteCharAt(stops.length() - 1);
+            stops.append("]");
+            trip.setStops(stops.toString());
+        } else {
+            trip.setStops("[]");
+        }
+        StringBuilder carriers = new StringBuilder("[");
+        StringBuilder flightLegs = new StringBuilder("[");
+        StringBuilder flightNumbers = new StringBuilder("[");
+
+
+        for (Flight flight : trip.getFlights()) {
+            carriers.append("\"" + flight.getCarrierCode() + "\",");
+            flightLegs.append("\"" + flight.getFlightDuration() + "\",");
+            flightNumbers.append("\"" + flight.getFlightNumber() + "\",");
+
+        }
+        carriers.deleteCharAt(carriers.length() - 1);
+        carriers.append("]");
+        flightLegs.deleteCharAt(flightLegs.length() - 1);
+        flightLegs.append("]");
+        flightNumbers.deleteCharAt(flightNumbers.length() - 1);
+        flightNumbers.append("]");
+
+        trip.getFlights().get(0).setLayover("00:00");
+        Flight firstFlight = trip.getFlights().get(0);
+        Flight lastFlight = trip.getFlights().get(trip.getFlights().size() - 1);
+        trip.setDepartCode(firstFlight.getDepartCode());
+        trip.setArriveCode(lastFlight.getArriveCode());
+        trip.setArrivePlace(lastFlight.getArrivePlace());
+        trip.setDepartPlace(firstFlight.getDepartPlace());
+        trip.setCreatedAt(new Date());
+        trip.setUpdatedAt(new Date());
+        trip.setCarriers(carriers.toString());
+        trip.setFlightLegs(flightLegs.toString());
+        trip.setFlightNumbers(flightNumbers.toString());
 
         return trip;
     }
@@ -225,7 +301,7 @@ public class DLParser {
             duration = duration + " 0m";
         }
 
-        trip.setTripDuration(Utils.getTotalTime(duration, new DLParser()));
+        trip.setTripDuration(ParserUtils.getTotalTime(duration, new DLParser()));
 
         String flights = resultMap.get(slice + ".flights").replaceAll("\"", "");
 
@@ -234,9 +310,11 @@ public class DLParser {
         do {
 
             if (resultMap.containsKey(flights + "[" + i + "]")) {
-
-                trip.getFlights().add(getFlight(resultMap, trip, resultMap.get(flights + "[" + i + "]").replaceAll("\"", "")));
-
+                Flight flight = getFlight(resultMap, trip, resultMap.get(flights + "[" + i + "]").replaceAll("\"", ""));
+                if (flight != null)
+                    flight.setPosition(trip.getFlights().size());
+                flight.setTrip(trip);
+                trip.getFlights().add(flight);
             }
 
             i++;
@@ -279,12 +357,9 @@ public class DLParser {
 
             String currencyCode = resultMap.get(fareItem + ".currencyCode").replaceAll("\"", "");
 
-            Info info = new Info();
-            info.setNa(false);
-            info.setStatus(Info.AVAILABLE);
-            info.setMileage(miles);
-            info.setTax(priceLeft + priceRight);
-            info.setCurrency(currencyCode);
+            String tax = priceLeft + priceRight;
+            BigDecimal cost = ParserUtils.convertCost(miles, tax);
+            trip.setCost(cost);
 
             int j = 0;
 
@@ -306,98 +381,46 @@ public class DLParser {
 
                     if (bookingCode.contains("N") || bookingCode.contains("X") || bookingCode.contains("T") || bookingCode.contains("U") || bookingCode.contains("W")) {
 //полностью Economy???
-                        trip.getFlights().get(j).setCabin("Economy");
-                        info.getMixedCabins().add("Economy");
+                        trip.getFlights().get(j).setCabin("E");
+                        //  trip.getMixedCabins().add("Economy");
 
-                        if (info.getMixedCabins().contains("Business") || info.getMixedCabins().contains("First")) {
+                  /*      if (info.getMixedCabins().contains("Business") || info.getMixedCabins().contains("First")) {
 
                             info.setMixed(true);
-                        }
+                        }*/
                     }
 
                     if (bookingCode.contains("O") || bookingCode.contains("Z") || bookingCode.contains("G")) {
 
-                        trip.getFlights().get(j).setCabin("Business");
-                        info.getMixedCabins().add("Business");
+                        trip.getFlights().get(j).setCabin("B");
+                    /*    info.getMixedCabins().add("Business");
 
                         if (info.getMixedCabins().contains("Economy") || info.getMixedCabins().contains("First")) {
 
                             info.setMixed(true);
-                        }
+                        }*/
                     }
 
                     if (bookingCode.contains("R") || bookingCode.contains("A")) {
 
-                        trip.getFlights().get(j).setCabin("First");
-                        info.getMixedCabins().add("First");
+                        trip.getFlights().get(j).setCabin("F");
+                      /*  info.getMixedCabins().add("First");
 
                         if (info.getMixedCabins().contains("Business") || info.getMixedCabins().contains("Economy")) {
 
                             info.setMixed(true);
                         }
 
-                        first = true;
+                        first = true;*/
                     }
-
-                    if (bookingCode.equals("N") || bookingCode.equals("X") || bookingCode.equals("T") || bookingCode.equals("U") || bookingCode.equals("W")) {
-
-                        awardName = SAVER;
-                    }
-
-                    if (bookingCode.equals("O") || bookingCode.equals("Z") || bookingCode.equals("G")) {
-
-                        awardName = SAVER;
-                    }
-
-                    if (bookingCode.equals("R") || bookingCode.equals("A")) {
-
-                        awardName = SAVER;
-                    }
-
-                    if (bookingCode.contains("L")) {
-
-                        awardName = SAVER_STANDART;
-                    }
-
-                    if (bookingCode.contains("D")) {
-
-                        awardName = STANDART;
-                    }
-
-                    if (bookingCode.contains("S")) {
-
-                        awardName = STANDART_FULL;
-                    }
-
-                    if (bookingCode.contains("K")) {
-
-                        awardName = FULL;
-                    }
-
-                    info.getAwardNames().add(awardName);
                 }
+
 
                 j++;
 
-            } while (resultMap.containsKey(miscFlightInfos + "[" + j + "]"));
-
-
-            if (first) {
-
-                trip.setFirst(info);
-
-            } else if (cabin.contains("Economy") || cabin.contains("Main")) {
-
-                trip.setEconomy(info);
-
-            } else if (cabin.contains("Business")) {
-
-                trip.setBusiness(info);
-
-            } else if (cabin.contains("One")) {
-
-                trip.setBusiness(info);
             }
+            while (resultMap.containsKey(miscFlightInfos + "[" + j + "]"));
+
 
         }
     }
@@ -405,15 +428,11 @@ public class DLParser {
     public static Flight getFlight(HashMap<String, String> resultMap, Trip trip, String flight) throws FileNotFoundException {
 
         Flight flightResult = new Flight();
-
-        String flightArrivalDate = resultMap.get(flight + ".flightArrivalDate").replaceAll("\"", "");
-
+        String year = new SimpleDateFormat("yyyy").format(trip.getTripDate());
         String flightArrivalTime = resultMap.get(flight + ".flightArrivalTime").replaceAll("\"", "");
-
-        String flightDepartureDate = resultMap.get(flight + ".flightDepartureDate").replaceAll("\"", "");
-
+        String flightArrivalDate = resultMap.get(flight + ".flightArrivalDate").replaceAll("\"", "") + " " + year + " " + flightArrivalTime;
         String flightDepartureTime = resultMap.get(flight + ".flightDepartureTime").replaceAll("\"", "");
-
+        String flightDepartureDate = resultMap.get(flight + ".flightDepartureDate").replaceAll("\"", "") + " " + year + " " + flightDepartureTime;
         String flightDestinationCode = getOriginDestinationCode(resultMap, resultMap.get(flight + ".flightDestination").replaceAll("\"", ""));
         String flightDestinationName = getOriginDestinationName(resultMap, resultMap.get(flight + ".flightDestination").replaceAll("\"", ""));
 
@@ -422,23 +441,38 @@ public class DLParser {
 
         String layoverInfos = resultMap.get(flight + ".layoverInfos").replaceAll("\"", "");
 
-        getLayover(resultMap, trip, layoverInfos);
-
+        String layover = getLayover(resultMap, trip, layoverInfos);
         String legs = resultMap.get(flight + ".legs").replaceAll("\"", "");
 
         getLegs(resultMap, flightResult, legs);
+        SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd yyyy h:mma", Locale.US);
+        SimpleDateFormat sdf1 = new SimpleDateFormat("h:mma");
+        SimpleDateFormat sdf2 = new SimpleDateFormat("HH:mm");
 
-        flightResult.setArriveDate(flightArrivalDate);
-        flightResult.setArrivePlace(flightDestinationName);
-    //    flightResult.setArriveAirport(flightDestinationCode);
-        flightResult.setArriveTime(flightArrivalTime);
-        flightResult.setDepartDate(flightDepartureDate);
-        flightResult.setDepartPlace(flightOriginName);
-   //     flightResult.setDepartAirport(flightOriginCode);
-        flightResult.setDepartTime(flightDepartureTime);
-        flightResult.setCabin("");
-   //     flightResult.setMeal("");
+        try {
+            flightResult.setArriveDate(sdf.parse(flightArrivalDate));
+            flightResult.setArrivePlace(flightDestinationName);
+            flightResult.setArriveCode(flightDestinationCode);
+            flightResult.setDepartCode(flightOriginCode);
+            //    flightResult.setArriveAirport(flightDestinationCode);
+            String arriveTime = sdf2.format(sdf1.parse(flightArrivalTime));
+            flightResult.setArriveTime(arriveTime);
+            flightResult.setDepartDate(sdf.parse(flightDepartureDate));
+            flightResult.setDepartPlace(flightOriginName);
+            //     flightResult.setDepartAirport(flightOriginCode);
+            String departTime = sdf2.format(sdf1.parse(flightDepartureTime));
+            flightResult.setDepartTime(departTime);
+            flightResult.setCabin("");
+            flightResult.setCreatedAt(new Date());
+            flightResult.setUpdatedAt(new Date());
+            flightResult.setParser(Parser);
 
+            //     flightResult.setMeal("");
+
+        } catch (ParseException e) {
+            System.out.println("ParseEx");
+            return null;
+        }
         return flightResult;
     }
 
@@ -460,15 +494,30 @@ public class DLParser {
         return airportName;
     }
 
-    public static void getLayover(HashMap<String, String> resultMap, Trip trip, String layover) throws FileNotFoundException {
+    public static String getLayover(HashMap<String, String> resultMap, Trip trip, String layover) throws FileNotFoundException {
 
         if (resultMap.containsKey(layover + "[0]")) {
 
             String layoverId = resultMap.get(layover + "[0]").replaceAll("\"", "");
 
-            String duration = resultMap.get(layoverId + ".duration").replaceAll("\"", "");
+            String duration = resultMap.get(layoverId + ".duration").replaceAll("\"", "").trim();
+            StringBuilder sb = new StringBuilder();
+            try {
+                sb = new StringBuilder(trip.getLayovers());
+            } catch (Exception e) {
+            }
+            if (sb.length() == 0)
+                sb.append("[");
+            try {
+                duration = ParserUtils.getTotalTime(duration, new DLParser());
+                sb.append("\"" + duration + "\",");
+            } catch (ParseException e) {
+            }
 //сделать json
-            trip.setLayovers(duration);
+            trip.setLayovers(sb.toString());
+            return duration;
+        } else {
+            return "00:00";
         }
     }
 
@@ -481,7 +530,6 @@ public class DLParser {
         String layoverInfoList = resultMap.get(legItem + ".layoverInfos").replaceAll("\"", "");
 
         int i = 0;
-
         while (resultMap.containsKey(layoverInfoList + "[" + i + "]")) {
 
             String stop = resultMap.get(layoverInfoList + "[" + i + "]").replaceAll("\"", "");
@@ -489,11 +537,9 @@ public class DLParser {
             String arpStop = resultMap.get(stop + ".equipChgAptCode").replaceAll("\"", "");
             String duration = resultMap.get(stop + ".duration").replaceAll("\"", "");
 //сделать тут layovers
-            Stop s = new Stop();
-            s.setAirport(arpStop);
-            s.setDuration(duration);
 
-            flight.getHiddenStopList().add(s);
+            //     s.setAirport(arpStop);
+
 
             i++;
         }
@@ -503,8 +549,14 @@ public class DLParser {
         String fNumber = getFNumber(resultMap, resultMap.get(legItem + ".operatingAirline").replaceAll("\"", ""));
 
         flight.setAircraft(aircraft);
-        flight.setFlightDuration(duration);
+        try {
+            flight.setFlightDuration(ParserUtils.getTotalTime(duration, new DLParser()));
+        } catch (ParseException e) {
+        }
         flight.setFlightNumber(fNumber);
+        flight.setCarrierCode(fNumber.split(" ")[0]);
+        flight.setCarrierName(fNumber.split(" ")[0]);
+
     }
 
     public static String getFNumber(HashMap<String, String> resultMap, String operAir) throws FileNotFoundException {
@@ -523,7 +575,7 @@ public class DLParser {
         return resultMap.get(aircraft + ".shortName").replaceAll("\"", "");
     }
 
-    public List<Trip> getDelta(String origin, String destination, String date, int seats) throws IOException, IncorrectCredentials, FileNotFoundException, ParseException {
+    public List<Trip> getDelta(String origin, String destination, String date, int seats, int requestId) throws IOException, IncorrectCredentials, FileNotFoundException, ParseException {
 
         //12/6/2014
         List<Trip> awardList = new LinkedList<>();
@@ -561,7 +613,7 @@ public class DLParser {
         response = httpclient.execute(httpGet);
         entity = response.getEntity();
 
-        String search = Utils.responseToString(entity.getContent());
+        String search = ParserUtils.responseToString(entity.getContent());
 
         Document searchForm = Jsoup.parse(search);
 
@@ -571,6 +623,7 @@ public class DLParser {
         List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
 
         Elements inputList = flightSearchForm.select(" > input[type = hidden]");
+
 
         for (Element item : inputList) {
 
@@ -608,9 +661,7 @@ public class DLParser {
         response = httpclient.execute(httpPost);
         entity = response.getEntity();
 
-        String html = Utils.responseToString(entity.getContent());
-        // System.out.println(html);
-
+        String html = ParserUtils.responseToString(entity.getContent());
         String compHome = "";
 
         Document scriptDoc = Jsoup.parse(search);
@@ -628,7 +679,7 @@ public class DLParser {
         // response = httpclient.execute(httpGet);
         entity = response.getEntity();
 
-        String js = Utils.responseToString(entity.getContent());
+        String js = ParserUtils.responseToString(entity.getContent());
 
         int firstIndex = js.indexOf("dwr.engine._origScriptSessionId=\"") + "dwr.engine._origScriptSessionId=\"".length();
         int secondIndex = js.indexOf("\"", firstIndex);
@@ -666,17 +717,52 @@ public class DLParser {
 
         String cacheKey = html.substring(f1Index, s2Index);
 
-        String numOfPages = getResultList(httpclient, httpPost, session, scriptSessionId, currentSessionCheckSum, response, entity, awardList, cacheKey, 1, false);
+        String numOfPages = getResultList(httpclient, httpPost, session, scriptSessionId, currentSessionCheckSum, response, entity, awardList, cacheKey, 1, false, requestId);
 
         int pages = Integer.parseInt(numOfPages);
 
         for (int i = 1; i < pages; i++) {
 
-            getResultList(httpclient, httpPost, session, scriptSessionId, currentSessionCheckSum, response, entity, awardList, cacheKey, i + 1, true);
+            getResultList(httpclient, httpPost, session, scriptSessionId, currentSessionCheckSum, response, entity, awardList, cacheKey, i + 1, true, requestId);
         }
 
         return awardList;
 
     }
-*/
+
+    @Override
+    public Collection<Trip> parse(RequestData requestData) throws Exception {
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+        ExecutorService executor = Executors.newCachedThreadPool();
+        List<Trip> results = new ArrayList<>();
+        String origin = requestData.getOrigin();
+        String destination = requestData.getDestination();
+        List<String> cabins = requestData.getCabins();
+        int seats = requestData.getSeats();
+        int requestId = requestData.getRequest_id();
+        List<Date> owDates = requestData.getOwDates();
+        List<Date> returnDates = requestData.getReturnDates();
+        Set<Callable<List<Trip>>> callables = new HashSet<Callable<List<Trip>>>();
+
+        for (Date date : owDates) {
+            callables.add(new DataThread(date, seats, destination, origin, requestId));
+
+        }
+        for (Date date : returnDates) {
+            callables.add(new DataThread(date, seats, origin, destination, requestId));
+        }
+
+        List<Future<List<Trip>>> futureList = executor.invokeAll(callables);
+        for (Future<List<Trip>> futureItem : futureList) {
+            try {
+                List<Trip> trips = futureItem.get();
+                results.addAll(trips);
+            } catch (Exception ex) {
+                return results;
+            }
+        }
+        executor.shutdown();
+        return results;
+    }
+
 }

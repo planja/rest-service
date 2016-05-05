@@ -237,7 +237,7 @@ public class KEParser implements Parser {
         return httpclient;
     }
 
-    public static List<Trip> getKE(int requestId, String origin, String destination, String date, int seats, String cabin, DefaultHttpClient client) throws Exception {
+    public List<Trip> getKE(int requestId, String origin, String destination, String date, int seats, String cabin, DefaultHttpClient client) throws Exception {
         if (client == null)
             return new ArrayList<Trip>();
         DefaultHttpClient httpclient = new DefaultHttpClient();
@@ -346,7 +346,7 @@ public class KEParser implements Parser {
             JSONObject jsonFares = (JSONObject) (((JSONObject) jsonObj.get("fares")).getJSONObject(fares).getJSONArray("fares")).get(0);
             String miles = ((Integer) jsonFares.get("totalMiles")).toString();
             String tax = ((Double) jsonFares.get("tax")).toString();
-            BigDecimal cost = convertCost(miles, tax);
+            BigDecimal cost = ParserUtils.convertCost(miles, tax);
             trip.setCost(cost);
             //   info.setCurrency((jsonFares.get("currencyCode")).toString());
           /*  if (cabin.equals("ECONOMY")) {
@@ -394,7 +394,6 @@ public class KEParser implements Parser {
                 //   flight.setArriveCity(arriveInfo[0]);
                 //   flight.setDepartAirport(departInfo[1]);
                 flight.setDepartPlace(departInfo[0]);
-                flight.setArriveCode(arriveCode);
                 flight.setArriveCode(arriveCode);
                 flight.setDepartCode(departCode);
                 //   flight.setDepartCity(departInfo[0]);
@@ -470,9 +469,9 @@ public class KEParser implements Parser {
             carriers.append("]");
             flightLegs.deleteCharAt(flightLegs.length() - 1);
             flightLegs.append("]");
-            flightNumbers.deleteCharAt(flightNumbers.length() - 1);
-            flightNumbers.append("]");
-            cabins.deleteCharAt(cabins.length() - 1);
+                flightNumbers.deleteCharAt(flightNumbers.length() - 1);
+                flightNumbers.append("]");
+                cabins.deleteCharAt(cabins.length() - 1);
             cabins.append("]");
             if (layovers.length() > 1)
                 layovers.deleteCharAt(layovers.length() - 1);
@@ -511,12 +510,7 @@ public class KEParser implements Parser {
         return true;
     }
 
-    private static BigDecimal convertCost(String miles, String tax) {
-        BigDecimal min = new BigDecimal(1000 + ".0");
-        BigDecimal max = new BigDecimal(2000 + ".0");
-        BigDecimal randomBigDecimal = min.add(new BigDecimal(Math.random()).multiply(max.subtract(min)));
-        return randomBigDecimal.setScale(2, BigDecimal.ROUND_HALF_UP);
-    }
+
 
     @Override
     public Collection<Trip> parse(RequestData requestData) throws Exception {

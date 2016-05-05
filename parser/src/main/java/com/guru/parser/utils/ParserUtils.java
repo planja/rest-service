@@ -18,6 +18,7 @@ import org.jsoup.select.Elements;
 
 
 import java.io.*;
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -34,15 +35,16 @@ import java.util.zip.GZIPInputStream;
 public class ParserUtils {
 
     public static String getTotalTime(String totalTime, Object parser) throws ParseException {
-        System.out.println(totalTime);
         String regexp = "";
          if(parser instanceof QFParser)
             regexp = "((\\d*)h\\s)?(\\d*)m";
 
 
         if (parser instanceof DLParser) {
-
-            regexp = "((\\d*)[h]\\s)?(\\d*)[m]";
+            if(totalTime.contains("m"))
+                regexp = "((\\d*)[h]\\s)?(\\d*)[m]";
+            else
+                regexp = "((\\d*)[h])";
 //            regexp = "((\\d*)\\D+\\s?)?(\\d*)\\D+";
 
         }
@@ -50,8 +52,13 @@ public class ParserUtils {
         Pattern pattern = Pattern.compile(regexp);
         Matcher matcher = pattern.matcher(totalTime);
         if(matcher.find()) {
-            String hours = matcher.group(2) == null?"0":matcher.group(2);
-            String minutes = matcher.group(3) != null && matcher.group(3).trim().length() != 0?matcher.group(3):"0";
+                String hours = matcher.group(2) == null ? "0" : matcher.group(2);
+            String minutes;
+                if(totalTime.contains("m"))
+                    minutes = matcher.group(3) != null && matcher.group(3).trim().length() != 0 ? matcher.group(3) : "0";
+            else
+                minutes = "0";
+
             DecimalFormat acFormat = new DecimalFormat("##00");
             return acFormat.format((long)Integer.parseInt(hours)) + ":" + acFormat.format((long)Integer.parseInt(minutes));
         } else {
@@ -213,6 +220,13 @@ public class ParserUtils {
 
     public static String responseToString(InputStream inputStream) throws IOException {
         return IOUtils.toString(inputStream);
+    }
+
+    public static BigDecimal convertCost(String miles, String tax) {
+        BigDecimal min = new BigDecimal(1000 + ".0");
+        BigDecimal max = new BigDecimal(2000 + ".0");
+        BigDecimal randomBigDecimal = min.add(new BigDecimal(Math.random()).multiply(max.subtract(min)));
+        return randomBigDecimal.setScale(2, BigDecimal.ROUND_HALF_UP);
     }
 
 
