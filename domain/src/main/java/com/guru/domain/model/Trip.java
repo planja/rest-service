@@ -77,6 +77,24 @@ public class Trip implements scala.Serializable{
     @Transient
     private int direction;
 
+    @Transient
+    private List<ClasInfo> clasInfo = new ArrayList<>();
+
+    @Transient
+    private String clas;
+
+    @Transient
+    private Boolean isComplete;
+
+    @Transient
+    private Integer miles;
+
+    @Transient
+    private BigDecimal tax;
+
+
+
+
     public Trip() {
     }
 
@@ -244,6 +262,38 @@ public class Trip implements scala.Serializable{
         this.direction = direction;
     }
 
+    public List<ClasInfo> getClasInfo() {
+        return clasInfo;
+    }
+
+    public void setClasInfo(List<ClasInfo> clasInfo) {
+        this.clasInfo = clasInfo;
+    }
+
+    public String getClas() {
+        return clas;
+    }
+
+    public void setClas(String clas) {
+        this.clas = clas;
+    }
+
+    public Integer getMiles() {
+        return miles;
+    }
+
+    public void setMiles(Integer miles) {
+        this.miles = miles;
+    }
+
+    public BigDecimal getTax() {
+        return tax;
+    }
+
+    public void setTax(BigDecimal tax) {
+        this.tax = tax;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -291,6 +341,14 @@ public class Trip implements scala.Serializable{
         result = 31 * result + (flightLegs != null ? flightLegs.hashCode() : 0);
         result = 31 * result + (flightNumbers != null ? flightNumbers.hashCode() : 0);
         return result;
+    }
+
+    public Boolean getIsComplete() {
+        return isComplete;
+    }
+
+    public void setIsComplete(Boolean isComplete) {
+        this.isComplete = isComplete;
     }
 
     @Override
