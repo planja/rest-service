@@ -358,6 +358,8 @@ public class DLParser implements Parser {
             String currencyCode = resultMap.get(fareItem + ".currencyCode").replaceAll("\"", "");
 
             String tax = priceLeft + priceRight;
+            trip.setTax(new BigDecimal(tax));
+
             BigDecimal cost = ParserUtils.convertCost(miles, tax);
             trip.setCost(cost);
 

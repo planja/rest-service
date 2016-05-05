@@ -1,7 +1,9 @@
 package com.guru.parser.ke;
 
 import com.guru.domain.model.Flight;
+import com.guru.domain.model.MileCost;
 import com.guru.domain.model.Trip;
+import com.guru.domain.repository.MileCostRepository;
 import com.guru.parser.interf.Parser;
 import com.guru.parser.utils.ParserUtils;
 import com.guru.vo.temp.Account;
@@ -27,18 +29,26 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * Created by Anton on 27.04.2016.
  */
+@Component
 public class KEParser implements Parser {
     private static final String PARSER_CODE = "KE";
     private static final HashMap<String, String> PLACES;
+
+    @Inject
+    private MileCostRepository mileCostRepository;
 
     static {
         PLACES = new HashMap<String, String>();
@@ -344,10 +354,10 @@ public class KEParser implements Parser {
             ArrayList fareMapperList = new ArrayList(baseTripFareMapper.keySet());
             String fares = (String) baseTripFareMapper.get(fareMapperList.get(i).toString());
             JSONObject jsonFares = (JSONObject) (((JSONObject) jsonObj.get("fares")).getJSONObject(fares).getJSONArray("fares")).get(0);
-            String miles = ((Integer) jsonFares.get("totalMiles")).toString();
+            Integer miles = ((Integer) jsonFares.get("totalMiles"));
             String tax = ((Double) jsonFares.get("tax")).toString();
-            BigDecimal cost = ParserUtils.convertCost(miles, tax);
-            trip.setCost(cost);
+            trip.setTax(new BigDecimal(tax));
+            trip.setMiles(miles);
             //   info.setCurrency((jsonFares.get("currencyCode")).toString());
           /*  if (cabin.equals("ECONOMY")) {
                award.setEconomy(info);
@@ -485,8 +495,29 @@ public class KEParser implements Parser {
             trip.setUpdatedAt(new Date());
             resultList.add(trip);
         }
-
+        MileCost mileCost=null;
+        if (resultList.size() != 0) {
+            List<MileCost> miles = StreamSupport.stream(Spliterators.spliteratorUnknownSize(mileCostRepository.findAll().iterator(), Spliterator.ORDERED), false)
+                    .collect(Collectors.toCollection(ArrayList::new));
+            mileCost = miles.stream().filter(o -> Objects.equals(o.getParser(), resultList.get(0).getFlights().get(0).getParser()))
+                    .findFirst().get();
+            // result = setMiles2Trip(result,mileCost);
+            resultList.get(0).setIsComplete(true);
+        }
+        setMiles2Trip(resultList,mileCost);
         return resultList;
+    }
+
+    private void setMiles2Trip(List<Trip> trips, MileCost mileCost) {
+        if (mileCost == null) return;
+        for (Trip trip : trips) {
+            Integer miles = Integer.valueOf(trip.getClasInfo().stream()
+                    .filter(o -> Objects.equals(o.getReduction(), trip.getClas()))
+                    .findFirst().get().getMileage());
+            trip.setMiles(miles);
+            double parserCost = miles / 100 * mileCost.getCost().doubleValue();//ещё сложить таксы
+            trip.setCost(BigDecimal.valueOf(parserCost));
+        }
     }
 
     private static boolean isJSONValid(String test) {
