@@ -8,4 +8,5 @@ import java.util.Collection;
 public interface Parser {
 
     Collection<Trip> parse(RequestData requestData) throws Exception;
+
 }

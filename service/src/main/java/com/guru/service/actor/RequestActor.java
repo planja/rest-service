@@ -26,6 +26,7 @@ public class RequestActor extends UntypedActor {
                 parserActor = getContext().actorOf(SpringExtProvider.get(getContext().system()).props(getClassName(parserName)));
                 // parserActor = context().system().actorOf(Props.create(getParserClass(parserName)));
                 parserActor.tell(message, self());
+
             }
         } else
             unhandled(message);

@@ -92,7 +92,7 @@ public class Trip implements scala.Serializable{
     @Transient
     private BigDecimal tax;
 
-
+// для всех парсеров добавить miles tax
 
 
     public Trip() {

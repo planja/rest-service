@@ -36,8 +36,9 @@ public class DataThread implements Callable<List<Trip>> {
         List<Trip> trips = new ArrayList<Trip>();
         String formattedDate = sdf.format(date);
         for (String cabin : cabins) {
-            DefaultHttpClient loggedInClient = KEParser.login();
-            trips.addAll(KEParser.getKE(requestId, origin, destination, formattedDate, seats, cabin, loggedInClient));
+            KEParser keParser = new KEParser();
+            DefaultHttpClient loggedInClient = keParser.login();
+            trips.addAll(keParser.getKE(requestId, origin, destination, formattedDate, seats, cabin, loggedInClient));
         }
         return trips;
     }

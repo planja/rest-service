@@ -23,6 +23,8 @@ public class ParserQF extends UntypedActor implements ParserActor {
     @Inject
     private QFParser qfParser;
 
+    //для всех
+
     LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
     @Override
