@@ -1,8 +1,8 @@
 package com.guru.parser.impl.qfparser;
 
-import com.guru.domain.model.ClasInfo;
-import com.guru.domain.model.Flight;
-import com.guru.domain.model.Trip;
+import com.guru.domain.model.*;
+import com.guru.domain.repository.MileCostRepository;
+import com.guru.domain.repository.QueryRepository;
 import com.guru.parser.interf.Parser;
 import com.guru.parser.utils.ParserUtils;
 import com.guru.vo.transfer.RequestData;
@@ -17,9 +17,9 @@ import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.apache.http.message.BasicNameValuePair;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import parser.utils.ComplexAward;
+import org.springframework.stereotype.Component;
 
-
+import javax.inject.Inject;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -27,31 +27,62 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * Created by Никита on 27.04.2016.
  */
 
+@Component
 public class QFParser implements Parser {
+
+    @Inject
+    private QueryRepository queryRepository;
+
+    @Inject
+    private MileCostRepository mileCostRepository;
+
 
     @Override
     public Collection<Trip> parse(RequestData requestData) throws Exception {
+
+
         Date start, end;
         List<Trip> result = new ArrayList<>();
-        parser.qf.QFParser qfParser = new parser.qf.QFParser();
+        int count = 0;
+        int fin;
+        Query find;
+        // Iterable<Query> queries  =queryRepository.findAll();
+
+        find = queryRepository.findOne((long) 28);
+
        /* DefaultHttpClient httpclient = this.login("1924112640", "Kin", "4152");
         ComplexAward complexAward = qfParser.getQantas(httpclient, requestData.getOw_start_date(),
                 requestData.getOw_end_date(), requestData.getOrigin(),
                 requestData.getDestination(), requestData.getSeats());*/
         if (Objects.equals(requestData.getType(), "ow")) {
-           // start = requestData.getRt_start_date();
-           // end = requestData.getRt_end_date();
-            List<Trip>trips = getQantas(requestData);
-            return trips;
+            fin = 1;
+            List<Trip> trips = getQantas(requestData);
+
+            count++;
+            find.setStatus(count / fin * 100);
+
+            // serviceRepositoryActor.tell(query, serviceRepositoryActor);
+
+            if (trips.size() != 0)
+                trips.get(0).setIsComplete(true);
+            result.addAll(trips);
         } else {
-            start = requestData.getRt_start_date();
-            end = requestData.getRt_end_date();
+            fin = 2;
+
             List<Trip> ow = getQantas(requestData);
+
+
+            count++;
+            float d = (float) count / fin * 100;
+            queryRepository.updateStatus(find.getId(), (int) d);
+
+
             requestData.setOw_start_date(requestData.getRt_start_date());
             requestData.setOw_end_date(requestData.getRt_end_date());
             String destination = requestData.getDestination();
@@ -59,11 +90,39 @@ public class QFParser implements Parser {
             requestData.setOrigin(destination);
             requestData.setDestination(origin);
             List<Trip> rt = getQantas(requestData);
+
+            count++;
+            d = (float) count / fin * 100;
+            //find.setStatus((int) d);
+
+
             result.addAll(ow);
             result.addAll(rt);
         }
+        MileCost mileCost=null;
+        if (result.size() != 0) {
+            List<MileCost> miles = StreamSupport.stream(Spliterators.spliteratorUnknownSize(mileCostRepository.findAll().iterator(), Spliterator.ORDERED), false)
+                    .collect(Collectors.toCollection(ArrayList::new));
+            mileCost = miles.stream().filter(o -> Objects.equals(o.getParser(), result.get(0).getFlights().get(0).getParser()))
+                    .findFirst().get();
+            // result = setMiles2Trip(result,mileCost);
+            result.get(0).setIsComplete(true);
+        }
+
+        setMiles2Trip(result,mileCost);
         return result;
-       // return getQantas(requestData);
+    }
+
+    private void setMiles2Trip(List<Trip> trips, MileCost mileCost) {
+        if (mileCost == null) return;
+        for (Trip trip : trips) {
+            Integer miles = Integer.valueOf(trip.getClasInfo().stream()
+                    .filter(o -> Objects.equals(o.getReduction(), trip.getClas()))
+                    .findFirst().get().getMileage());
+            trip.setMiles(miles);
+            double parserCost = miles / 100 * mileCost.getCost().doubleValue();//ещё сложить таксы
+            trip.setCost(BigDecimal.valueOf(parserCost));
+        }
     }
 
     private DefaultHttpClient login(String user, String surname, String password) throws IOException, InterruptedException, ExecutionException {
@@ -142,7 +201,7 @@ public class QFParser implements Parser {
         if (Objects.equals(requestData.getType(), "ow")) {
             rt.forEach(o -> o.setQueryId(Long.valueOf("0")));
             ow.forEach(o -> o.setQueryId((long) requestData.getRequest_id()));
-        }else{
+        } else {
             rt.forEach(o -> o.setQueryId((long) requestData.getRequest_id()));
             ow.forEach(o -> o.setQueryId((long) requestData.getRequest_id()));
         }
@@ -163,10 +222,10 @@ public class QFParser implements Parser {
 
     }
 
-    private List<Flight> getFlightDur(List<Flight> flights){
-        for(Flight flight:flights){
+    private List<Flight> getFlightDur(List<Flight> flights) {
+        for (Flight flight : flights) {
             long time = getDateDiff(flight.getFullStartDate(), flight.getFullEndDate(), TimeUnit.MINUTES);
-            flight.setFlightDuration(ParserUtils.convertMinutes((int)time));
+            flight.setFlightDuration(ParserUtils.convertMinutes((int) time));
         }
         return flights;
     }
@@ -198,7 +257,7 @@ public class QFParser implements Parser {
                 o.setLayovers(map.keySet().stream().findFirst().get());
                 o.setFlights(map.values().stream().findFirst().get());
             } else {
-                o.setLayovers("[]");
+                o.setLayovers("[\"00:00\"]");
             }
 
 
@@ -207,9 +266,9 @@ public class QFParser implements Parser {
     }
 
     private String getTripDuration(Trip trip) {
-            long time = getDateDiff(trip.getFlights().get(0).getFullStartDate(),
-                    trip.getFlights().get(trip.getFlights().size() - 1).getFullEndDate(), TimeUnit.MINUTES);
-            return ParserUtils.convertMinutes((int) time);
+        long time = getDateDiff(trip.getFlights().get(0).getFullStartDate(),
+                trip.getFlights().get(trip.getFlights().size() - 1).getFullEndDate(), TimeUnit.MINUTES);
+        return ParserUtils.convertMinutes((int) time);
     }
 
     private List<Trip> setCabin(List<Trip> list, List<String> classes) {
@@ -224,6 +283,7 @@ public class QFParser implements Parser {
                 return new ArrayList<>();
             }
             for (ClasInfo clasInfo : sorted) {
+                trip.setClas(clasInfo.getReduction());
                 trip.getFlights().stream().forEach(o -> o.setCabin(clasInfo.getReduction()));
                 List<Info> infos = new ArrayList<>();
                 trip.getFlights().stream().forEach(o -> infos.add(new Info(o.getDepartPlace(), o.getArrivePlace())));

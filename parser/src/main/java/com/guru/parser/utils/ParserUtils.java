@@ -1,5 +1,6 @@
 package com.guru.parser.utils;
 
+import com.guru.parser.impl.qfparser.Info;
 import com.guru.parser.impl.qfparser.QFParser;
 
 import org.apache.commons.io.IOUtils;

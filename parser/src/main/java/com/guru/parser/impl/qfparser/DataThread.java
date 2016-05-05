@@ -13,7 +13,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import parser.utils.Utils;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
