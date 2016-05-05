@@ -80,7 +80,7 @@ public class QFParser implements Parser {
 
             count++;
             float d = (float) count / fin * 100;
-            queryRepository.updateStatus(find.getId(), (int) d);
+//            queryRepository.updateStatus(find.getId(), (int) d);
 
 
             requestData.setOw_start_date(requestData.getRt_start_date());

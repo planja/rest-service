@@ -3,7 +3,6 @@ package com.guru.parser.dl;
 import com.guru.domain.model.Flight;
 import com.guru.domain.model.Trip;
 import com.guru.parser.interf.Parser;
-import com.guru.parser.ke.*;
 import com.guru.parser.utils.ParserUtils;
 import com.guru.vo.temp.ProxyUtils;
 import com.guru.vo.temp.exceptions.IncorrectCredentials;
@@ -387,7 +386,6 @@ public class DLParser implements Parser {
                         //  trip.getMixedCabins().add("Economy");
 
                   /*      if (info.getMixedCabins().contains("Business") || info.getMixedCabins().contains("First")) {
-
                             info.setMixed(true);
                         }*/
                     }
@@ -396,9 +394,7 @@ public class DLParser implements Parser {
 
                         trip.getFlights().get(j).setCabin("B");
                     /*    info.getMixedCabins().add("Business");
-
                         if (info.getMixedCabins().contains("Economy") || info.getMixedCabins().contains("First")) {
-
                             info.setMixed(true);
                         }*/
                     }
@@ -407,12 +403,9 @@ public class DLParser implements Parser {
 
                         trip.getFlights().get(j).setCabin("F");
                       /*  info.getMixedCabins().add("First");
-
                         if (info.getMixedCabins().contains("Business") || info.getMixedCabins().contains("Economy")) {
-
                             info.setMixed(true);
                         }
-
                         first = true;*/
                     }
                 }

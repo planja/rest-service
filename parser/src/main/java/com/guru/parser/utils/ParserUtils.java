@@ -42,9 +42,11 @@ public class ParserUtils {
 
 
         if (parser instanceof DLParser) {
+            if (totalTime.contains("m"))
+                regexp = "((\\d*)[h]\\s)?(\\d*)[m]";
+            else
+                regexp = "((\\d*)[h])";
 
-            regexp = "((\\d*)[h]\\s)?(\\d*)[m]";
-//            regexp = "((\\d*)\\D+\\s?)?(\\d*)\\D+";
 
         }
 
@@ -52,8 +54,10 @@ public class ParserUtils {
         Matcher matcher = pattern.matcher(totalTime);
         if (matcher.find()) {
             String hours = matcher.group(2) == null ? "0" : matcher.group(2);
-            String minutes = matcher.group(3) != null && matcher.group(3).trim().length() != 0 ? matcher.group(3) : "0";
-            DecimalFormat acFormat = new DecimalFormat("##00");
+            String minutes;
+            if(totalTime.contains("m")) minutes = matcher.group(3) != null && matcher.group(3).trim().length() != 0 ? matcher.group(3) : "0";
+            else
+                minutes = "0"; DecimalFormat acFormat = new DecimalFormat("##00");
             return acFormat.format((long) Integer.parseInt(hours)) + ":" + acFormat.format((long) Integer.parseInt(minutes));
         } else {
             return null;
@@ -261,34 +265,34 @@ public class ParserUtils {
             entity = response.getEntity();
             String html = IOUtils.toString(entity.getContent());
             Document document = Jsoup.parse(html);
-            if(document.getElementsByClass("FlightTrackerList").size() > 0) {
+            if (document.getElementsByClass("FlightTrackerList").size() > 0) {
                 String timeF = time.format(date);
                 String timeT = time.format(dateTo);
                 Elements trList = document.getElementsByClass("FlightTrackerList").first().select(" > tbody > tr");
                 Iterator var16 = trList.iterator();
 
-                while(true) {
-                    while(true) {
+                while (true) {
+                    while (true) {
                         Element trItem;
                         do {
-                            if(!var16.hasNext()) {
+                            if (!var16.hasNext()) {
                                 return info;
                             }
 
-                            trItem = (Element)var16.next();
-                        } while(trItem.select(" > td").size() <= 5);
+                            trItem = (Element) var16.next();
+                        } while (trItem.select(" > td").size() <= 5);
 
                         Iterator al;
                         Element fn;
                         String al1;
                         String fn1;
-                        if(trItem.select(" > td").get(3).text().contains(timeF) && trItem.select(" > td").get(5).text().contains(timeT)) {
+                        if (trItem.select(" > td").get(3).text().contains(timeF) && trItem.select(" > td").get(5).text().contains(timeT)) {
                             ex = new HttpPost("http://www.flightview.com/TravelTools/FlightTrackerQueryResults.asp");
                             nameValuePairs = new ArrayList();
                             al = trItem.select(" > input[type=hidden]").iterator();
 
-                            while(al.hasNext()) {
-                                fn = (Element)al.next();
+                            while (al.hasNext()) {
+                                fn = (Element) al.next();
                                 nameValuePairs.add(new BasicNameValuePair(fn.attr("name"), fn.attr("value")));
                             }
 
@@ -301,15 +305,15 @@ public class ParserUtils {
                             entity = response.getEntity();
                             html = IOUtils.toString(entity.getContent());
                             document = Jsoup.parse(html);
-                            info.setDepart(document.getElementById("txt_depapt") == null?"":document.getElementById("txt_depapt").text());
-                            info.setArrive(document.getElementById("txt_arrapt") == null?"":document.getElementById("txt_arrapt").text());
-                        } else if(trItem.select(" > td").get(3).text().contains(timeF) && !trItem.select(" > td").get(5).text().contains(timeT)) {
+                            info.setDepart(document.getElementById("txt_depapt") == null ? "" : document.getElementById("txt_depapt").text());
+                            info.setArrive(document.getElementById("txt_arrapt") == null ? "" : document.getElementById("txt_arrapt").text());
+                        } else if (trItem.select(" > td").get(3).text().contains(timeF) && !trItem.select(" > td").get(5).text().contains(timeT)) {
                             ex = new HttpPost("http://www.flightview.com/TravelTools/FlightTrackerQueryResults.asp");
                             nameValuePairs = new ArrayList();
                             al = trItem.select(" > input[type=hidden]").iterator();
 
-                            while(al.hasNext()) {
-                                fn = (Element)al.next();
+                            while (al.hasNext()) {
+                                fn = (Element) al.next();
                                 nameValuePairs.add(new BasicNameValuePair(fn.attr("name"), fn.attr("value")));
                             }
 
@@ -322,14 +326,14 @@ public class ParserUtils {
                             entity = response.getEntity();
                             html = IOUtils.toString(entity.getContent());
                             document = Jsoup.parse(html);
-                            info.setDepart(document.getElementById("txt_depapt") == null?"":document.getElementById("txt_depapt").text());
-                        } else if(!trItem.select(" > td").get(3).text().contains(timeF) && trItem.select(" > td").get(5).text().contains(timeT)) {
+                            info.setDepart(document.getElementById("txt_depapt") == null ? "" : document.getElementById("txt_depapt").text());
+                        } else if (!trItem.select(" > td").get(3).text().contains(timeF) && trItem.select(" > td").get(5).text().contains(timeT)) {
                             ex = new HttpPost("http://www.flightview.com/TravelTools/FlightTrackerQueryResults.asp");
                             nameValuePairs = new ArrayList();
                             al = trItem.select(" > input[type=hidden]").iterator();
 
-                            while(al.hasNext()) {
-                                fn = (Element)al.next();
+                            while (al.hasNext()) {
+                                fn = (Element) al.next();
                                 nameValuePairs.add(new BasicNameValuePair(fn.attr("name"), fn.attr("value")));
                             }
 
@@ -342,13 +346,13 @@ public class ParserUtils {
                             entity = response.getEntity();
                             html = IOUtils.toString(entity.getContent());
                             document = Jsoup.parse(html);
-                            info.setArrive(document.getElementById("txt_arrapt") == null?"":document.getElementById("txt_arrapt").text());
+                            info.setArrive(document.getElementById("txt_arrapt") == null ? "" : document.getElementById("txt_arrapt").text());
                         }
                     }
                 }
             } else {
-                info.setDepart(document.getElementById("txt_depapt") == null?"":document.getElementById("txt_depapt").text());
-                info.setArrive(document.getElementById("txt_arrapt") == null?"":document.getElementById("txt_arrapt").text());
+                info.setDepart(document.getElementById("txt_depapt") == null ? "" : document.getElementById("txt_depapt").text());
+                info.setArrive(document.getElementById("txt_arrapt") == null ? "" : document.getElementById("txt_arrapt").text());
             }
         } catch (Exception var20) {
             var20.printStackTrace();
@@ -356,7 +360,6 @@ public class ParserUtils {
 
         return info;
     }
-
 
 
 }

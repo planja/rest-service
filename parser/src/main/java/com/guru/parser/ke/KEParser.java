@@ -44,11 +44,14 @@ import java.util.stream.StreamSupport;
  */
 @Component
 public class KEParser implements Parser {
-    private static final String PARSER_CODE = "KE";
-    private static final HashMap<String, String> PLACES;
 
     @Inject
     private MileCostRepository mileCostRepository;
+
+
+    private static final String PARSER_CODE = "KE";
+    private static final HashMap<String, String> PLACES;
+
 
     static {
         PLACES = new HashMap<String, String>();
@@ -283,7 +286,6 @@ public class KEParser implements Parser {
             default:
                 return new ArrayList<Trip>();
         }
-        System.out.println(cabin);
         nameValuePairs.add(new BasicNameValuePair("flexDays", "0"));
         nameValuePairs.add(new BasicNameValuePair("scheduleDriven", "false"));
         nameValuePairs.add(new BasicNameValuePair("purchaseThirdPerson", "false"));
@@ -333,14 +335,12 @@ public class KEParser implements Parser {
             Trip trip = new Trip();
             JSONObject jsonAward = (JSONObject) outBound.get(i);
             JSONObject availableSeats = (JSONObject) jsonAward.get("remainingSeatsByCabinClass");
-            System.out.println(availableSeats);
             System.out.println(Integer.parseInt(availableSeats.get(cabin).toString()));
             if (Integer.parseInt(availableSeats.get(cabin).toString()) < seats) {
                 continue;
             }
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
             Date arrivalDate = sdf.parse((String) jsonAward.get("arrival"));
             Date departureDate = sdf.parse((String) jsonAward.get("departure"));
             long millis = (arrivalDate.getTime() - departureDate.getTime());
@@ -479,9 +479,9 @@ public class KEParser implements Parser {
             carriers.append("]");
             flightLegs.deleteCharAt(flightLegs.length() - 1);
             flightLegs.append("]");
-                flightNumbers.deleteCharAt(flightNumbers.length() - 1);
-                flightNumbers.append("]");
-                cabins.deleteCharAt(cabins.length() - 1);
+            flightNumbers.deleteCharAt(flightNumbers.length() - 1);
+            flightNumbers.append("]");
+            cabins.deleteCharAt(cabins.length() - 1);
             cabins.append("]");
             if (layovers.length() > 1)
                 layovers.deleteCharAt(layovers.length() - 1);
@@ -495,27 +495,13 @@ public class KEParser implements Parser {
             trip.setUpdatedAt(new Date());
             resultList.add(trip);
         }
-        MileCost mileCost=null;
-        if (resultList.size() != 0) {
-            List<MileCost> miles = StreamSupport.stream(Spliterators.spliteratorUnknownSize(mileCostRepository.findAll().iterator(), Spliterator.ORDERED), false)
-                    .collect(Collectors.toCollection(ArrayList::new));
-            mileCost = miles.stream().filter(o -> Objects.equals(o.getParser(), resultList.get(0).getFlights().get(0).getParser()))
-                    .findFirst().get();
-            // result = setMiles2Trip(result,mileCost);
-            resultList.get(0).setIsComplete(true);
-        }
-        setMiles2Trip(resultList,mileCost);
         return resultList;
     }
 
     private void setMiles2Trip(List<Trip> trips, MileCost mileCost) {
         if (mileCost == null) return;
         for (Trip trip : trips) {
-            Integer miles = Integer.valueOf(trip.getClasInfo().stream()
-                    .filter(o -> Objects.equals(o.getReduction(), trip.getClas()))
-                    .findFirst().get().getMileage());
-            trip.setMiles(miles);
-            double parserCost = miles / 100 * mileCost.getCost().doubleValue();//ещё сложить таксы
+            double parserCost = trip.getMiles() / 100 * mileCost.getCost().doubleValue() + trip.getTax().doubleValue();//ещё сложить таксы
             trip.setCost(BigDecimal.valueOf(parserCost));
         }
     }
@@ -540,7 +526,6 @@ public class KEParser implements Parser {
 
         return true;
     }
-
 
 
     @Override
@@ -572,6 +557,16 @@ public class KEParser implements Parser {
             }
         }
         executor.shutdown();
+        MileCost mileCost = null;
+        if (results.size() != 0) {
+            List<MileCost> miles = StreamSupport.stream(Spliterators.spliteratorUnknownSize(mileCostRepository.findAll().iterator(), Spliterator.ORDERED), false)
+                    .collect(Collectors.toCollection(ArrayList::new));
+            mileCost = miles.stream().filter(o -> Objects.equals(o.getParser(), results.get(0).getFlights().get(0).getParser()))
+                    .findFirst().get();
+            // result = setMiles2Trip(result,mileCost);
+            results.get(0).setIsComplete(true);
+        }
+        setMiles2Trip(results, mileCost);
         return results;
     }
 }
