@@ -70,7 +70,7 @@ public class DLParser implements Parser {
 
     public static final String Parser = "DL";
 
-    public String getResultList(DefaultHttpClient httpclient, HttpPost httpPost, String session, String scriptSessionId, String currentSessionCheckSum, HttpResponse response, HttpEntity entity, List<Trip> tripList, String cacheKey, int index, boolean resum, int requestId) throws IOException, FileNotFoundException, ParseException {
+    public String getResultList(DefaultHttpClient httpclient, HttpPost httpPost, String session, String scriptSessionId, String currentSessionCheckSum, HttpResponse response, HttpEntity entity, List<Trip> tripList, String cacheKey, int index, boolean resum, int requestId, List<Airport> cities) throws IOException, FileNotFoundException, ParseException {
 
         String url = "";
         String dwrInfo = "";
@@ -194,7 +194,7 @@ public class DLParser implements Parser {
 
             String value = resultMap.get(itineraries + "[" + i + "]");
 
-            tripList.add(getTrip(resultMap, value, requestId));
+            tripList.add(getTrip(resultMap, value, requestId, cities));
         }
         PrintWriter pw = new PrintWriter("result.txt");
         pw.write(resultMap.toString());
@@ -202,7 +202,7 @@ public class DLParser implements Parser {
         return numberOfPages;
     }
 
-    public Trip getTrip(HashMap<String, String> resultMap, String itin, int requestId) throws FileNotFoundException, ParseException {
+    public Trip getTrip(HashMap<String, String> resultMap, String itin, int requestId ,List<Airport> cities) throws FileNotFoundException, ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMMMM yyyy", Locale.US);
         Trip trip = new Trip();
         trip.setQueryId((long) requestId);
@@ -218,7 +218,7 @@ public class DLParser implements Parser {
 
         for (String item : sliceList) {
 
-            getSlice(resultMap, trip, item);
+            getSlice(resultMap, trip, item, cities);
         }
 
         getFare(resultMap, trip, totalFare);
@@ -312,7 +312,7 @@ public class DLParser implements Parser {
         return sliceList;
     }
 
-    public void getSlice(HashMap<String, String> resultMap, Trip trip, String slice) throws FileNotFoundException, ParseException {
+    public void getSlice(HashMap<String, String> resultMap, Trip trip, String slice, List<Airport> cities) throws FileNotFoundException, ParseException {
 
         String duration = resultMap.get(slice + ".duration").replaceAll("\"", "");
 
@@ -330,7 +330,7 @@ public class DLParser implements Parser {
         do {
 
             if (resultMap.containsKey(flights + "[" + i + "]")) {
-                Flight flight = getFlight(resultMap, trip, resultMap.get(flights + "[" + i + "]").replaceAll("\"", ""));
+                Flight flight = getFlight(resultMap, trip, resultMap.get(flights + "[" + i + "]").replaceAll("\"", ""), cities);
                 if (flight != null)
                     flight.setPosition(trip.getFlights().size());
                 flight.setTrip(trip);
@@ -441,7 +441,7 @@ public class DLParser implements Parser {
         }
     }
 
-    public Flight getFlight(HashMap<String, String> resultMap, Trip trip, String flight) throws FileNotFoundException {
+    public Flight getFlight(HashMap<String, String> resultMap, Trip trip, String flight,List<Airport> cities) throws FileNotFoundException {
 
         Flight flightResult = new Flight();
         String year = new SimpleDateFormat("yyyy").format(trip.getTripDate());
@@ -467,37 +467,19 @@ public class DLParser implements Parser {
 
         try {
             flightResult.setArriveDate(sdf.parse(flightArrivalDate));
-            List<Airport> cities = StreamSupport.stream(Spliterators.spliteratorUnknownSize(airportRepository.findAll().iterator(), Spliterator.ORDERED), false)
-                    .collect(Collectors.toCollection(ArrayList::new));
             flightResult.setDepartPlace(flightOriginName);
             flightResult.setArrivePlace(flightDestinationName);
-            Iterator it = cities.iterator();
-            int count = 0;
-            while (it.hasNext()) {
-                Airport airport = (Airport) it.next();
-                if (airport.getCodeIata().equals(flightOriginCode)) {
-                    flightResult.setDepartPlace(airport.getCity());
-                    count++;
-                    if (count > 1)
-                        break;
-                    continue;
-                }
-                if (airport.getCodeIata().equals(flightDestinationCode)) {
-                    flightResult.setArrivePlace(airport.getCity());
-                    count++;
-                    if (count > 1)
-                        break;
-                    continue;
-                }
-            }
+
             flightResult.setArrivePlace(flightDestinationName);
             flightResult.setArriveCode(flightDestinationCode);
             flightResult.setDepartCode(flightOriginCode);
+
             //    flightResult.setArriveAirport(flightDestinationCode);
             String arriveTime = sdf2.format(sdf1.parse(flightArrivalTime));
             flightResult.setArriveTime(arriveTime);
             flightResult.setDepartDate(sdf.parse(flightDepartureDate));
             flightResult.setDepartPlace(flightOriginName);
+            setFlightCitiesByCodes(cities,flightResult);
             //     flightResult.setDepartAirport(flightOriginCode);
             String departTime = sdf2.format(sdf1.parse(flightDepartureTime));
             flightResult.setDepartTime(departTime);
@@ -614,7 +596,7 @@ public class DLParser implements Parser {
         return resultMap.get(aircraft + ".shortName").replaceAll("\"", "");
     }
 
-    public List<Trip> getDelta(String origin, String destination, String date, int seats, int requestId) throws IOException, IncorrectCredentials, FileNotFoundException, ParseException {
+    public List<Trip> getDelta(String origin, String destination, String date, int seats, int requestId, List<Airport> cities) throws IOException, IncorrectCredentials, FileNotFoundException, ParseException {
 
         //12/6/2014
         List<Trip> awardList = new LinkedList<>();
@@ -756,13 +738,13 @@ public class DLParser implements Parser {
 
         String cacheKey = html.substring(f1Index, s2Index);
 
-        String numOfPages = getResultList(httpclient, httpPost, session, scriptSessionId, currentSessionCheckSum, response, entity, awardList, cacheKey, 1, false, requestId);
+        String numOfPages = getResultList(httpclient, httpPost, session, scriptSessionId, currentSessionCheckSum, response, entity, awardList, cacheKey, 1, false, requestId, cities);
 
         int pages = Integer.parseInt(numOfPages);
 
         for (int i = 1; i < pages; i++) {
 
-            getResultList(httpclient, httpPost, session, scriptSessionId, currentSessionCheckSum, response, entity, awardList, cacheKey, i + 1, true, requestId);
+            getResultList(httpclient, httpPost, session, scriptSessionId, currentSessionCheckSum, response, entity, awardList, cacheKey, i + 1, true, requestId , cities);
         }
 
         return awardList;
@@ -771,7 +753,8 @@ public class DLParser implements Parser {
 
     @Override
     public Collection<Trip> parse(RequestData requestData) throws Exception {
-        System.out.println(requestData);
+        List<Airport> cities = StreamSupport.stream(Spliterators.spliteratorUnknownSize(airportRepository.findAll().iterator(), Spliterator.ORDERED), false)
+                .collect(Collectors.toCollection(ArrayList::new));
         List<Trip> results = new ArrayList<>();
         String origin = requestData.getOrigin();
         String destination = requestData.getDestination();
@@ -779,20 +762,18 @@ public class DLParser implements Parser {
         int seats = requestData.getSeats();
         int requestId = requestData.getRequest_id();
         List<Date> owDates = requestData.getOwDates();
-        System.out.println(owDates);
 
         List<Date> returnDates = requestData.getReturnDates();
-        System.out.println(returnDates);
         Set<Callable<List<Trip>>> callables = new HashSet<Callable<List<Trip>>>();
 
         for (Date date : owDates) {
             if (date != null)
-                callables.add(new DataThread(date, seats, destination, origin, requestId));
+                callables.add(new DataThread(date, seats, destination, origin, requestId, cities));
         }
         if (requestData.getType().equals("rt")) {
             for (Date date : returnDates) {
                 if (date != null)
-                    callables.add(new DataThread(date, seats, origin, destination, requestId));
+                    callables.add(new DataThread(date, seats, origin, destination, requestId, cities));
             }
         }
         ExecutorService executor = Executors.newCachedThreadPool();
@@ -839,6 +820,30 @@ public class DLParser implements Parser {
             }
         }
         return neededResults;
+    }
+
+    private void setFlightCitiesByCodes (List<Airport> cities,Flight flight){
+        Iterator it = cities.iterator();
+        String departCode = flight.getDepartCode();
+        String arriveCode = flight.getArriveCode();
+        int count = 0;
+        while (it.hasNext()) {
+            Airport airport = (Airport) it.next();
+            if (airport.getCodeIata().equals(departCode)) {
+                flight.setDepartPlace(airport.getCity());
+                count++;
+                if (count > 1)
+                    break;
+                continue;
+            }
+            if (airport.getCodeIata().equals(arriveCode)) {
+                flight.setArrivePlace(airport.getCity());
+                count++;
+                if (count > 1)
+                    break;
+                continue;
+            }
+        }
     }
 
 }

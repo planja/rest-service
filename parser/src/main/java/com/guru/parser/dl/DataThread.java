@@ -1,5 +1,6 @@
 package com.guru.parser.dl;
 
+import com.guru.domain.model.Airport;
 import com.guru.domain.model.Trip;
 import com.guru.parser.ke.KEParser;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -20,13 +21,14 @@ import java.util.concurrent.Callable;
         private String destination;
         private int seats;
         private Date date;
-
-        public DataThread(Date date, int seats, String destination, String origin, int requestId) {
+        private  List<Airport> cities;
+        public DataThread(Date date, int seats, String destination, String origin, int requestId,  List<Airport> cities) {
             this.date = date;
             this.seats = seats;
             this.destination = destination;
             this.origin = origin;
             this.requestId = requestId;
+            this.cities = cities;
         }
 
         @Override
@@ -37,7 +39,7 @@ import java.util.concurrent.Callable;
             System.out.println(date);
             String formattedDate = sdf.format(date);
             DLParser dlParser = new DLParser();
-            trips.addAll(dlParser.getDelta(origin, destination, formattedDate, seats, requestId));
+            trips.addAll(dlParser.getDelta(origin, destination, formattedDate, seats, requestId,  cities));
             return trips;
         }
     }
