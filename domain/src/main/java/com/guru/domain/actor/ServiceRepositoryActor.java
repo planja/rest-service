@@ -4,11 +4,8 @@ package com.guru.domain.actor;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import com.guru.domain.model.MileCost;
-import com.guru.domain.model.Query;
 import com.guru.domain.model.Trip;
 import com.guru.domain.model.TripCost;
-import com.guru.domain.repository.MileCostRepository;
 import com.guru.domain.repository.QueryRepository;
 import com.guru.domain.repository.TripCostRepository;
 import com.guru.domain.repository.TripRepository;
@@ -45,7 +42,8 @@ public class ServiceRepositoryActor extends UntypedActor {
             List<Trip> save = StreamSupport.stream(Spliterators.spliteratorUnknownSize(tripRepository.save(trips).iterator(), Spliterator.ORDERED), false)
                     .collect(Collectors.toCollection(ArrayList::new));
             if (trips.size() != 0) {
-                queryRepository.updateStatus(trips.get(0).getQueryId(),100);
+                if (Objects.equals(trips.get(0).getFlights().get(0).getParser(), "QF"))
+                    queryRepository.updateStatus(trips.get(0).getQueryId(), 100);
 
                 List<TripCost> tripCosts = CalculateCost.calc(save);
                 tripCostRepository.save(tripCosts);

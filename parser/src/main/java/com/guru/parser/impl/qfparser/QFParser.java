@@ -6,6 +6,7 @@ import com.guru.domain.repository.QueryRepository;
 import com.guru.parser.interf.Parser;
 import com.guru.parser.utils.ParserUtils;
 import com.guru.vo.transfer.RequestData;
+import com.guru.vo.utils.ProcessRequestHelperService;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -54,52 +55,100 @@ public class QFParser implements Parser {
         Query find;
         // Iterable<Query> queries  =queryRepository.findAll();
 
-        find = queryRepository.findOne((long) 28);
+        find = queryRepository.findOne((long) requestData.getRequest_id());
 
        /* DefaultHttpClient httpclient = this.login("1924112640", "Kin", "4152");
         ComplexAward complexAward = qfParser.getQantas(httpclient, requestData.getOw_start_date(),
                 requestData.getOw_end_date(), requestData.getOrigin(),
                 requestData.getDestination(), requestData.getSeats());*/
         if (Objects.equals(requestData.getType(), "ow")) {
-            fin = 1;
-            List<Trip> trips = getQantas(requestData);
+            List<Date> owDates = ProcessRequestHelperService
+                    .getDaysBetweenDates(requestData.getOw_start_date(), requestData.getOw_end_date());
+            fin = owDates.size();
+            int num = 0;
+            List<Trip> ow = new ArrayList<>();
+            for (Date date : owDates) {
+                num++;
+                requestData.setOw_end_date(date);
+                requestData.setOw_start_date(date);
+                ow.addAll(getQantas(requestData));
+                if (num != fin) {
 
-            count++;
-            find.setStatus(count / fin * 100);
+                    count++;
+                    float d = (float) count / fin * 100;
+                    //find.setStatus(count / fin * 100);
+                    queryRepository.updateStatus(find.getId(), (int) d);
+                }
+
+
+            }
+
 
             // serviceRepositoryActor.tell(query, serviceRepositoryActor);
 
-            if (trips.size() != 0)
-                trips.get(0).setIsComplete(true);
-            result.addAll(trips);
+            if (ow.size() != 0)
+                ow.get(0).setIsComplete(true);
+            result.addAll(ow);
         } else {
-            fin = 2;
 
-            List<Trip> ow = getQantas(requestData);
+            List<Date> owDates = ProcessRequestHelperService
+                    .getDaysBetweenDates(requestData.getOw_start_date(), requestData.getOw_end_date());
+            List<Date> rtDates = ProcessRequestHelperService
+                    .getDaysBetweenDates(requestData.getRt_start_date(), requestData.getRt_end_date());
+            fin = owDates.size() + rtDates.size();
+            int num = 0;
+            List<Trip> ow = new ArrayList<>();
+            for (Date date : owDates) {
+                num++;
+                requestData.setOw_end_date(date);
+                requestData.setOw_start_date(date);
+                ow.addAll(getQantas(requestData));
+                if (num != fin) {
+
+                    count++;
+                    float d = (float) count / fin * 100;
+                    //find.setStatus(count / fin * 100);
+                    queryRepository.updateStatus(find.getId(), (int) d);
+                }
+
+            }
 
 
-            count++;
-            float d = (float) count / fin * 100;
-//            queryRepository.updateStatus(find.getId(), (int) d);
+           // count++;
+          //  float d = (float) count / fin * 100;
+            //queryRepository.updateStatus(find.getId(), (int) d);
 
 
-            requestData.setOw_start_date(requestData.getRt_start_date());
-            requestData.setOw_end_date(requestData.getRt_end_date());
+            //  requestData.setOw_start_date(requestData.getRt_start_date());
+            //requestData.setOw_end_date(requestData.getRt_end_date());
             String destination = requestData.getDestination();
             String origin = requestData.getOrigin();
             requestData.setOrigin(destination);
             requestData.setDestination(origin);
-            List<Trip> rt = getQantas(requestData);
+            List<Trip> rt = new ArrayList<>();
+            for (Date date : rtDates) {
+                num++;
+                requestData.setOw_start_date(date);
+                requestData.setOw_end_date(date);
+                rt.addAll(getQantas(requestData));
+                if (num != fin) {
+                    count++;
+                    float d = (float) count / fin * 100;
+                    //find.setStatus(count / fin * 100);
+                    queryRepository.updateStatus(find.getId(), (int) d);
+                }
+            }
 
-            count++;
-            d = (float) count / fin * 100;
+
+          //  count++;
+           // d = (float) count / fin * 100;
             //find.setStatus((int) d);
 
 
             result.addAll(ow);
             result.addAll(rt);
         }
-        MileCost mileCost=null;
+        MileCost mileCost = null;
         if (result.size() != 0) {
             List<MileCost> miles = StreamSupport.stream(Spliterators.spliteratorUnknownSize(mileCostRepository.findAll().iterator(), Spliterator.ORDERED), false)
                     .collect(Collectors.toCollection(ArrayList::new));
@@ -109,19 +158,32 @@ public class QFParser implements Parser {
             result.get(0).setIsComplete(true);
         }
 
-        setMiles2Trip(result,mileCost);
+        setMiles2Trip(result, mileCost);
         return result;
     }
 
     private void setMiles2Trip(List<Trip> trips, MileCost mileCost) {
         if (mileCost == null) return;
+        List<String> miles1 = new ArrayList<>();
         for (Trip trip : trips) {
+            for (ClasInfo clasInfo : trip.getClasInfo()) {
+                miles1.add(clasInfo.getMileage());
+            }
+        }
+        for (Trip trip : trips) {
+            String m = trip.getClasInfo().stream().filter(o -> Objects.equals(o.getReduction(), trip.getClas()))
+                    .findFirst().get().getMileage();
+            System.out.println(m);
+
+
             Integer miles = Integer.valueOf(trip.getClasInfo().stream()
                     .filter(o -> Objects.equals(o.getReduction(), trip.getClas()))
                     .findFirst().get().getMileage());
             trip.setMiles(miles);
             double parserCost = miles / 100 * mileCost.getCost().doubleValue();//ещё сложить таксы
             trip.setCost(BigDecimal.valueOf(parserCost));
+
+
         }
     }
 
