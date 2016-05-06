@@ -6,6 +6,7 @@ package com.guru.rest;
 
 import akka.actor.ActorRef;
 import com.guru.vo.transfer.RequestData;
+import com.guru.vo.transfer.RequestDataViewModel;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -15,6 +16,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.text.ParseException;
 
 @Component
 @Path("/")
@@ -52,7 +54,13 @@ public class RESTService {
     @Path("search")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response post(RequestData requestData) {
+    public Response post(RequestDataViewModel requestDataViewModel) throws ParseException {
+
+        //Date date ;
+        // String dateString = "2012-11-13 14:00:00:000";
+
+        RequestData requestData = requestDataViewModel.toRequestData();
+
         //ActorSystem system = ActorSystem.create("ApplicationSystem");
         //ActorRef requestActor = system.actorOf(Props.create(RequestActor.class));
         requestActor.tell(requestData, requestActor);

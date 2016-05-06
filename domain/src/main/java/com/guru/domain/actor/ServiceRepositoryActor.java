@@ -28,9 +28,6 @@ public class ServiceRepositoryActor extends UntypedActor {
     private TripRepository tripRepository;
 
     @Inject
-    private MileCostRepository mileCostRepository;
-
-    @Inject
     private TripCostRepository tripCostRepository;
 
     @Inject
@@ -48,7 +45,7 @@ public class ServiceRepositoryActor extends UntypedActor {
             List<Trip> save = StreamSupport.stream(Spliterators.spliteratorUnknownSize(tripRepository.save(trips).iterator(), Spliterator.ORDERED), false)
                     .collect(Collectors.toCollection(ArrayList::new));
             if (trips.size() != 0) {
-                //queryRepository.updateStatus(trips.get(0).getQueryId(),100);
+                queryRepository.updateStatus(trips.get(0).getQueryId(),100);
 
                 List<TripCost> tripCosts = CalculateCost.calc(save);
                 tripCostRepository.save(tripCosts);
