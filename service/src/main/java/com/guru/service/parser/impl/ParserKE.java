@@ -30,12 +30,6 @@ public class ParserKE extends UntypedActor implements ParserActor {
             log.info("got it KE");
            Collection<Trip> trips = keParser.parse((RequestData) message);
             log.info("find " + trips.size() + " trips");
-            Iterator it = trips.iterator();
-            while(it.hasNext()){
-                Trip trip =(Trip) it.next();
-                System.out.println(trip);
-                System.out.println(trip.getFlights());
-            }
             ActorRef processingResultOfParserActor = context().system().actorOf(Props.create(ProcessingResultOfParserActor.class));
             processingResultOfParserActor.tell(trips, self());
         }

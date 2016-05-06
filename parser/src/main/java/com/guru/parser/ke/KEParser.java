@@ -53,6 +53,9 @@ public class KEParser implements Parser {
     private static final HashMap<String, String> PLACES;
 
 
+    /**
+     * list of cities for this parser
+     */
     static {
         PLACES = new HashMap<String, String>();
         PLACES.put("AXT", "Akita, Akita Airport");
@@ -218,6 +221,12 @@ public class KEParser implements Parser {
         PLACES.put("AUH", "Abu Dhabi, Abu Dhabi International Airport");
     }
 
+
+    /**
+     * logins to the account, returns httpclient
+     * @return
+     * @throws Exception
+     */
     public static DefaultHttpClient login() throws Exception {
         DefaultHttpClient httpclient = new DefaultHttpClient();
         httpclient.getParams().setParameter(ClientPNames.COOKIE_POLICY, CookiePolicy.BROWSER_COMPATIBILITY);
@@ -250,6 +259,18 @@ public class KEParser implements Parser {
         return httpclient;
     }
 
+    /**
+     * does all the job to get results for one day
+     * @param requestId
+     * @param origin
+     * @param destination
+     * @param date
+     * @param seats
+     * @param cabin
+     * @param client
+     * @return
+     * @throws Exception
+     */
     public List<Trip> getKE(int requestId, String origin, String destination, String date, int seats, String cabin, DefaultHttpClient client) throws Exception {
         if (client == null)
             return new ArrayList<Trip>();
@@ -498,6 +519,11 @@ public class KEParser implements Parser {
         return resultList;
     }
 
+    /**
+     * calculates cost of the trip and sets it
+     * @param trips
+     * @param mileCost
+     */
     private void setMiles2Trip(List<Trip> trips, MileCost mileCost) {
         if (mileCost == null) return;
         for (Trip trip : trips) {
@@ -506,6 +532,11 @@ public class KEParser implements Parser {
         }
     }
 
+    /**
+     * finds out whether json is valid or not
+     * @param test
+     * @return
+     */
     private static boolean isJSONValid(String test) {
         try {
 
@@ -527,7 +558,12 @@ public class KEParser implements Parser {
         return true;
     }
 
-
+    /**
+     * finds all the trips for all days, operates other functions
+     * @param requestData
+     * @return
+     * @throws Exception
+     */
     @Override
     public Collection<Trip> parse(RequestData requestData) throws Exception {
         ExecutorService executor = Executors.newCachedThreadPool();

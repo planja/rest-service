@@ -35,8 +35,7 @@ import java.util.zip.GZIPInputStream;
 public class ParserUtils {
 
     public static String getTotalTime(String totalTime, Object parser) throws ParseException {
-        System.out.println(totalTime);
-        String regexp = "";
+       String regexp = "";
         if (parser instanceof QFParser)
             regexp = "((\\d*)h\\s)?(\\d*)m";
 
