@@ -1,7 +1,9 @@
 package com.guru.parser.ke;
 
 import com.guru.domain.model.Flight;
+import com.guru.domain.model.MileCost;
 import com.guru.domain.model.Trip;
+import com.guru.domain.repository.MileCostRepository;
 import com.guru.parser.interf.Parser;
 import com.guru.parser.utils.ParserUtils;
 import com.guru.vo.temp.Account;
@@ -27,18 +29,29 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * Created by Anton on 27.04.2016.
  */
+@Component
 public class KEParser implements Parser {
+
+    @Inject
+    private MileCostRepository mileCostRepository;
+
+
     private static final String PARSER_CODE = "KE";
     private static final HashMap<String, String> PLACES;
+
 
     static {
         PLACES = new HashMap<String, String>();
@@ -237,7 +250,7 @@ public class KEParser implements Parser {
         return httpclient;
     }
 
-    public static List<Trip> getKE(int requestId, String origin, String destination, String date, int seats, String cabin, DefaultHttpClient client) throws Exception {
+    public List<Trip> getKE(int requestId, String origin, String destination, String date, int seats, String cabin, DefaultHttpClient client) throws Exception {
         if (client == null)
             return new ArrayList<Trip>();
         DefaultHttpClient httpclient = new DefaultHttpClient();
@@ -273,7 +286,6 @@ public class KEParser implements Parser {
             default:
                 return new ArrayList<Trip>();
         }
-        System.out.println(cabin);
         nameValuePairs.add(new BasicNameValuePair("flexDays", "0"));
         nameValuePairs.add(new BasicNameValuePair("scheduleDriven", "false"));
         nameValuePairs.add(new BasicNameValuePair("purchaseThirdPerson", "false"));
@@ -323,14 +335,12 @@ public class KEParser implements Parser {
             Trip trip = new Trip();
             JSONObject jsonAward = (JSONObject) outBound.get(i);
             JSONObject availableSeats = (JSONObject) jsonAward.get("remainingSeatsByCabinClass");
-            System.out.println(availableSeats);
             System.out.println(Integer.parseInt(availableSeats.get(cabin).toString()));
             if (Integer.parseInt(availableSeats.get(cabin).toString()) < seats) {
                 continue;
             }
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
             Date arrivalDate = sdf.parse((String) jsonAward.get("arrival"));
             Date departureDate = sdf.parse((String) jsonAward.get("departure"));
             long millis = (arrivalDate.getTime() - departureDate.getTime());
@@ -344,10 +354,10 @@ public class KEParser implements Parser {
             ArrayList fareMapperList = new ArrayList(baseTripFareMapper.keySet());
             String fares = (String) baseTripFareMapper.get(fareMapperList.get(i).toString());
             JSONObject jsonFares = (JSONObject) (((JSONObject) jsonObj.get("fares")).getJSONObject(fares).getJSONArray("fares")).get(0);
-            String miles = ((Integer) jsonFares.get("totalMiles")).toString();
+            Integer miles = ((Integer) jsonFares.get("totalMiles"));
             String tax = ((Double) jsonFares.get("tax")).toString();
-            BigDecimal cost = convertCost(miles, tax);
-            trip.setCost(cost);
+            trip.setTax(new BigDecimal(tax));
+            trip.setMiles(miles);
             //   info.setCurrency((jsonFares.get("currencyCode")).toString());
           /*  if (cabin.equals("ECONOMY")) {
                award.setEconomy(info);
@@ -394,7 +404,6 @@ public class KEParser implements Parser {
                 //   flight.setArriveCity(arriveInfo[0]);
                 //   flight.setDepartAirport(departInfo[1]);
                 flight.setDepartPlace(departInfo[0]);
-                flight.setArriveCode(arriveCode);
                 flight.setArriveCode(arriveCode);
                 flight.setDepartCode(departCode);
                 //   flight.setDepartCity(departInfo[0]);
@@ -486,8 +495,15 @@ public class KEParser implements Parser {
             trip.setUpdatedAt(new Date());
             resultList.add(trip);
         }
-
         return resultList;
+    }
+
+    private void setMiles2Trip(List<Trip> trips, MileCost mileCost) {
+        if (mileCost == null) return;
+        for (Trip trip : trips) {
+            double parserCost = trip.getMiles() / 100 * mileCost.getCost().doubleValue() + trip.getTax().doubleValue();//ещё сложить таксы
+            trip.setCost(BigDecimal.valueOf(parserCost));
+        }
     }
 
     private static boolean isJSONValid(String test) {
@@ -511,12 +527,6 @@ public class KEParser implements Parser {
         return true;
     }
 
-    private static BigDecimal convertCost(String miles, String tax) {
-        BigDecimal min = new BigDecimal(1000 + ".0");
-        BigDecimal max = new BigDecimal(2000 + ".0");
-        BigDecimal randomBigDecimal = min.add(new BigDecimal(Math.random()).multiply(max.subtract(min)));
-        return randomBigDecimal.setScale(2, BigDecimal.ROUND_HALF_UP);
-    }
 
     @Override
     public Collection<Trip> parse(RequestData requestData) throws Exception {
@@ -547,6 +557,16 @@ public class KEParser implements Parser {
             }
         }
         executor.shutdown();
+        MileCost mileCost = null;
+        if (results.size() != 0) {
+            List<MileCost> miles = StreamSupport.stream(Spliterators.spliteratorUnknownSize(mileCostRepository.findAll().iterator(), Spliterator.ORDERED), false)
+                    .collect(Collectors.toCollection(ArrayList::new));
+            mileCost = miles.stream().filter(o -> Objects.equals(o.getParser(), results.get(0).getFlights().get(0).getParser()))
+                    .findFirst().get();
+            // result = setMiles2Trip(result,mileCost);
+            results.get(0).setIsComplete(true);
+        }
+        setMiles2Trip(results, mileCost);
         return results;
     }
 }
