@@ -35,6 +35,9 @@ public class Airport {
     @Column(name = "lon")
     private BigDecimal lon;
 
+    public Airport() {
+    }
+
     @Override
     public String toString() {
         return "Airport{" +

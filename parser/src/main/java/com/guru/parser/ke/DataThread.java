@@ -19,7 +19,6 @@ public class DataThread implements Callable<List<Trip>> {
     private List<String> cabins;
     private int seats;
     private Date date;
-    private SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
 
     public DataThread(Date date, int seats, List<String> cabins, String destination, String origin, int requestId) {
         this.date = date;
@@ -34,6 +33,7 @@ public class DataThread implements Callable<List<Trip>> {
 
     public List<Trip> call() throws Exception {
         List<Trip> trips = new ArrayList<Trip>();
+        SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
         String formattedDate = sdf.format(date);
         for (String cabin : cabins) {
             KEParser keParser = new KEParser();

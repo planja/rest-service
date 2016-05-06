@@ -98,6 +98,36 @@ public class Trip implements scala.Serializable{
     public Trip() {
     }
 
+    @Override
+    public String toString() {
+        return "Trip{" +
+                "id=" + id +
+                ", departCode='" + departCode + '\'' +
+                ", arriveCode='" + arriveCode + '\'' +
+                ", departPlace='" + departPlace + '\'' +
+                ", arrivePlace='" + arrivePlace + '\'' +
+                ", tripDate=" + tripDate +
+                ", tripDuration='" + tripDuration + '\'' +
+                ", cost=" + cost +
+                ", queryId=" + queryId +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", stops='" + stops + '\'' +
+                ", cabins='" + cabins + '\'' +
+                ", carriers='" + carriers + '\'' +
+                ", layovers='" + layovers + '\'' +
+                ", flightLegs='" + flightLegs + '\'' +
+                ", flightNumbers='" + flightNumbers + '\'' +
+                ", flights=" + flights +
+                ", direction=" + direction +
+                ", clasInfo=" + clasInfo +
+                ", clas='" + clas + '\'' +
+                ", isComplete=" + isComplete +
+                ", miles=" + miles +
+                ", tax=" + tax +
+                '}';
+    }
+
     public Trip(Long id, String departCode, String arriveCode, String departPlace, String arrivePlace, Date tripDate, String tripDuration, BigDecimal cost) {
         this.id = id;
         this.departCode = departCode;
@@ -351,26 +381,4 @@ public class Trip implements scala.Serializable{
         this.isComplete = isComplete;
     }
 
-    @Override
-    public String toString() {
-        return "Trip{" +
-                "id=" + id +
-                ", departCode='" + departCode + '\'' +
-                ", arriveCode='" + arriveCode + '\'' +
-                ", departPlace='" + departPlace + '\'' +
-                ", arrivePlace='" + arrivePlace + '\'' +
-                ", tripDate=" + tripDate +
-                ", tripDuration='" + tripDuration + '\'' +
-                ", cost=" + cost +
-                ", requestId=" + queryId +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                ", stops='" + stops + '\'' +
-                ", cabins='" + cabins + '\'' +
-                ", carriers='" + carriers + '\'' +
-                ", layovers='" + layovers + '\'' +
-                ", flightLegs='" + flightLegs + '\'' +
-                ", flightNumbers='" + flightNumbers + '\'' +
-                '}';
-    }
 }
