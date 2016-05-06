@@ -20,7 +20,6 @@ import java.util.concurrent.Callable;
         private String destination;
         private int seats;
         private Date date;
-        private SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
 
         public DataThread(Date date, int seats, String destination, String origin, int requestId) {
             this.date = date;
@@ -34,6 +33,8 @@ import java.util.concurrent.Callable;
 
         public List<Trip> call() throws Exception {
             List<Trip> trips = new ArrayList<Trip>();
+            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+            System.out.println(date);
             String formattedDate = sdf.format(date);
             DLParser dlParser = new DLParser();
             trips.addAll(dlParser.getDelta(origin, destination, formattedDate, seats, requestId));

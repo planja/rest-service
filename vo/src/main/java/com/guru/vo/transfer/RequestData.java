@@ -163,9 +163,32 @@ public class RequestData {
                 this.getOw_except_dates().stream().map(ExceptDate::getDate).collect(Collectors.toList()));
     }
 
+    @Override
+    public String toString() {
+        return "RequestData{" +
+                "parsers=" + parsers +
+                ", user='" + user + '\'' +
+                ", origin='" + origin + '\'' +
+                ", destination='" + destination + '\'' +
+                ", ow_start_date=" + ow_start_date +
+                ", ow_end_date=" + ow_end_date +
+                ", rt_start_date=" + rt_start_date +
+                ", rt_end_date=" + rt_end_date +
+                ", ow_except_dates=" + ow_except_dates +
+                ", rt_except_dates=" + rt_except_dates +
+                ", seats=" + seats +
+                ", cabins=" + cabins +
+                ", type='" + type + '\'' +
+                ", request_id=" + request_id +
+                ", user_id=" + user_id +
+                ", owDates=" + owDates +
+                ", returnDates=" + returnDates +
+                '}';
+    }
+
     public List<Date> getReturnDates() throws ParseException {
         List<Date> dates = ProcessRequestHelperService.getDaysBetweenDates(getOw_start_date(), getOw_end_date());
-        List<Date> returnDates = ProcessRequestHelperService.getReturnDates(getRt_start_date(), getRt_end_date(), dates);
+      List<Date> returnDates = ProcessRequestHelperService.getReturnDates(getRt_start_date(), getRt_end_date(), dates);
         return ProcessRequestHelperService.getRDates(dates, returnDates,
                 this.getRt_except_dates().stream().map(ExceptDate::getDate).collect(Collectors.toList()));
 
