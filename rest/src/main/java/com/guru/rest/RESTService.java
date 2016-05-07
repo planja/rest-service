@@ -7,6 +7,8 @@ package com.guru.rest;
 import akka.actor.ActorRef;
 import com.guru.vo.transfer.RequestData;
 import com.guru.vo.transfer.RequestDataViewModel;
+import com.guru.vo.transfer.Status;
+import com.guru.vo.transfer.StatusCount;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -55,14 +57,11 @@ public class RESTService {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response post(RequestDataViewModel requestDataViewModel) throws ParseException {
-
-        //Date date ;
-        // String dateString = "2012-11-13 14:00:00:000";
-
         RequestData requestData = requestDataViewModel.toRequestData();
 
-        //ActorSystem system = ActorSystem.create("ApplicationSystem");
-        //ActorRef requestActor = system.actorOf(Props.create(RequestActor.class));
+        Status.statusCountList.add(
+                new StatusCount((long) requestData.getRequest_id(), 0, Status.CalculateStatus(requestData)));
+
         requestActor.tell(requestData, requestActor);
         return Response.status(Response.Status.OK).build();
     }

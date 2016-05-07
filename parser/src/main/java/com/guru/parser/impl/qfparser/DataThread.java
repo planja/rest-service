@@ -3,6 +3,7 @@ package com.guru.parser.impl.qfparser;
 import com.guru.domain.model.ClasInfo;
 import com.guru.domain.model.Flight;
 import com.guru.domain.model.Trip;
+import com.guru.parser.account.Account;
 import com.guru.parser.utils.ParserUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -28,10 +29,12 @@ class DataThread implements Callable<Trip> {
     private Trip trip;
     private DefaultHttpClient httpclient;
     private int counter = 0;
+    private Account account;
 
-    public DataThread(Trip trip, DefaultHttpClient httpclient) {
+    public DataThread(Trip trip, DefaultHttpClient httpclient, Account account) {
         this.trip = trip;
         this.httpclient = httpclient;
+        this.account = account;
     }
 
     public Trip call() throws IOException, Exception {
@@ -40,6 +43,10 @@ class DataThread implements Callable<Trip> {
         httpclient.getParams().setParameter("http.protocol.cookie-policy", "compatibility");
         httpclient.setCookieStore(new BasicCookieStore());
         httpclient.setRedirectStrategy(new LaxRedirectStrategy());
+
+        QFParser.setClientProxyProperties(httpclient, account);
+
+
         httpclient.getParams().setParameter("http.useragent", "Mozilla/5.0 (Windows NT 6.2; WOW64; rv:32.0) Gecko/20100101 Firefox/32.0");
         Iterator sdf = this.httpclient.getCookieStore().getCookies().iterator();
 
@@ -139,6 +146,10 @@ class DataThread implements Callable<Trip> {
         httpclient.getParams().setParameter("http.protocol.cookie-policy", "compatibility");
         httpclient.setCookieStore(new BasicCookieStore());
         httpclient.setRedirectStrategy(new LaxRedirectStrategy());
+
+        QFParser.setClientProxyProperties(httpclient, account);
+
+
         httpclient.getParams().setParameter("http.useragent", "Mozilla/5.0 (Windows NT 6.2; WOW64; rv:32.0) Gecko/20100101 Firefox/32.0");
         Iterator httGet = this.httpclient.getCookieStore().getCookies().iterator();
 
@@ -168,14 +179,12 @@ class DataThread implements Callable<Trip> {
                 String miles = milesJson.substring(fIndex, sIndex);
                 Pattern pattern = Pattern.compile("[A-Za-z]");
                 Matcher matcher = pattern.matcher(miles);
-                if (matcher.matches() || miles.contains("\"")){
+                if (matcher.matches() || miles.contains("\"")) {
                     info.setMileage("");
                     System.out.println("bad");
                     System.out.println(miles);
                     info.setStatus(0);
-                }
-
-                else
+                } else
                     info.setMileage(miles);
             } else {
                 info.setMileage("");

@@ -1,18 +1,30 @@
 package com.guru.parser.impl.qfparser;
 
-import com.guru.domain.model.*;
+import com.guru.domain.model.ClasInfo;
+import com.guru.domain.model.Flight;
+import com.guru.domain.model.MileCost;
+import com.guru.domain.model.Trip;
 import com.guru.domain.repository.MileCostRepository;
 import com.guru.domain.repository.QueryRepository;
+import com.guru.parser.account.Account;
 import com.guru.parser.interf.Parser;
+import com.guru.parser.proxy.ProxyUtils;
+import com.guru.parser.utils.AccountUtils;
 import com.guru.parser.utils.ParserUtils;
 import com.guru.vo.transfer.RequestData;
-import com.guru.vo.utils.ProcessRequestHelperService;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.Credentials;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.apache.http.message.BasicNameValuePair;
@@ -48,118 +60,46 @@ public class QFParser implements Parser {
     public Collection<Trip> parse(RequestData requestData) throws Exception {
 
 
-        Date start, end;
-        List<Trip> result = new ArrayList<>();
-        int count = 0;
-        int fin;
-        Query find;
-        // Iterable<Query> queries  =queryRepository.findAll();
-
-        find = queryRepository.findOne((long) requestData.getRequest_id());
-
-       /* DefaultHttpClient httpclient = this.login("1924112640", "Kin", "4152");
-        ComplexAward complexAward = qfParser.getQantas(httpclient, requestData.getOw_start_date(),
-                requestData.getOw_end_date(), requestData.getOrigin(),
-                requestData.getDestination(), requestData.getSeats());*/
-        if (Objects.equals(requestData.getType(), "ow")) {
-            List<Date> owDates = ProcessRequestHelperService
-                    .getDaysBetweenDates(requestData.getOw_start_date(), requestData.getOw_end_date());
-            fin = owDates.size();
-            int num = 0;
-            List<Trip> ow = new ArrayList<>();
-            for (Date date : owDates) {
-                num++;
-                requestData.setOw_end_date(date);
-                requestData.setOw_start_date(date);
-                ow.addAll(getQantas(requestData));
-                if (num != fin) {
-
-                    count++;
-                    float d = (float) count / fin * 100;
-                    //find.setStatus(count / fin * 100);
-                    queryRepository.updateStatus(find.getId(), (int) d);
-                }
-
-
-            }
-
-
-            // serviceRepositoryActor.tell(query, serviceRepositoryActor);
-
-            if (ow.size() != 0)
-                ow.get(0).setIsComplete(true);
-            result.addAll(ow);
-        } else {
-
-            List<Date> owDates = ProcessRequestHelperService
-                    .getDaysBetweenDates(requestData.getOw_start_date(), requestData.getOw_end_date());
-            List<Date> rtDates = ProcessRequestHelperService
-                    .getDaysBetweenDates(requestData.getRt_start_date(), requestData.getRt_end_date());
-            fin = owDates.size() + rtDates.size();
-            int num = 0;
-            List<Trip> ow = new ArrayList<>();
-            for (Date date : owDates) {
-                num++;
-                requestData.setOw_end_date(date);
-                requestData.setOw_start_date(date);
-                ow.addAll(getQantas(requestData));
-                if (num != fin) {
-
-                    count++;
-                    float d = (float) count / fin * 100;
-                    //find.setStatus(count / fin * 100);
-                    queryRepository.updateStatus(find.getId(), (int) d);
-                }
-
-            }
-
-
-           // count++;
-          //  float d = (float) count / fin * 100;
-            //queryRepository.updateStatus(find.getId(), (int) d);
-
-
-            //  requestData.setOw_start_date(requestData.getRt_start_date());
-            //requestData.setOw_end_date(requestData.getRt_end_date());
-            String destination = requestData.getDestination();
-            String origin = requestData.getOrigin();
-            requestData.setOrigin(destination);
-            requestData.setDestination(origin);
-            List<Trip> rt = new ArrayList<>();
-            for (Date date : rtDates) {
-                num++;
-                requestData.setOw_start_date(date);
-                requestData.setOw_end_date(date);
-                rt.addAll(getQantas(requestData));
-                if (num != fin) {
-                    count++;
-                    float d = (float) count / fin * 100;
-                    //find.setStatus(count / fin * 100);
-                    queryRepository.updateStatus(find.getId(), (int) d);
-                }
-            }
-
-
-          //  count++;
-           // d = (float) count / fin * 100;
-            //find.setStatus((int) d);
-
-
-            result.addAll(ow);
-            result.addAll(rt);
-        }
+        List<Trip> result = getQantas(requestData);
         MileCost mileCost = null;
         if (result.size() != 0) {
             List<MileCost> miles = StreamSupport.stream(Spliterators.spliteratorUnknownSize(mileCostRepository.findAll().iterator(), Spliterator.ORDERED), false)
                     .collect(Collectors.toCollection(ArrayList::new));
             mileCost = miles.stream().filter(o -> Objects.equals(o.getParser(), result.get(0).getFlights().get(0).getParser()))
                     .findFirst().get();
-            // result = setMiles2Trip(result,mileCost);
             result.get(0).setIsComplete(true);
         }
 
         setMiles2Trip(result, mileCost);
         return result;
+    }
+
+    static void setClientProxyProperties(DefaultHttpClient httpclient, Account account) throws IOException {
+        String credent = null;
+        String ipport = null;
+
+        if (account.isProxy()) {
+
+            credent = account.getProxy_login() + ":" + account.getProxy_password();
+            ipport = account.getIp() + ":" + account.getPort();
+
+        } else {
+
+            String proxyInfo = ProxyUtils.getProxy("AA");
+
+            credent = proxyInfo.split("@")[0];
+            ipport = proxyInfo.split("@")[1];
+        }
+
+        HttpHost proxy = new HttpHost(ipport.split(":")[0], Integer.parseInt(ipport.split(":")[1]));
+
+        Credentials credentials = new UsernamePasswordCredentials(credent.split(":")[0], credent.split(":")[1]);
+        AuthScope authScope = new AuthScope(ipport.split(":")[0], Integer.parseInt(ipport.split(":")[1]));
+        CredentialsProvider credsProvider = new BasicCredentialsProvider();
+        credsProvider.setCredentials(authScope, credentials);
+
+        httpclient.setCredentialsProvider(credsProvider);
+        httpclient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
     }
 
     private void setMiles2Trip(List<Trip> trips, MileCost mileCost) {
@@ -187,11 +127,14 @@ public class QFParser implements Parser {
         }
     }
 
-    private DefaultHttpClient login(String user, String surname, String password) throws IOException, InterruptedException, ExecutionException {
+    private DefaultHttpClient login(String user, String surname, String password, Account account) throws IOException, InterruptedException, ExecutionException {
         DefaultHttpClient httpclient = new DefaultHttpClient();
         httpclient.getParams().setParameter("http.protocol.cookie-policy", "compatibility");
         httpclient.setCookieStore(new BasicCookieStore());
         httpclient.setRedirectStrategy(new LaxRedirectStrategy());
+
+        setClientProxyProperties(httpclient, account);
+
         httpclient.getParams().setParameter("http.useragent", "Mozilla/5.0 (Windows NT 6.2; WOW64; rv:32.0) Gecko/20100101 Firefox/32.0");
         HttpPost httget = new HttpPost("http://www.qantas.com.au");
         httpclient.execute(httget).close();
@@ -207,20 +150,9 @@ public class QFParser implements Parser {
     }
 
     private List<Trip> getQantas(RequestData requestData) throws Exception, IOException, InterruptedException, ExecutionException, ParseException {
-        DefaultHttpClient httpclient = this.login("1924112640", "Kin", "4152");
-        /*Date start, end;
-        if (Objects.equals(requestData.getType(), "ow")) {
-            start = requestData.getOw_start_date();
-            end = requestData.getOw_end_date();
-        } else {
-            start = requestData.getRt_start_date();
-            end = requestData.getRt_end_date();
-        }*/
-        System.out.println(requestData.getOw_start_date());
-        System.out.println(requestData.getOw_end_date());
-        System.out.println(requestData.getOrigin());
-        System.out.println(requestData.getDestination());
-        System.out.println(requestData.getSeats());
+        Account account = AccountUtils.getAccount("QF");
+        DefaultHttpClient httpclient = this.login("1924112640", "Kin", "4152", account);
+
 
         SimpleDateFormat sdf1 = new SimpleDateFormat("yyyyMMdd");
         List<Trip> awardList = new ArrayList<>
@@ -234,7 +166,7 @@ public class QFParser implements Parser {
 
         while (futureList.hasNext()) {
             Trip trip = (Trip) futureList.next();
-            callables.add(new DataThread(trip, httpclient));
+            callables.add(new DataThread(trip, httpclient, account));
         }
 
         List futureList1 = executor.invokeAll(callables);
@@ -267,11 +199,6 @@ public class QFParser implements Parser {
             rt.forEach(o -> o.setQueryId((long) requestData.getRequest_id()));
             ow.forEach(o -> o.setQueryId((long) requestData.getRequest_id()));
         }
-
-     /* parser.qf.QFParser qfParser = new parser.qf.QFParser();
-        ComplexAward complexAward = qfParser.getQantas(httpclient, requestData.getOw_start_date(),
-                requestData.getOw_end_date(), requestData.getOrigin(),
-                requestData.getDestination(), requestData.getSeats());*/
 
 
         trips.addAll(ow);
@@ -351,11 +278,20 @@ public class QFParser implements Parser {
                 trip.getFlights().stream().forEach(o -> infos.add(new Info(o.getDepartPlace(), o.getArrivePlace())));
                 for (int i = 0; i < trip.getFlights().size(); i++) {
                     for (int j = 0; j < clasInfo.getMixedCabins().size(); j++) {
-                        String str = clasInfo.getMixedCabins().get(j);
+                        String str = clasInfo.getMixedCabins().get(j);///????
                         List<String> strings = Arrays.asList(str.split(" "));
                         if (infos.get(i).getArrive().contains(strings.get(3).substring(0, strings.get(3).length() - 1)) &&
-                                infos.get(i).getDepart().contains(strings.get(1)))
-                            trip.getFlights().get(i).setCabin(strings.get(4).substring(0, 1));
+                                infos.get(i).getDepart().contains(strings.get(1))) {
+                            String clas = "N";
+                            if (str.contains("Economy"))
+                                clas = "E";
+                            if (str.contains("Business"))
+                                clas = "B";
+                            if (str.contains("First"))
+                                clas = "F";
+                            trip.getFlights().get(i).setCabin(clas);
+                        }
+
                     }
                 }
                 trip.setCabins(getCabins(trip.getFlights()));

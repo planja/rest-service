@@ -189,6 +189,10 @@ public class ParserUtils {
         return info;
     }*/
 
+    public static int randInt(int max) {
+        return (int)(Math.random() * (double)max);
+    }
+
     public static String gzipResponseToString(InputStream inputStream) {
         StringBuffer buffer = new StringBuffer();
 
