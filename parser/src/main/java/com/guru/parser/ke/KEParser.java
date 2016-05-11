@@ -7,20 +7,27 @@ import com.guru.domain.repository.MileCostRepository;
 import com.guru.parser.interf.Parser;
 import com.guru.parser.utils.ParserUtils;
 import com.guru.vo.temp.Account;
-import com.guru.vo.temp.AccountUtils;
+import com.guru.vo.temp.ProxyUtils;
 import com.guru.vo.transfer.RequestData;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.Credentials;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.params.ClientPNames;
 import org.apache.http.client.params.CookiePolicy;
 import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.CoreProtocolPNames;
@@ -32,6 +39,7 @@ import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -45,13 +53,8 @@ import java.util.stream.StreamSupport;
 @Component
 public class KEParser implements Parser {
 
-    @Inject
-    private MileCostRepository mileCostRepository;
-
-
     private static final String PARSER_CODE = "KE";
     private static final HashMap<String, String> PLACES;
-
 
     /**
      * list of cities for this parser
@@ -221,24 +224,53 @@ public class KEParser implements Parser {
         PLACES.put("AUH", "Abu Dhabi, Abu Dhabi International Airport");
     }
 
+    @Inject
+    private MileCostRepository mileCostRepository;
 
     /**
      * logins to the account, returns httpclient
+     *
      * @return
      * @throws Exception
      */
-    public static DefaultHttpClient login() throws Exception {
+    public static DefaultHttpClient login(Account account) throws Exception {
+        boolean isActive = false;
         DefaultHttpClient httpclient = new DefaultHttpClient();
         httpclient.getParams().setParameter(ClientPNames.COOKIE_POLICY, CookiePolicy.BROWSER_COMPATIBILITY);
         httpclient.setCookieStore(new BasicCookieStore());
         httpclient.getParams().setParameter(CoreProtocolPNames.USER_AGENT, "Mozilla/5.0 (Windows NT 6.2; WOW64; rv:32.0) Gecko/20100101 Firefox/32.0");
+        HttpGet httpGet;
         HttpResponse response = null;
-        Account account = AccountUtils.getAccount("KE");
         HttpEntity entity = null;
-        HttpGet httpGet = new HttpGet("https://www.koreanair.com/global/en.html");
-        response = httpclient.execute(httpGet);
-        entity = response.getEntity();
-        String html = ParserUtils.responseToString(entity.getContent());
+        String html;
+        String credent = null;
+        String ipport = null;
+        while (!isActive) {
+            String proxyInfo = ProxyUtils.getProxy("KE");
+            credent = proxyInfo.split("@")[0];
+            ipport = proxyInfo.split("@")[1];
+            setProxyInfo(httpclient, credent, ipport);
+            httpGet = new HttpGet("https://www.koreanair.com/global/en.html");
+            response = httpclient.execute(httpGet);
+            entity = response.getEntity();
+            html = ParserUtils.responseToString(entity.getContent());
+            if (response.getStatusLine().getStatusCode() == 200) {
+                isActive = true;
+                ProxyUtils.markProxyAs(proxyInfo, PARSER_CODE, true);
+            } else
+                ProxyUtils.markProxyAs(proxyInfo, PARSER_CODE, false);
+        }
+        if (account.getProxy_login() != null && account.getProxy_password() != null) {
+            setProxyInfo(httpclient, account.getProxy_login(), account.getProxy_password());
+            httpGet = new HttpGet("https://www.koreanair.com/global/en.html");
+            response = httpclient.execute(httpGet);
+            entity = response.getEntity();
+            html = ParserUtils.responseToString(entity.getContent());
+            if (response.getStatusLine().getStatusCode() != 200) {
+                setProxyInfo(httpclient, credent, ipport);
+                ProxyUtils.linkProxyToAccount(account.getId(), ipport, PARSER_CODE);
+            }
+        }
         httpGet = new HttpGet("https://www.koreanair.com/content/koreanair-admin/cross-region/en/login-config/jcr:content/par/login_0.html");
         response = httpclient.execute(httpGet);
         entity = response.getEntity();
@@ -248,19 +280,59 @@ public class KEParser implements Parser {
                 ContentType.create("application/json")));
         response = httpclient.execute(httpPost);
         if (response.getStatusLine().toString().contains("500")) {
+
             return null;
         }
         entity = response.getEntity();
         html = ParserUtils.responseToString(entity.getContent());
         Document loadingDoc = Jsoup.parse(html);
-        if (loadingDoc.title().equals("Service Unavailable")) {
-            login();
-        }
+
         return httpclient;
     }
 
     /**
+     * finds out whether json is valid or not
+     *
+     * @param test
+     * @return
+     */
+    private static boolean isJSONValid(String test) {
+        try {
+
+            new JSONObject(test);
+
+        } catch (JSONException ex) {
+
+            try {
+
+                new JSONArray(test);
+
+            } catch (JSONException ex1) {
+
+                return false;
+            }
+        }
+
+
+        return true;
+    }
+
+    private static void setProxyInfo(DefaultHttpClient httpclient, String credent, String ipport) throws IOException {
+        HttpResponse response = null;
+        HttpEntity entity = null;
+
+        HttpHost proxy = new HttpHost(ipport.split(":")[0], Integer.parseInt(ipport.split(":")[1]));
+        Credentials credentials = new UsernamePasswordCredentials(credent.split(":")[0], credent.split(":")[1]);
+        AuthScope authScope = new AuthScope(ipport.split(":")[0], Integer.parseInt(ipport.split(":")[1]));
+        CredentialsProvider credsProvider = new BasicCredentialsProvider();
+        credsProvider.setCredentials(authScope, credentials);
+        httpclient.setCredentialsProvider(credsProvider);
+        httpclient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+    }
+
+    /**
      * does all the job to get results for one day
+     *
      * @param requestId
      * @param origin
      * @param destination
@@ -291,7 +363,6 @@ public class KEParser implements Parser {
         response = httpclient.execute(httpGet);
         entity = response.getEntity();
         html = ParserUtils.responseToString(entity.getContent());
-
         String url = "https://www.koreanair.com/api/fly/award/from/" + origin + "/to/" + destination + "/on/" + date + "?";
         List<NameValuePair> nameValuePairs = new ArrayList<>();
         switch (cabin) {
@@ -326,7 +397,6 @@ public class KEParser implements Parser {
         nameValuePairs.add(new BasicNameValuePair("_", new Date().getTime() + ""));
         url = url + URLEncodedUtils.format(nameValuePairs, "utf-8");
         httpGet = new HttpGet(url);
-
         response = httpclient.execute(httpGet);
         entity = response.getEntity();
         html = ParserUtils.responseToString(entity.getContent());
@@ -521,6 +591,7 @@ public class KEParser implements Parser {
 
     /**
      * calculates cost of the trip and sets it
+     *
      * @param trips
      * @param mileCost
      */
@@ -533,33 +604,8 @@ public class KEParser implements Parser {
     }
 
     /**
-     * finds out whether json is valid or not
-     * @param test
-     * @return
-     */
-    private static boolean isJSONValid(String test) {
-        try {
-
-            new JSONObject(test);
-
-        } catch (JSONException ex) {
-
-            try {
-
-                new JSONArray(test);
-
-            } catch (JSONException ex1) {
-
-                return false;
-            }
-        }
-
-
-        return true;
-    }
-
-    /**
      * finds all the trips for all days, operates other functions
+     *
      * @param requestData
      * @return
      * @throws Exception
@@ -568,7 +614,6 @@ public class KEParser implements Parser {
     public Collection<Trip> parse(RequestData requestData) throws Exception {
         ExecutorService executor = Executors.newCachedThreadPool();
         List<Trip> results = new ArrayList<>();
-        DefaultHttpClient loggedInClient = login();
         String origin = requestData.getOrigin();
         String destination = requestData.getDestination();
         List<String> cabins = requestData.getCabins();
@@ -578,10 +623,12 @@ public class KEParser implements Parser {
         List<Date> returnDates = requestData.getReturnDates();
         Set<Callable<List<Trip>>> callables = new HashSet<Callable<List<Trip>>>();
         for (Date date : owDates) {
-            callables.add(new DataThread(date, seats, cabins, destination, origin, requestId));
+            if (date != null)
+                callables.add(new DataThread(date, seats, cabins, destination, origin, requestId));
         }
         for (Date date : returnDates) {
-            callables.add(new DataThread(date, seats, cabins, origin, destination, requestId));
+            if (date != null)
+                callables.add(new DataThread(date, seats, cabins, origin, destination, requestId));
         }
         List<Future<List<Trip>>> futureList = executor.invokeAll(callables);
         for (Future<List<Trip>> futureItem : futureList) {
@@ -605,4 +652,6 @@ public class KEParser implements Parser {
         setMiles2Trip(results, mileCost);
         return results;
     }
+
+
 }

@@ -1,6 +1,8 @@
 package com.guru.parser.ke;
 
 import com.guru.domain.model.Trip;
+import com.guru.vo.temp.Account;
+import com.guru.vo.temp.AccountUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.text.SimpleDateFormat;
@@ -36,8 +38,22 @@ public class DataThread implements Callable<List<Trip>> {
         SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
         String formattedDate = sdf.format(date);
         for (String cabin : cabins) {
+            if (cabin.equals("P"))
+                continue;
+
             KEParser keParser = new KEParser();
-            DefaultHttpClient loggedInClient = keParser.login();
+            Account account = AccountUtils.getAccount("KE");
+            DefaultHttpClient loggedInClient = null;
+            while (loggedInClient == null) {
+                loggedInClient = keParser.login(account);
+                if (loggedInClient == null) {
+                    if (account != null)
+                        AccountUtils.badAccount(account.getId());
+                    account = AccountUtils.getAccount("KE");
+                } else {
+                    break;
+                }
+            }
             trips.addAll(keParser.getKE(requestId, origin, destination, formattedDate, seats, cabin, loggedInClient));
         }
         return trips;

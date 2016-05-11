@@ -68,7 +68,7 @@ public class DLParser implements Parser {
     @Inject
     private AirportRepository airportRepository;
 
-    private static final String Parser = "DL";
+    private static final String PARSER_CODE = "DL";
     private HashMap<String, String> databaseCities;
 
     /**
@@ -562,7 +562,7 @@ public class DLParser implements Parser {
             flightResult.setCabin("");
             flightResult.setCreatedAt(new Date());
             flightResult.setUpdatedAt(new Date());
-            flightResult.setParser(Parser);
+            flightResult.setParser(PARSER_CODE);
 
             //     flightResult.setMeal("");
 
@@ -749,29 +749,24 @@ public class DLParser implements Parser {
 
         HttpResponse response = null;
         HttpEntity entity = null;
-
-        String proxyInfo = ProxyUtils.getProxy("DL");
-
-        System.out.println(proxyInfo);
-
-        String credent = proxyInfo.split("@")[0];
-        String ipport = proxyInfo.split("@")[1];
-
-        HttpHost proxy = new HttpHost(ipport.split(":")[0], Integer.parseInt(ipport.split(":")[1]));
-
-
-        Credentials credentials = new UsernamePasswordCredentials(credent.split(":")[0], credent.split(":")[1]);
-        AuthScope authScope = new AuthScope(ipport.split(":")[0], Integer.parseInt(ipport.split(":")[1]));
-        CredentialsProvider credsProvider = new BasicCredentialsProvider();
-        credsProvider.setCredentials(authScope, credentials);
-
-        httpclient.setCredentialsProvider(credsProvider);
-        httpclient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
-
-        HttpGet httpGet = new HttpGet("https://www.delta.com/");
-
-        response = httpclient.execute(httpGet);
+        HttpGet httpGet;
+        boolean isActive = false;
+        while (!isActive) {
+            String proxyInfo = ProxyUtils.getProxy("DL");
+            System.out.println(proxyInfo);
+            String credent = proxyInfo.split("@")[0];
+            String ipport = proxyInfo.split("@")[1];
+            setProxyInfo(httpclient, credent, ipport);
+            httpGet = new HttpGet("https://www.delta.com/");
+            response = httpclient.execute(httpGet);
+            if (response.getStatusLine().getStatusCode() == 200) {
+                isActive = true;
+                ProxyUtils.markProxyAs(proxyInfo, PARSER_CODE, true);
+            } else
+                ProxyUtils.markProxyAs(proxyInfo, PARSER_CODE, false);
+        }
         entity = response.getEntity();
+
 
         String search = ParserUtils.responseToString(entity.getContent());
 
@@ -916,12 +911,12 @@ public class DLParser implements Parser {
             if (date != null)
                 callables.add(new DataThread(date, seats, destination, origin, requestId, cities));
         }
-        if (requestData.getType().equals("rt")) {
-            for (Date date : returnDates) {
-                if (date != null)
-                    callables.add(new DataThread(date, seats, origin, destination, requestId, cities));
-            }
+
+        for (Date date : returnDates) {
+            if (date != null)
+                callables.add(new DataThread(date, seats, origin, destination, requestId, cities));
         }
+
         ExecutorService executor = Executors.newCachedThreadPool();
 
         List<Future<List<Trip>>> futureList = executor.invokeAll(callables);
@@ -1022,6 +1017,19 @@ public class DLParser implements Parser {
                 continue;
             }
         }
+    }
+
+    private static void setProxyInfo(DefaultHttpClient httpclient, String credent, String ipport) throws IOException {
+        HttpResponse response = null;
+        HttpEntity entity = null;
+
+        HttpHost proxy = new HttpHost(ipport.split(":")[0], Integer.parseInt(ipport.split(":")[1]));
+        Credentials credentials = new UsernamePasswordCredentials(credent.split(":")[0], credent.split(":")[1]);
+        AuthScope authScope = new AuthScope(ipport.split(":")[0], Integer.parseInt(ipport.split(":")[1]));
+        CredentialsProvider credsProvider = new BasicCredentialsProvider();
+        credsProvider.setCredentials(authScope, credentials);
+        httpclient.setCredentialsProvider(credsProvider);
+        httpclient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
     }
 
 }
