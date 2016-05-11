@@ -614,7 +614,6 @@ public class KEParser implements Parser {
     public Collection<Trip> parse(RequestData requestData) throws Exception {
         ExecutorService executor = Executors.newCachedThreadPool();
         List<Trip> results = new ArrayList<>();
-        System.out.println(requestData);
         String origin = requestData.getOrigin();
         String destination = requestData.getDestination();
         List<String> cabins = requestData.getCabins();
@@ -624,10 +623,12 @@ public class KEParser implements Parser {
         List<Date> returnDates = requestData.getReturnDates();
         Set<Callable<List<Trip>>> callables = new HashSet<Callable<List<Trip>>>();
         for (Date date : owDates) {
-            callables.add(new DataThread(date, seats, cabins, destination, origin, requestId));
+            if (date != null)
+                callables.add(new DataThread(date, seats, cabins, destination, origin, requestId));
         }
         for (Date date : returnDates) {
-            callables.add(new DataThread(date, seats, cabins, origin, destination, requestId));
+            if (date != null)
+                callables.add(new DataThread(date, seats, cabins, origin, destination, requestId));
         }
         List<Future<List<Trip>>> futureList = executor.invokeAll(callables);
         for (Future<List<Trip>> futureItem : futureList) {

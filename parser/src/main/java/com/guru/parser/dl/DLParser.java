@@ -911,12 +911,12 @@ public class DLParser implements Parser {
             if (date != null)
                 callables.add(new DataThread(date, seats, destination, origin, requestId, cities));
         }
-        if (requestData.getType().equals("rt")) {
-            for (Date date : returnDates) {
-                if (date != null)
-                    callables.add(new DataThread(date, seats, origin, destination, requestId, cities));
-            }
+
+        for (Date date : returnDates) {
+            if (date != null)
+                callables.add(new DataThread(date, seats, origin, destination, requestId, cities));
         }
+
         ExecutorService executor = Executors.newCachedThreadPool();
 
         List<Future<List<Trip>>> futureList = executor.invokeAll(callables);
