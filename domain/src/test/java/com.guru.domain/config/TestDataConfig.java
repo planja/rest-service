@@ -19,7 +19,7 @@ import java.util.Properties;
 
 @Configuration
 @EnableTransactionManagement
-@EnableJpaRepositories( {"com.guru.domain"} )
+@EnableJpaRepositories({"com.guru.domain"})
 @PropertySource({"persistence-config-test.properties"})
 public class TestDataConfig {
 

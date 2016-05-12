@@ -12,7 +12,6 @@ import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.apache.http.params.CoreProtocolPNames;
 import org.json.JSONObject;
 
-
 import java.io.IOException;
 
 /**

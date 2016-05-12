@@ -1,7 +1,6 @@
 package com.guru.service.parser;
 
 
-import com.guru.service.adaptor.impl.*;
 import com.guru.service.adaptor.interf.Adaptor;
 import com.guru.service.parser.impl.*;
 
@@ -20,7 +19,7 @@ public enum ParserType {
     }, AC {
         @Override
         public Adaptor getAdaptorService() {
-          //  return new AdaptorServiceAC();
+            //  return new AdaptorServiceAC();
             return null;
         }
 
@@ -31,7 +30,7 @@ public enum ParserType {
     }, AF {
         @Override
         public Adaptor getAdaptorService() {
-          //  return new AdaptorServiceAF();
+            //  return new AdaptorServiceAF();
             return null;
         }
 
@@ -67,7 +66,7 @@ public enum ParserType {
     CX {
         @Override
         public Adaptor getAdaptorService() {
-          //  return new AdaptorServiceCX();
+            //  return new AdaptorServiceCX();
             return null;
         }
 
@@ -79,7 +78,7 @@ public enum ParserType {
     DL {
         @Override
         public Adaptor getAdaptorService() {
-         //   return new AdaptorServiceDL();
+            //   return new AdaptorServiceDL();
             return null;
         }
 
@@ -91,7 +90,7 @@ public enum ParserType {
     EK {
         @Override
         public Adaptor getAdaptorService() {
-           // return new AdaptorServiceEK();
+            // return new AdaptorServiceEK();
             return null;
         }
 
@@ -103,7 +102,7 @@ public enum ParserType {
     EY {
         @Override
         public Adaptor getAdaptorService() {
-         //   return new AdaptorServiceEY();
+            //   return new AdaptorServiceEY();
             return null;
         }
 
@@ -115,7 +114,7 @@ public enum ParserType {
     JL {
         @Override
         public Adaptor getAdaptorService() {
-          //  return new AdaptorServiceJL();
+            //  return new AdaptorServiceJL();
             return null;
         }
 
@@ -127,7 +126,7 @@ public enum ParserType {
     LH {
         @Override
         public Adaptor getAdaptorService() {
-       //     return new AdaptorServiceLH();
+            //     return new AdaptorServiceLH();
             return null;
         }
 
@@ -139,7 +138,7 @@ public enum ParserType {
     NH {
         @Override
         public Adaptor getAdaptorService() {
-         //   return new AdaptorServiceNH();
+            //   return new AdaptorServiceNH();
             return null;
         }
 
@@ -151,7 +150,7 @@ public enum ParserType {
     QF {
         @Override
         public Adaptor getAdaptorService() {
-          //  return new AdaptorServiceQF();
+            //  return new AdaptorServiceQF();
             return null;
         }
 
@@ -175,7 +174,7 @@ public enum ParserType {
     SQ {
         @Override
         public Adaptor getAdaptorService() {
-           // return new AdaptorServiceSQ();
+            // return new AdaptorServiceSQ();
             return null;
         }
 
@@ -187,7 +186,7 @@ public enum ParserType {
     VS {
         @Override
         public Adaptor getAdaptorService() {
-         //   return new AdaptorServiceVS();
+            //   return new AdaptorServiceVS();
             return null;
         }
 
@@ -199,7 +198,7 @@ public enum ParserType {
     UA {
         @Override
         public Adaptor getAdaptorService() {
-           // return new AdaptorServiceAA();
+            // return new AdaptorServiceAA();
             return null;
         }
 

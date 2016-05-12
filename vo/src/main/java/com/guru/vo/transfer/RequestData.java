@@ -1,10 +1,9 @@
 package com.guru.vo.transfer;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.guru.vo.transfer.ExceptDate;
 import com.guru.vo.utils.ProcessRequestHelperService;
 
 import java.text.ParseException;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,9 +18,9 @@ public class RequestData {
     private Date ow_start_date;
     //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM/dd/yyyy")
     private Date ow_end_date;
-   // @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM/dd/yyyy")
+    // @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM/dd/yyyy")
     private Date rt_start_date;
-   // @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM/dd/yyyy")
+    // @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM/dd/yyyy")
     private Date rt_end_date;
     private List<ExceptDate> ow_except_dates;
     private List<ExceptDate> rt_except_dates;
@@ -32,6 +31,25 @@ public class RequestData {
     private int user_id;
     private List<Date> owDates;
     private List<Date> returnDates;
+
+    public RequestData(RequestData requestData) {
+        this.parsers = requestData.getParsers();
+        this.user = requestData.getUser();
+        this.origin = requestData.getOrigin();
+        this.destination = requestData.getDestination();
+        this.ow_start_date = requestData.getOw_start_date();
+        this.ow_end_date = requestData.getOw_end_date();
+        this.rt_start_date = requestData.getRt_start_date();
+        this.rt_end_date = requestData.getRt_end_date();
+        this.ow_except_dates = requestData.getOw_except_dates();
+        this.rt_except_dates = requestData.getRt_except_dates();
+        this.seats = requestData.getSeats();
+        this.cabins = requestData.getCabins();
+        this.type = requestData.getType();
+        this.request_id = requestData.getRequest_id();
+        this.user_id = requestData.getUser_id();
+    }
+
     public RequestData() {
     }
 
@@ -159,8 +177,10 @@ public class RequestData {
     public List<Date> getOwDates() throws ParseException {
         List<Date> dates = ProcessRequestHelperService.getDaysBetweenDates(getOw_start_date(), getOw_end_date());
         List<Date> returnDates = ProcessRequestHelperService.getReturnDates(getRt_start_date(), getRt_end_date(), dates);
-        return ProcessRequestHelperService.getODates(dates, returnDates,
+        List<Date> neededDates = ProcessRequestHelperService.getODates(dates, returnDates,
                 this.getOw_except_dates().stream().map(ExceptDate::getDate).collect(Collectors.toList()));
+        neededDates.removeAll(Collections.singleton(null));
+        return neededDates;
     }
 
     @Override
@@ -188,9 +208,10 @@ public class RequestData {
 
     public List<Date> getReturnDates() throws ParseException {
         List<Date> dates = ProcessRequestHelperService.getDaysBetweenDates(getOw_start_date(), getOw_end_date());
-      List<Date> returnDates = ProcessRequestHelperService.getReturnDates(getRt_start_date(), getRt_end_date(), dates);
-        return ProcessRequestHelperService.getRDates(dates, returnDates,
+        List<Date> returnDates = ProcessRequestHelperService.getReturnDates(getRt_start_date(), getRt_end_date(), dates);
+        List<Date> neededDates = ProcessRequestHelperService.getRDates(dates, returnDates,
                 this.getRt_except_dates().stream().map(ExceptDate::getDate).collect(Collectors.toList()));
-
+        neededDates.removeAll(Collections.singleton(null));
+        return neededDates;
     }
 }

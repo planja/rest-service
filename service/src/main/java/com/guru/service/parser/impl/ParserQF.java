@@ -24,12 +24,11 @@ import java.util.Objects;
 
 public class ParserQF extends UntypedActor implements ParserActor {
 
-    @Inject
-    private QFParser qfParser;
+    LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
     //для всех
-
-    LoggingAdapter log = Logging.getLogger(getContext().system(), this);
+    @Inject
+    private QFParser qfParser;
 
     @Override
     public void onReceive(Object message) throws Exception {
