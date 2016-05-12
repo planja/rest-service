@@ -1,16 +1,17 @@
 package com.guru.domain.model;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Никита on 12.04.2016.
  */
 @Entity
 @Table(name = "trips")
-public class Trip implements scala.Serializable{
+public class Trip implements scala.Serializable {
 
     @Id
     @Column(name = "id")
@@ -98,6 +99,17 @@ public class Trip implements scala.Serializable{
     public Trip() {
     }
 
+    public Trip(Long id, String departCode, String arriveCode, String departPlace, String arrivePlace, Date tripDate, String tripDuration, BigDecimal cost) {
+        this.id = id;
+        this.departCode = departCode;
+        this.arriveCode = arriveCode;
+        this.departPlace = departPlace;
+        this.arrivePlace = arrivePlace;
+        this.tripDate = tripDate;
+        this.tripDuration = tripDuration;
+        this.cost = cost;
+    }
+
     @Override
     public String toString() {
         return "Trip{" +
@@ -126,17 +138,6 @@ public class Trip implements scala.Serializable{
                 ", miles=" + miles +
                 ", tax=" + tax +
                 '}';
-    }
-
-    public Trip(Long id, String departCode, String arriveCode, String departPlace, String arrivePlace, Date tripDate, String tripDuration, BigDecimal cost) {
-        this.id = id;
-        this.departCode = departCode;
-        this.arriveCode = arriveCode;
-        this.departPlace = departPlace;
-        this.arrivePlace = arrivePlace;
-        this.tripDate = tripDate;
-        this.tripDuration = tripDuration;
-        this.cost = cost;
     }
 
     public Long getId() {

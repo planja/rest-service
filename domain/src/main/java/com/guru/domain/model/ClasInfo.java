@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Created by Никита on 30.04.2016.
  */
-public class ClasInfo implements scala.Serializable{
+public class ClasInfo implements scala.Serializable {
 
     public static final int NA = 0;
     public static final int AVAILABLE = 1;
@@ -29,14 +29,14 @@ public class ClasInfo implements scala.Serializable{
 
     public ClasInfo(boolean na) {
         this.na = na;
-        if(!this.na) {
+        if (!this.na) {
             this.status = 1;
         }
 
     }
 
     public String getStringStatus() {
-        return this.status == 0?"NA":(this.status == 1?"AVAILABLE":(this.status == 2?"WAITLIST":"NA"));
+        return this.status == 0 ? "NA" : (this.status == 1 ? "AVAILABLE" : (this.status == 2 ? "WAITLIST" : "NA"));
     }
 
     public String getMileage() {

@@ -35,7 +35,7 @@ import java.util.zip.GZIPInputStream;
 public class ParserUtils {
 
     public static String getTotalTime(String totalTime, Object parser) throws ParseException {
-       String regexp = "";
+        String regexp = "";
         if (parser instanceof QFParser)
             regexp = "((\\d*)h\\s)?(\\d*)m";
 
@@ -54,9 +54,11 @@ public class ParserUtils {
         if (matcher.find()) {
             String hours = matcher.group(2) == null ? "0" : matcher.group(2);
             String minutes;
-            if(totalTime.contains("m")) minutes = matcher.group(3) != null && matcher.group(3).trim().length() != 0 ? matcher.group(3) : "0";
+            if (totalTime.contains("m"))
+                minutes = matcher.group(3) != null && matcher.group(3).trim().length() != 0 ? matcher.group(3) : "0";
             else
-                minutes = "0"; DecimalFormat acFormat = new DecimalFormat("##00");
+                minutes = "0";
+            DecimalFormat acFormat = new DecimalFormat("##00");
             return acFormat.format((long) Integer.parseInt(hours)) + ":" + acFormat.format((long) Integer.parseInt(minutes));
         } else {
             return null;
@@ -190,7 +192,7 @@ public class ParserUtils {
     }*/
 
     public static int randInt(int max) {
-        return (int)(Math.random() * (double)max);
+        return (int) (Math.random() * (double) max);
     }
 
     public static String gzipResponseToString(InputStream inputStream) {
@@ -363,8 +365,6 @@ public class ParserUtils {
 
         return info;
     }
-
-
 
 
 }

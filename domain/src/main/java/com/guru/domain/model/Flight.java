@@ -1,11 +1,7 @@
 package com.guru.domain.model;
 
-import scala.Serializable;
-
 import javax.persistence.*;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Created by Никита on 12.04.2016.

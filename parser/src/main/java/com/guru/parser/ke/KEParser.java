@@ -7,6 +7,7 @@ import com.guru.domain.repository.MileCostRepository;
 import com.guru.parser.interf.Parser;
 import com.guru.parser.utils.ParserUtils;
 import com.guru.vo.temp.Account;
+import com.guru.vo.temp.AccountUtils;
 import com.guru.vo.temp.ProxyUtils;
 import com.guru.vo.transfer.RequestData;
 import org.apache.http.HttpEntity;
@@ -43,7 +44,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -287,6 +288,7 @@ public class KEParser implements Parser {
         html = ParserUtils.responseToString(entity.getContent());
         Document loadingDoc = Jsoup.parse(html);
 
+
         return httpclient;
     }
 
@@ -407,6 +409,7 @@ public class KEParser implements Parser {
         JSONObject jsonObj = new JSONObject(html);
 
         JSONArray outBound = jsonObj.getJSONArray("outbound");
+        int count = 0;
         for (int i = 0; i < outBound.length(); i++) {
             if (cabin.length() == 1) {
                 switch (cabin) {
@@ -424,9 +427,14 @@ public class KEParser implements Parser {
                 }
             }
             Trip trip = new Trip();
+            trip.setQueryId((long) requestId);
             JSONObject jsonAward = (JSONObject) outBound.get(i);
             JSONObject availableSeats = (JSONObject) jsonAward.get("remainingSeatsByCabinClass");
-            System.out.println(Integer.parseInt(availableSeats.get(cabin).toString()));
+            if (availableSeats.toString().contains("{}")) {
+                count++;
+                continue;
+            }
+            System.out.println("AVAILABLE SEATS " + Integer.parseInt(availableSeats.get(cabin).toString()));
             if (Integer.parseInt(availableSeats.get(cabin).toString()) < seats) {
                 continue;
             }
@@ -443,7 +451,8 @@ public class KEParser implements Parser {
             trip.setTripDuration(duration);
             JSONObject baseTripFareMapper = (JSONObject) jsonObj.get("baseTripFareMapper");
             ArrayList fareMapperList = new ArrayList(baseTripFareMapper.keySet());
-            String fares = (String) baseTripFareMapper.get(fareMapperList.get(i).toString());
+
+            String fares = (String) baseTripFareMapper.get(fareMapperList.get(i - count).toString());
             JSONObject jsonFares = (JSONObject) (((JSONObject) jsonObj.get("fares")).getJSONObject(fares).getJSONArray("fares")).get(0);
             Integer miles = ((Integer) jsonFares.get("totalMiles"));
             String tax = ((Double) jsonFares.get("tax")).toString();
@@ -612,7 +621,6 @@ public class KEParser implements Parser {
      */
     @Override
     public Collection<Trip> parse(RequestData requestData) throws Exception {
-        ExecutorService executor = Executors.newCachedThreadPool();
         List<Trip> results = new ArrayList<>();
         String origin = requestData.getOrigin();
         String destination = requestData.getDestination();
@@ -621,25 +629,33 @@ public class KEParser implements Parser {
         int requestId = requestData.getRequest_id();
         List<Date> owDates = requestData.getOwDates();
         List<Date> returnDates = requestData.getReturnDates();
-        Set<Callable<List<Trip>>> callables = new HashSet<Callable<List<Trip>>>();
-        for (Date date : owDates) {
-            if (date != null)
-                callables.add(new DataThread(date, seats, cabins, destination, origin, requestId));
+        Date date = requestData.getOw_start_date();
+        System.out.println(date);
+        SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
+        String formattedDate = sdf.format(date);
+        for (String cabin : cabins) {
+            if (cabin.equals("P"))
+                continue;
+            KEParser keParser = new KEParser();
+            Account account = AccountUtils.getAccount("KE");
+            DefaultHttpClient loggedInClient = null;
+            while (loggedInClient == null) {
+                loggedInClient = keParser.login(account);
+                if (loggedInClient == null) {
+                    if (account != null)
+                        AccountUtils.badAccount(account.getId());
+                    account = AccountUtils.getAccount("KE");
+                } else {
+                    break;
+                }
+            }
+            results.addAll(keParser.getKE(requestId, origin, destination, formattedDate, seats, cabin, loggedInClient));
         }
-        for (Date date : returnDates) {
+
+   /*     for (Date date : returnDates) {
             if (date != null)
                 callables.add(new DataThread(date, seats, cabins, origin, destination, requestId));
-        }
-        List<Future<List<Trip>>> futureList = executor.invokeAll(callables);
-        for (Future<List<Trip>> futureItem : futureList) {
-            try {
-                List<Trip> trips = futureItem.get();
-                results.addAll(trips);
-            } catch (Exception ex) {
-                return results;
-            }
-        }
-        executor.shutdown();
+        }*/
         MileCost mileCost = null;
         if (results.size() != 0) {
             List<MileCost> miles = StreamSupport.stream(Spliterators.spliteratorUnknownSize(mileCostRepository.findAll().iterator(), Spliterator.ORDERED), false)

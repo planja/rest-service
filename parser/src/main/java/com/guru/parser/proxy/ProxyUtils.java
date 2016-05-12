@@ -10,7 +10,6 @@ import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.apache.http.params.CoreProtocolPNames;
-//import parser.utils.Utils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -18,6 +17,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+
+//import parser.utils.Utils;
 
 /**
  * Created by Никита on 06.05.2016.

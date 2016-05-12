@@ -1,11 +1,9 @@
 package com.guru.domain.service.cost;
 
-import com.guru.domain.model.MileCost;
 import com.guru.domain.model.Trip;
 import com.guru.domain.model.TripCost;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,7 +23,7 @@ public class CalculateCost {
 
     }*/
 
-    public static List<TripCost> calc(List<Trip> trips){
+    public static List<TripCost> calc(List<Trip> trips) {
         return trips.stream().map(trip -> new TripCost(trip, trip.getMiles(), BigDecimal.ONE, trip.getCost(),
                 BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE,
                 BigDecimal.ONE, new Date(), new Date())).collect(Collectors.toList());

@@ -1,17 +1,9 @@
 package com.guru.service.parser.impl;
 
-import akka.actor.ActorRef;
-import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import com.guru.service.actor.processingresult.ProcessingResultOfParserActor;
 import com.guru.service.parser.interf.ParserActor;
-import com.guru.vo.transfer.RequestData;
-import org.apache.http.impl.client.DefaultHttpClient;
-
-import java.text.SimpleDateFormat;
-import java.util.List;
 
 public class ParserAA extends UntypedActor implements ParserActor {
 

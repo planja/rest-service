@@ -8,6 +8,7 @@ import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.json.JSONObject;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -31,7 +32,7 @@ public class AccountUtils {
         hResponse = httpclient.execute(httpGet);
         entity = hResponse.getEntity();
         String callback = responseToString(entity.getContent());
-        if(callback.equals("[]")) {
+        if (callback.equals("[]")) {
             return account;
         } else {
             JSONObject jsonObj = new JSONObject(callback);
