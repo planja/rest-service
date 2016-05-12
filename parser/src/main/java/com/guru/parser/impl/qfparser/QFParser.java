@@ -53,25 +53,6 @@ public class QFParser implements Parser {
     @Inject
     private MileCostRepository mileCostRepository;
 
-
-    @Override
-    public Collection<Trip> parse(RequestData requestData) throws Exception {
-
-
-        List<Trip> result = getQantas(requestData);
-        MileCost mileCost = null;
-        if (result.size() != 0) {
-            List<MileCost> miles = StreamSupport.stream(Spliterators.spliteratorUnknownSize(mileCostRepository.findAll().iterator(), Spliterator.ORDERED), false)
-                    .collect(Collectors.toCollection(ArrayList::new));
-            mileCost = miles.stream().filter(o -> Objects.equals(o.getParser(), result.get(0).getFlights().get(0).getParser()))
-                    .findFirst().get();
-            result.get(0).setIsComplete(true);
-        }
-
-        setMiles2Trip(result, mileCost);
-        return result;
-    }
-
     static void setClientProxyProperties(DefaultHttpClient httpclient, Account account) throws IOException {
         String credent = null;
         String ipport = null;
@@ -98,6 +79,24 @@ public class QFParser implements Parser {
 
         httpclient.setCredentialsProvider(credsProvider);
         httpclient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+    }
+
+    @Override
+    public Collection<Trip> parse(RequestData requestData) throws Exception {
+
+
+        List<Trip> result = getQantas(requestData);
+        MileCost mileCost = null;
+        if (result.size() != 0) {
+            List<MileCost> miles = StreamSupport.stream(Spliterators.spliteratorUnknownSize(mileCostRepository.findAll().iterator(), Spliterator.ORDERED), false)
+                    .collect(Collectors.toCollection(ArrayList::new));
+            mileCost = miles.stream().filter(o -> Objects.equals(o.getParser(), result.get(0).getFlights().get(0).getParser()))
+                    .findFirst().get();
+            result.get(0).setIsComplete(true);
+        }
+
+        setMiles2Trip(result, mileCost);
+        return result;
     }
 
     private void setMiles2Trip(List<Trip> trips, MileCost mileCost) {

@@ -2,8 +2,6 @@ package com.guru.service.actor.processingresult;
 
 import akka.actor.ActorSelection;
 import akka.actor.UntypedActor;
-import com.guru.domain.model.Trip;
-import com.guru.vo.transfer.ParserResult;
 
 import java.util.List;
 

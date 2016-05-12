@@ -10,10 +10,8 @@ import com.typesafe.config.ConfigFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
 
 import static com.guru.domain.config.SpringExtension.SpringExtProvider;
 
@@ -25,13 +23,13 @@ public class AkkaConfig {
     private ActorSystem domainSystem;*/
 
 
+    @Autowired
+    private ApplicationContext applicationContext;
+
     @Bean
     public ActorRef repositoryActor() {
         return domainSystem().actorOf(Props.create(RepositoryActor.class), "repositoryConfig");
     }
-
-    @Autowired
-    private ApplicationContext applicationContext;
 
     @Bean
     public ActorSystem domainSystem() {
@@ -42,7 +40,7 @@ public class AkkaConfig {
 
     @Bean
     public ActorSystem applicationSystem() {
-        ActorSystem system =ActorSystem.create("ApplicationSystem", ConfigFactory.load().getConfig("applicationConfig"));
+        ActorSystem system = ActorSystem.create("ApplicationSystem", ConfigFactory.load().getConfig("applicationConfig"));
         SpringExtProvider.get(system).initialize(applicationContext);
         return system;
     }

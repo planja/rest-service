@@ -39,7 +39,7 @@ public class ProcessRequestHelperService {
     public static List<Date> getODates(List<Date> dates, List<Date> returnDates, List<Date> exceptDates) {
         List<Date> owDates = new ArrayList<>();
         if (dates.size() > returnDates.size()) {
-            dates.stream().map( o -> exceptDates.contains(o) ? owDates.add(null) : owDates.add(o)).collect(Collectors.toList());
+            dates.stream().map(o -> exceptDates.contains(o) ? owDates.add(null) : owDates.add(o)).collect(Collectors.toList());
 
         }
         if (returnDates.size() > dates.size()) {

@@ -57,8 +57,18 @@ public class Status {
                     totalCount += count;
                     break;
                 case "DL":
+                    count = 0;
+                    if (Objects.equals(requestData.getType(), "rt"))
+                        count = requestData.getReturnDates().size() + requestData.getOwDates().size();
+                    else count = requestData.getOwDates().size();
+                    totalCount += count;
                     break;
                 case "KE":
+                    count = 0;
+                    if (Objects.equals(requestData.getType(), "rt"))
+                        count = requestData.getReturnDates().size() + requestData.getOwDates().size();
+                    else count = requestData.getOwDates().size();
+                    totalCount += count;
                     break;
                 case "AC":
                     int acCount;

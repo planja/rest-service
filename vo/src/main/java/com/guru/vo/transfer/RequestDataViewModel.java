@@ -30,6 +30,9 @@ public class RequestDataViewModel {
     private List<Date> owDates;
     private List<Date> returnDates;
 
+    public RequestDataViewModel() {
+    }
+
     public RequestData toRequestData() throws ParseException {
         RequestData requestData = new RequestData();
         requestData.setParsers(this.user == null ? null : this.getParsers());
@@ -76,9 +79,6 @@ public class RequestDataViewModel {
         exceptDate.setParser(exceptDateViewModel.getParser() == null ? null : exceptDateViewModel.getParser());
         exceptDate.setDate(exceptDateViewModel.getDate() == null ? null : convertDate(exceptDateViewModel.getDate()));
         return exceptDate;
-    }
-
-    public RequestDataViewModel() {
     }
 
     public List<String> getParsers() {

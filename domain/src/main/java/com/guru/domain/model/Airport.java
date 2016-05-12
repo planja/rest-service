@@ -38,6 +38,17 @@ public class Airport {
     public Airport() {
     }
 
+    public Airport(String airport, String city, String country, String codeIata, String codeIkao, BigDecimal lat, BigDecimal lon) {
+
+        this.airport = airport;
+        this.city = city;
+        this.country = country;
+        this.codeIata = codeIata;
+        this.codeIkao = codeIkao;
+        this.lat = lat;
+        this.lon = lon;
+    }
+
     @Override
     public String toString() {
         return "Airport{" +
@@ -141,17 +152,6 @@ public class Airport {
     }
 
     public void setLon(BigDecimal lon) {
-        this.lon = lon;
-    }
-
-    public Airport(String airport, String city, String country, String codeIata, String codeIkao, BigDecimal lat, BigDecimal lon) {
-
-        this.airport = airport;
-        this.city = city;
-        this.country = country;
-        this.codeIata = codeIata;
-        this.codeIkao = codeIkao;
-        this.lat = lat;
         this.lon = lon;
     }
 

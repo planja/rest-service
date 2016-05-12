@@ -50,6 +50,7 @@ public class ServiceRepositoryActor extends UntypedActor {
         }
        else if (message instanceof List<?>) {
             List<Trip> trips = (List<Trip>) message;
+
             for (Trip trip : trips) {
                 log.info(trip.getFlightNumbers() + " flights in this trip: " + trip.getFlights().get(0));
             }
@@ -62,7 +63,7 @@ public class ServiceRepositoryActor extends UntypedActor {
 
             float status = (float) statusCount.getCurrentStatus() / statusCount.getMaxStatus() * 100;
 
-            queryRepository.updateStatus(queryId, (int)status);
+            queryRepository.updateStatus(queryId, (int) status);
 
             System.out.println(queryRepository.findOne(queryId).getStatus());
 

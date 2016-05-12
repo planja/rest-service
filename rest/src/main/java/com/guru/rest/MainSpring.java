@@ -25,12 +25,8 @@ public class MainSpring {
     public static final int PORT = Integer.parseInt(bundle.getString("port"));
 
     public static void main(String[] args) throws IOException, ParseException, InterruptedException,IncorrectCredentials,MaintenanceException {
-    /*    ACParser acParser = new ACParser();
-
+      /*  ACParser acParser = new ACParser();
         Account account = AccountUtils.getAccount("AC");
-
-        //538332420
-
         DefaultHttpClient httpclient = ACParser.login("947", "826", "111", "test1985", account);
 
 //        DefaultHttpClient httpclient = ACParser.login("587", "807", "934", "fdsf2g34t8I", account);

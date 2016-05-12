@@ -3,12 +3,9 @@ package com.guru.parser.config;
 import com.guru.parser.dl.DLParser;
 import com.guru.parser.impl.acparser.ACParser;
 import com.guru.parser.impl.qfparser.QFParser;
-import com.guru.parser.interf.Parser;
 import com.guru.parser.ke.KEParser;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
 
 @Configuration
 public class ParserConfig {
@@ -29,7 +26,7 @@ public class ParserConfig {
     }
 
     @Bean
-    public DLParser dlParser(){
+    public DLParser dlParser() {
         return new DLParser();
     }
 

@@ -101,8 +101,8 @@ public class Query implements Serializable {
         this.error = error;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-       // this.parserAnswers = parserAnswers;
-       // this.parserErrors = parserErrors;
+        // this.parserAnswers = parserAnswers;
+        // this.parserErrors = parserErrors;
     }
 
     public Long getId() {

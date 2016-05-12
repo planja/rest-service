@@ -1,16 +1,9 @@
 package com.guru.service.parser.impl;
 
-import akka.actor.ActorRef;
-import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import com.guru.vo.transfer.RequestData;
-import com.guru.service.actor.processingresult.ProcessingResultOfParserActor;
 import com.guru.service.parser.interf.ParserActor;
-
-
-import java.util.List;
 
 /**
  * Created by Никита on 18.04.2016.
