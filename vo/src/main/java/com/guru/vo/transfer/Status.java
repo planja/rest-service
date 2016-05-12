@@ -60,6 +60,13 @@ public class Status {
                     break;
                 case "KE":
                     break;
+                case "AC":
+                    int acCount;
+                    if (Objects.equals(requestData.getType(), "rt"))
+                        acCount = requestData.getReturnDates().size() + requestData.getOwDates().size();
+                    else acCount = requestData.getOwDates().size();
+                    totalCount += acCount;
+                    break;
             }
         }
         return totalCount;

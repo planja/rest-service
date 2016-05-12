@@ -5,6 +5,7 @@ import akka.actor.ActorSystem;
 import akka.actor.Props;
 import akka.actor.UntypedActor;
 import com.guru.service.actor.RequestActor;
+import com.guru.service.parser.impl.ParserAC;
 import com.guru.service.parser.impl.ParserDL;
 import com.guru.service.parser.impl.ParserKE;
 import com.guru.service.parser.impl.ParserQF;
@@ -41,6 +42,12 @@ public class Actors {
     @Scope("prototype")
     public ParserDL parserDL() {
         return new ParserDL();
+    }
+
+    @Bean(name = "parserAC")
+    @Scope("prototype")
+    public ParserAC parserAC() {
+        return new ParserAC();
     }
 
 }

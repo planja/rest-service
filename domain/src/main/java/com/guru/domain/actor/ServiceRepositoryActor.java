@@ -42,12 +42,13 @@ public class ServiceRepositoryActor extends UntypedActor {
             Long queryId = (Long) message;
             StatusCount statusCount = Status.getStatusCountByQueryId(queryId);
             Status.updateStatus(queryId);
-            int status = statusCount.getCurrentStatus() / statusCount.getMaxStatus() * 100;
-            queryRepository.updateStatus(queryId, status);
+            float status = (float) statusCount.getCurrentStatus() / statusCount.getMaxStatus() * 100;
+            queryRepository.updateStatus(queryId, (int)status);
+            System.out.println(queryRepository.findOne(queryId).getStatus());
             if (statusCount.getCurrentStatus() == statusCount.getMaxStatus())
                 Status.deleteFromStatusList(queryId);
         }
-        if (message instanceof List<?>) {
+       else if (message instanceof List<?>) {
             List<Trip> trips = (List<Trip>) message;
             for (Trip trip : trips) {
                 log.info(trip.getFlightNumbers() + " flights in this trip: " + trip.getFlights().get(0));

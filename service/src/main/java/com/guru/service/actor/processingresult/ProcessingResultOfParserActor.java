@@ -13,6 +13,9 @@ public class ProcessingResultOfParserActor extends UntypedActor {
 
     @Override
     public void onReceive(Object message) throws Exception {
+        if(message instanceof Long){
+            repositoryActor.tell(message, self());
+        }
         if (message instanceof List<?>) {
             repositoryActor.tell(message, self());
         } else
