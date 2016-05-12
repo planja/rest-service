@@ -456,36 +456,4 @@ class ParserThread implements Callable<List<Trip>> {
         return info;
     }
 
-    /*private void getAwards(Element table, List<Trip> flights, int direction) throws ParseException, IllegalStateException, JSONException, IOException, InterruptedException {
-        int awardIndex = 0;
-        boolean newTrip;
-
-        for (Iterator var13 = table.getElementsByTag("tbody").iterator(); var13.hasNext(); ++awardIndex) {
-            Element tbody = (Element) var13.next();
-            Trip trip = new Trip();
-            newTrip = true;
-            Iterator ex = tbody.select(" > tr").iterator();
-
-            while (ex.hasNext()) {
-                Element tr = (Element) ex.next();
-                if (tr.attr("id").contains("idLine")) {
-                    Flight flight = new Flight();
-                    Elements tdhList = tr.select(" > th");
-                    if (newTrip) {
-                        tdhList.get(1).getElementsByClass("stops").text();
-                        newTrip = false;
-                    }
-                    trip.setTripDuration(ParserUtils.getTotalTime(tdhList.get(0).getElementsByClass("duration").first().ownText(), this.qfParser));
-                    String data_url = tdhList.get(2).getElementsByTag("a").first().attr("data-url");
-                    flight.setUrl(data_url);
-                    trip.getFlights().add(flight);
-                } else {
-                    trip.setTripDuration(ParserUtils.getTotalTime(tr.getElementsByClass("total-duration").text(), this.qfParser));
-                }
-            }
-            flights.add(trip);
-        }
-
-    }*/
-
 }

@@ -6,6 +6,9 @@ package com.guru.rest;
 
 import akka.actor.ActorRef;
 import com.guru.vo.transfer.RequestData;
+import com.guru.vo.transfer.RequestDataViewModel;
+import com.guru.vo.transfer.Status;
+import com.guru.vo.transfer.StatusCount;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -15,6 +18,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.text.ParseException;
 
 @Component
 @Path("/")
@@ -52,9 +56,12 @@ public class RESTService {
     @Path("search")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response post(RequestData requestData) {
-        //ActorSystem system = ActorSystem.create("ApplicationSystem");
-        //ActorRef requestActor = system.actorOf(Props.create(RequestActor.class));
+    public Response post(RequestDataViewModel requestDataViewModel) throws ParseException {
+        RequestData requestData = requestDataViewModel.toRequestData();
+
+        Status.statusCountList.add(
+                new StatusCount((long) requestData.getRequest_id(), 0, Status.CalculateStatus(requestData)));
+
         requestActor.tell(requestData, requestActor);
         return Response.status(Response.Status.OK).build();
     }
