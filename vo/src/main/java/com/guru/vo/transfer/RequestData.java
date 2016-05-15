@@ -1,12 +1,15 @@
 package com.guru.vo.transfer;
 
+import com.guru.vo.temp.Account;
 import com.guru.vo.utils.ProcessRequestHelperService;
+import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.text.ParseException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+
 
 public class RequestData {
 
@@ -31,6 +34,8 @@ public class RequestData {
     private int user_id;
     private List<Date> owDates;
     private List<Date> returnDates;
+    private DefaultHttpClient defaultHttpClient;
+    private Account account;
 
     public RequestData(RequestData requestData) {
         this.parsers = requestData.getParsers();
@@ -51,6 +56,22 @@ public class RequestData {
     }
 
     public RequestData() {
+    }
+
+    public Account getAccount() {
+        return account;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
+    }
+
+    public DefaultHttpClient getDefaultHttpClient() {
+        return defaultHttpClient;
+    }
+
+    public void setDefaultHttpClient(DefaultHttpClient defaultHttpClient) {
+        this.defaultHttpClient = defaultHttpClient;
     }
 
     public List<String> getParsers() {

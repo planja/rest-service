@@ -35,6 +35,8 @@ public class ServiceRepositoryActor extends UntypedActor {
     @Inject
     private QueryRepository queryRepository;
 
+    private static int count = 0;
+
 
     @Override
     public void onReceive(Object message) throws Exception {
@@ -45,6 +47,7 @@ public class ServiceRepositoryActor extends UntypedActor {
             float status = (float) statusCount.getCurrentStatus() / statusCount.getMaxStatus() * 100;
             queryRepository.updateStatus(queryId, (int)status);
             System.out.println(queryRepository.findOne(queryId).getStatus());
+            System.out.println("Count - "+count++);
             if (statusCount.getCurrentStatus() == statusCount.getMaxStatus())
                 Status.deleteFromStatusList(queryId);
         }
@@ -66,6 +69,7 @@ public class ServiceRepositoryActor extends UntypedActor {
             queryRepository.updateStatus(queryId, (int) status);
 
             System.out.println(queryRepository.findOne(queryId).getStatus());
+            System.out.println("Count - "+count++);
 
             if (statusCount.getCurrentStatus() == statusCount.getMaxStatus())
                 Status.deleteFromStatusList(queryId);

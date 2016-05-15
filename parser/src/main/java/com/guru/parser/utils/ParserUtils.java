@@ -104,50 +104,7 @@ public class ParserUtils {
         return ParserUtils.convertMinutes((int) time);
     }
 
-    public static List<Trip> setCabin(List<Trip> list, List<String> classes) {
-        System.out.println(list.size());
-        List<Trip> result = new ArrayList<>();
-        for (Trip trip : list) {
-            List<ClasInfo> sorted;
-            List<ClasInfo> clasInfos = trip.getClasInfo();
-            try {
-                sorted = clasInfos.stream().filter(o -> classes.contains(o.getReduction()) && o.getStatus() != 0).collect(Collectors.toList());
-            } catch (NoSuchElementException ex) {
-                return new ArrayList<>();
-            }
-            for (ClasInfo clasInfo : sorted) {
-                trip.setClas(clasInfo.getReduction());
-                if (clasInfo.getTax() != null || !Objects.equals(clasInfo.getTax(), ""))
-                    trip.setTax(new BigDecimal(clasInfo.getTax().replaceAll(",", "")));
 
-                trip.getFlights().stream().forEach(o -> o.setCabin(clasInfo.getReduction()));
-                List<Info> infos = new ArrayList<>();
-                trip.getFlights().stream().forEach(o -> infos.add(new Info(o.getDepartPlace(), o.getArrivePlace())));
-                for (int i = 0; i < trip.getFlights().size(); i++) {
-                    for (int j = 0; j < clasInfo.getMixedCabins().size(); j++) {
-                        String str = clasInfo.getMixedCabins().get(j);///????
-                        List<String> strings = Arrays.asList(str.split(" "));
-                        if (infos.get(i).getArrive().contains(strings.get(3).substring(0, strings.get(3).length() - 1)) &&
-                                infos.get(i).getDepart().contains(strings.get(1))) {
-                            String clas = "N";
-                            if (str.contains("Economy"))
-                                clas = "E";
-                            if (str.contains("Business"))
-                                clas = "B";
-                            if (str.contains("First"))
-                                clas = "F";
-                            trip.getFlights().get(i).setCabin(clas);
-                        }
-
-                    }
-                }
-                trip.setCabins(getCabins(trip.getFlights()));
-                result.add(trip);
-            }
-        }
-        System.out.println(result.size());
-        return result;
-    }
 
     public static void setMiles2Trip(List<Trip> trips, MileCost mileCost) {
         if (mileCost == null) return;
@@ -178,7 +135,7 @@ public class ParserUtils {
 
     public static String getCabins(List<Flight> flights) {
         String str = "[" + flights.stream().map(o -> "\"" + o.getCabin() + "\",").collect(Collectors.joining()) + "]";
-        int index = str.lastIndexOf(',');//Переделать
+        int index = str.lastIndexOf(',');
         return str.substring(0, index) + str.substring(index + 1, str.length());
     }
 

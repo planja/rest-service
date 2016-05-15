@@ -11,6 +11,7 @@ import java.util.Objects;
 public class Status {
 
     public static List<StatusCount> statusCountList = new ArrayList<>();
+    public static int count = 0;
 
     public static void deleteFromStatusList(Long queryId) {
         StatusCount statusCount = statusCountList.stream().filter(o -> Objects.equals(o.getQueryId(), queryId)).findFirst().get();

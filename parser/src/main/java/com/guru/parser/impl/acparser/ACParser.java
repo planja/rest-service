@@ -5,12 +5,11 @@ import com.guru.domain.model.Flight;
 import com.guru.domain.model.MileCost;
 import com.guru.domain.model.Trip;
 import com.guru.domain.repository.MileCostRepository;
-import com.guru.parser.account.Account;
 import com.guru.parser.interf.Parser;
 import com.guru.parser.proxy.ProxyUtils;
-import com.guru.parser.utils.AccountUtils;
 import com.guru.parser.utils.ComplexTrip;
 import com.guru.parser.utils.ParserUtils;
+import com.guru.vo.temp.Account;
 import com.guru.vo.transfer.RequestData;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -73,29 +72,14 @@ public class ACParser implements Parser {
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 
         String owDate = df.format(requestData.getOw_start_date());
-        String rtDate = df.format(requestData.getRt_start_date());
+        String rtDate = df.format(requestData.getOw_end_date());
 
-      /*  parser.ac.ACParser acParser = new parser.ac.ACParser();
 
-        parser.utils.Account account1 = parser.utils.AccountUtils.getAccount("AC");
-
-        //538332420
-
-        DefaultHttpClient httpclient1 = parser.ac.ACParser.login("947", "826", "111", "test1985", account1);
-
-//        DefaultHttpClient httpclient = ACParser.login("587", "807", "934", "fdsf2g34t8I", account);
-
-        ComplexAward flights1 = acParser.getAC(httpclient1, owDate, rtDate, requestData.getOrigin(),
-                requestData.getDestination(), requestData.getSeats());*/
-
-        Account account = AccountUtils.getAccount("AC");
-        DefaultHttpClient httpclient = login("947", "826", "111", "test1985", account);
-        ComplexTrip flights = getAC(httpclient, owDate, rtDate, requestData.getOrigin(), requestData.getDestination(),
-                requestData.getSeats(), account);
+        ComplexTrip flights = getAC(requestData.getDefaultHttpClient(), owDate, rtDate, requestData.getOrigin(), requestData.getDestination(),
+                requestData.getSeats(), requestData.getAccount());
         List<Trip> owTrips = getTrips(flights.getOneWayList(), requestData.getCabins(),
                 (long) requestData.getRequest_id());
-      //  List<Trip> rtTrips = getTrips(flights.getReturnWayList(), requestData.getCabins(),
-            //    (long) requestData.getRequest_id());
+
 
 
         MileCost mileCost = null;
@@ -106,7 +90,7 @@ public class ACParser implements Parser {
                     .findFirst().get();
         }
 
-       // ParserUtils.setMiles2Trip(rtTrips, mileCost);
+        // ParserUtils.setMiles2Trip(rtTrips, mileCost);
         ParserUtils.setMiles2Trip(owTrips, mileCost);
         return owTrips;
     }
@@ -115,7 +99,6 @@ public class ACParser implements Parser {
         trips.stream().forEach(o -> {
             o.setQueryId(queryId);
             o.setFlights(ParserUtils.getFlightDur(o.getFlights()));
-            //  o.setQueryId((long) (new Random().nextDouble() * 123L));
             o.setArriveCode(o.getFlights().get(o.getFlights().size() - 1).getArriveCode());
             o.setDepartCode(o.getFlights().get(0).getDepartCode());
 
@@ -128,7 +111,6 @@ public class ACParser implements Parser {
             o.setFlightLegs(ParserUtils.getFlightLegs(o.getFlights()));
             o.setFlightNumbers(ParserUtils.getFlightNumbers(o.getFlights()));
 
-            //o.setCost(BigDecimal.valueOf(1000L + ((long) (new Random().nextDouble() * (2000L - 1000L)))));
             o.setUpdatedAt(new Date());
             o.setTripDuration(ParserUtils.getTripDuration(o));
             o.setCreatedAt(new Date());
@@ -143,8 +125,28 @@ public class ACParser implements Parser {
 
 
         });
-        return ParserUtils.setCabin(trips, classes);
-        //return trips;
+        return setCabin(trips, classes);
+    }
+
+    private List<Trip> setCabin(List<Trip> list, List<String> classes) {
+        System.out.println(list.size());
+        List<Trip> result = new ArrayList<>();
+        for (Trip trip : list) {
+            List<ClasInfo> sorted = new ArrayList<>();
+            List<ClasInfo> clasInfos = trip.getClasInfo();
+            try {
+                sorted = clasInfos.stream().filter(o -> classes.contains(o.getReduction()) && o.getStatus() != 0).collect(Collectors.toList());
+            } catch (NoSuchElementException ex) {
+                return new ArrayList<>();
+            }
+            if (sorted.size() != 0) {
+                trip.setClas(sorted.get(0).getReduction());
+                result.add(trip);
+                trip.setCabins(ParserUtils.getCabins(trip.getFlights()));
+            }
+        }
+        System.out.println("after sortings by class" + result.size());
+        return result;
     }
 
     public ComplexTrip getAC(DefaultHttpClient client, String date, String returnDate, String origin, String destination, int seats, Account account) throws UnsupportedEncodingException, IOException, IncorrectCredentials, ParseException, InterruptedException {
@@ -828,7 +830,7 @@ public class ACParser implements Parser {
         return true;
     }
 
-    private void setClientProxyProperties(DefaultHttpClient httpclient, Account account) throws IOException {
+    public static void setClientProxyProperties(DefaultHttpClient httpclient, Account account) throws IOException {
         String credent = null;
         String ipport = null;
 
@@ -856,7 +858,7 @@ public class ACParser implements Parser {
         httpclient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
     }
 
-    private DefaultHttpClient login(String loginS1, String loginS2, String loginS3, String password, Account account) throws UnsupportedEncodingException, IOException, IncorrectCredentials, ParseException, MaintenanceException {
+    public static DefaultHttpClient login(String loginS1, String loginS2, String loginS3, String password, Account account) throws UnsupportedEncodingException, IOException, IncorrectCredentials, ParseException, MaintenanceException {
 
         DefaultHttpClient httpclient = new DefaultHttpClient();
         httpclient.getParams().setParameter(ClientPNames.COOKIE_POLICY, CookiePolicy.BROWSER_COMPATIBILITY);
@@ -880,7 +882,9 @@ public class ACParser implements Parser {
 
         if (main.contains("Sorry")) {
 
-            throw new MaintenanceException();
+            System.out.println("Maintenance");
+            //throw new MaintenanceException();
+            return null;
         }
 
         HttpPost httget = new HttpPost("https://www4.aeroplan.com/log_in.do");
