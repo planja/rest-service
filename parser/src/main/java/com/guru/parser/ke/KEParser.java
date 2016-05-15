@@ -463,7 +463,6 @@ public class KEParser implements Parser {
                award.setEconomy(info);
             } else if (cabin.equals("PRESTIGE")) {
                 award.setBusiness(info);
-
             } else if (cabin.equals("FIRST")) {
                 award.setFirst(info);
             }

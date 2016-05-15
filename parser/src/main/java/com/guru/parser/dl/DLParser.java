@@ -952,6 +952,8 @@ public class DLParser implements Parser {
         while (it.hasNext()) {
             Trip trip = (Trip) it.next();
             for (String cabin : cabins) {
+                if(cabin.equals("B"))
+                    cabin = "F";
                 if (trip.getFlights().get(0).getCabin().equals(cabin))
                     neededResults.add(trip);
             }
