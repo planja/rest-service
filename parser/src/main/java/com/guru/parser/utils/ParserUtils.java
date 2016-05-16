@@ -1,6 +1,11 @@
 package com.guru.parser.utils;
 
+import com.guru.domain.model.ClasInfo;
+import com.guru.domain.model.Flight;
+import com.guru.domain.model.MileCost;
+import com.guru.domain.model.Trip;
 import com.guru.parser.dl.DLParser;
+import com.guru.parser.impl.acparser.ACParser;
 import com.guru.parser.impl.qfparser.Info;
 import com.guru.parser.impl.qfparser.QFParser;
 import org.apache.commons.io.IOUtils;
@@ -22,11 +27,11 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
 /**
@@ -38,6 +43,11 @@ public class ParserUtils {
         String regexp = "";
         if (parser instanceof QFParser)
             regexp = "((\\d*)h\\s)?(\\d*)m";
+        if (parser instanceof ACParser) {
+
+            regexp = "((\\d*)[h]\\s)?(\\d*)[min]";
+
+        }
 
 
         if (parser instanceof DLParser) {
@@ -63,6 +73,113 @@ public class ParserUtils {
         } else {
             return null;
         }
+    }
+
+    public static String getStops(List<Flight> flights) {
+        if (flights.size() == 1) return "[]";
+        else {
+            String str = "[" + flights.subList(1, flights.size()).stream()
+                    .map(o -> "\"" + o.getDepartCode() + "\",").collect(Collectors.joining()) + "]";
+            int index = str.lastIndexOf(',');//Переделать
+            return str.substring(0, index) + str.substring(index + 1, str.length());
+        }
+
+    }
+
+    public static String getCarriers(List<Flight> flights) {
+        String str = "[" + flights.stream().map(o -> "\"" + o.getCarrierCode() + "\",").collect(Collectors.joining()) + "]";//??????
+        int index = str.lastIndexOf(',');//Переделать
+        return str.substring(0, index) + str.substring(index + 1, str.length());
+    }
+
+    public static String getFlightLegs(List<Flight> flights) {
+        String str = "[" + flights.stream().map(o -> "\"" + o.getFlightDuration() + "\",").collect(Collectors.joining()) + "]";
+        int index = str.lastIndexOf(',');//Переделать
+        return str.substring(0, index) + str.substring(index + 1, str.length());
+    }
+
+    public static String getTripDuration(Trip trip) {
+        long time = getDateDiff(trip.getFlights().get(0).getFullStartDate(),
+                trip.getFlights().get(trip.getFlights().size() - 1).getFullEndDate(), TimeUnit.MINUTES);
+        return ParserUtils.convertMinutes((int) time);
+    }
+
+
+
+    public static void setMiles2Trip(List<Trip> trips, MileCost mileCost) {
+        if (mileCost == null) return;
+        List<String> miles1 = new ArrayList<>();
+        for (Trip trip : trips) {
+            for (ClasInfo clasInfo : trip.getClasInfo()) {
+                miles1.add(clasInfo.getMileage());
+            }
+        }
+        for (Trip trip : trips) {
+            String m = trip.getClasInfo().stream().filter(o -> Objects.equals(o.getReduction(), trip.getClas()))
+                    .findFirst().get().getMileage();
+            System.out.println(m);
+
+
+            Integer miles = Integer.valueOf(trip.getClasInfo().stream()
+                    .filter(o -> Objects.equals(o.getReduction(), trip.getClas()))
+                    .findFirst().get().getMileage());
+            trip.setMiles(miles);
+            BigDecimal tax = BigDecimal.ZERO;
+            if (trip.getTax() != null) tax = trip.getTax();
+            double parserCost = miles / 100 * mileCost.getCost().doubleValue() + tax.doubleValue();
+            trip.setCost(BigDecimal.valueOf(parserCost));
+
+
+        }
+    }
+
+    public static String getCabins(List<Flight> flights) {
+        String str = "[" + flights.stream().map(o -> "\"" + o.getCabin() + "\",").collect(Collectors.joining()) + "]";
+        int index = str.lastIndexOf(',');
+        return str.substring(0, index) + str.substring(index + 1, str.length());
+    }
+
+    public static Map<String, List<Flight>> getLayovers(List<Flight> flights) {
+        List<Long> longs = new ArrayList<>();
+        if (flights.size() == 1) return null;
+        for (int i = 0; i < flights.size() - 1; i++) {
+            longs.add(getDateDiff(flights.get(i).getFullEndDate(),
+                    flights.get(i + 1).getFullStartDate(), TimeUnit.MINUTES));
+        }
+        List<String> list = longs.stream().map(o -> ParserUtils.convertMinutes(Integer.valueOf(o.toString()))).collect(Collectors.toList());
+        for (int i = 1; i <= flights.size() - 1; i++) {
+            flights.get(i).setLayover(list.get(i - 1));
+        }
+
+        String str = "[" + list.stream().map(o -> "\"" + o.toString() + "\",").collect(Collectors.joining()) + "]";
+        int index = str.lastIndexOf(',');
+        Map<String, List<Flight>> map = new TreeMap<>();
+        String layovers = str.substring(0, index) + str.substring(index + 1, str.length());
+        for (int i = 1; i < flights.size(); i++) {
+            flights.get(i).setLayover(list.get(i - 1));
+        }
+        map.put(layovers, flights);
+        return map;
+    }
+
+    public static String getFlightNumbers(List<Flight> flights) {
+        String str = "[" + flights.stream().map(o -> "\"" + o.getFlightNumber() + "\",").collect(Collectors.joining()) + "]";
+        int index = str.lastIndexOf(',');//Переделать
+        return str.substring(0, index) + str.substring(index + 1, str.length());
+    }
+
+
+    public static List<Flight> getFlightDur(List<Flight> flights) {
+        for (Flight flight : flights) {
+            long time = getDateDiff(flight.getFullStartDate(), flight.getFullEndDate(), TimeUnit.MINUTES);
+            flight.setFlightDuration(ParserUtils.convertMinutes((int) time));
+        }
+        return flights;
+    }
+
+    public static long getDateDiff(Date date1, Date date2, TimeUnit timeUnit) {
+        long diffInMillies = date2.getTime() - date1.getTime();
+        return timeUnit.convert(diffInMillies, TimeUnit.MILLISECONDS);
     }
 
   /*  public static FInfo getFlightInfo(String fNumber, Date date, Date dateTo) throws UnsupportedEncodingException, IOException {

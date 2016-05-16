@@ -26,7 +26,7 @@ public class AkkaConfig {
     @Autowired
     private ApplicationContext applicationContext;
 
-    @Bean
+    /*@Bean
     public ActorRef repositoryActor() {
         return domainSystem().actorOf(Props.create(RepositoryActor.class), "repositoryConfig");
     }
@@ -36,11 +36,11 @@ public class AkkaConfig {
         ActorSystem system = ActorSystem.create("DomainSystem", ConfigFactory.load().getConfig("repositoryConfig"));
         SpringExtProvider.get(system).initialize(applicationContext);
         return system;
-    }
+    }*/
 
     @Bean
     public ActorSystem applicationSystem() {
-        ActorSystem system = ActorSystem.create("ApplicationSystem", ConfigFactory.load().getConfig("applicationConfig"));
+        ActorSystem system = ActorSystem.create("ApplicationSystem");
         SpringExtProvider.get(system).initialize(applicationContext);
         return system;
     }

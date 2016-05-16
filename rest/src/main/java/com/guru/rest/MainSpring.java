@@ -1,11 +1,16 @@
 package com.guru.rest;
 
 import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.glassfish.grizzly.http.server.*;
 import org.glassfish.grizzly.servlet.ServletRegistration;
 import org.glassfish.grizzly.servlet.WebappContext;
+import parser.ac.ACParser;
 import parser.exceptions.IncorrectCredentials;
 import parser.exceptions.MaintenanceException;
+import parser.utils.Account;
+import parser.utils.AccountUtils;
+import parser.utils.ComplexAward;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -19,12 +24,14 @@ public class MainSpring {
     public static final String BASE_URI = bundle.getString("url");
     public static final int PORT = Integer.parseInt(bundle.getString("port"));
 
-    public static void main(String[] args) throws IOException, ParseException, InterruptedException, IncorrectCredentials, MaintenanceException {
+    public static void main(String[] args) throws IOException, ParseException, InterruptedException,IncorrectCredentials,MaintenanceException {
       /*  ACParser acParser = new ACParser();
         Account account = AccountUtils.getAccount("AC");
         DefaultHttpClient httpclient = ACParser.login("947", "826", "111", "test1985", account);
-       ComplexAward complexAward =  acParser.getAC(httpclient, "2016-05-14", "2016-05-16", "LAX", "LHR", 1);
-        System.out.println("");*/
+
+//        DefaultHttpClient httpclient = ACParser.login("587", "807", "934", "fdsf2g34t8I", account);
+
+        ComplexAward flights = acParser.getAC(httpclient, "2016-08-25", "2016-09-20", "JFK", "CEB", 1);*/
         startupServer();
     }
 

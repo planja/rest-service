@@ -11,6 +11,7 @@ import java.util.Objects;
 public class Status {
 
     public static List<StatusCount> statusCountList = new ArrayList<>();
+    public static int count = 0;
 
     public static void deleteFromStatusList(Long queryId) {
         StatusCount statusCount = statusCountList.stream().filter(o -> Objects.equals(o.getQueryId(), queryId)).findFirst().get();
@@ -69,6 +70,13 @@ public class Status {
                         count = requestData.getReturnDates().size() + requestData.getOwDates().size();
                     else count = requestData.getOwDates().size();
                     totalCount += count;
+                    break;
+                case "AC":
+                    int acCount;
+                    if (Objects.equals(requestData.getType(), "rt"))
+                        acCount = requestData.getReturnDates().size() + requestData.getOwDates().size();
+                    else acCount = requestData.getOwDates().size();
+                    totalCount += acCount;
                     break;
             }
         }

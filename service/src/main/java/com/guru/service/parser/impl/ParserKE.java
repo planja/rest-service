@@ -18,6 +18,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import static com.guru.domain.config.SpringExtension.SpringExtProvider;
+
 public class ParserKE extends UntypedActor implements ParserActor {
 
     LoggingAdapter log = Logging.getLogger(getContext().system(), this);
@@ -29,7 +31,8 @@ public class ParserKE extends UntypedActor implements ParserActor {
         if (message instanceof RequestData) {
             log.info("got it KE");
 
-            ActorRef processingResultOfParserActor = context().system().actorOf(Props.create(ProcessingResultOfParserActor.class));
+            ActorRef processingResultOfParserActor = getContext().actorOf(SpringExtProvider.get(getContext().system())
+                    .props("processingResultOfParserActor"));
             ExecutorService executor = Executors.newCachedThreadPool();
             RequestData requestData = (RequestData) message;
             Set<Callable<Object>> callables = new HashSet<Callable<Object>>();

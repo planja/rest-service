@@ -49,8 +49,6 @@ import java.util.stream.StreamSupport;
 @Component
 public class QFParser implements Parser {
 
-    @Inject
-    private QueryRepository queryRepository;
 
     @Inject
     private MileCostRepository mileCostRepository;

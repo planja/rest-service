@@ -19,7 +19,7 @@ public class RepositoryActor extends UntypedActor {
 
     @Override
     public void onReceive(Object message) throws Exception {
-        if (message instanceof Long) {
+        if(message instanceof Long){
             serviceRepositoryActor.tell(message, self());
         }
         if (message instanceof List<?>) {
