@@ -18,6 +18,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import static com.guru.domain.config.SpringExtension.SpringExtProvider;
+
 /**
  * Created by Никита on 18.04.2016.
  */
@@ -32,7 +34,8 @@ public class ParserDL extends UntypedActor implements ParserActor {
         if (message instanceof RequestData) {
             log.info("got it DL");
 
-            ActorRef processingResultOfParserActor = context().system().actorOf(Props.create(ProcessingResultOfParserActor.class));
+            ActorRef processingResultOfParserActor = getContext().actorOf(SpringExtProvider.get(getContext().system())
+                    .props("processingResultOfParserActor"));
             ExecutorService executor = Executors.newCachedThreadPool();
             RequestData requestData = (RequestData) message;
             Set<Callable<Object>> callables = new HashSet<Callable<Object>>();
