@@ -32,7 +32,7 @@ public class MainSpring {
 //        DefaultHttpClient httpclient = ACParser.login("587", "807", "934", "fdsf2g34t8I", account);
 
         ComplexAward flights = acParser.getAC(httpclient, "2016-08-25", "2016-09-20", "JFK", "CEB", 1);*/
-        startupServer();
+            startupServer();
     }
 
     private static void startupServer() throws IOException {

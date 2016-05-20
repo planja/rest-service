@@ -182,7 +182,7 @@ public class DLParser implements Parser {
 
                     if (bookingCode.contains("R") || bookingCode.contains("A")) {
 
-                        trip.getFlights().get(j).setCabin("F");
+                        trip.getFlights().get(j).setCabin("B");
                       /*  info.getMixedCabins().add("First");
                         if (info.getMixedCabins().contains("Business") || info.getMixedCabins().contains("Economy")) {
                             info.setMixed(true);
@@ -207,10 +207,10 @@ public class DLParser implements Parser {
                     flight.setTrip(newTrip);
                 }
 
-                newTrip.getFlights().get(0).setCabin(FIRST);
+                newTrip.getFlights().get(0).setCabin(BUSINESS);
                 newTrip.setCreatedAt(new Date());
                 newTrip.setUpdatedAt(new Date());
-                newTrip.setClas(FIRST);
+                newTrip.setClas(BUSINESS);
                 trips.add(newTrip);
 
             } else if (cabin.contains("Economy") || cabin.contains("Main")) {
