@@ -1,12 +1,10 @@
 package com.guru.service.parser.impl;
 
 import akka.actor.ActorRef;
-import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import com.guru.parser.dl.DLParser;
-import com.guru.service.actor.processingresult.ProcessingResultOfParserActor;
 import com.guru.service.parser.interf.ParserActor;
 import com.guru.vo.transfer.RequestData;
 import com.guru.vo.utils.ProcessRequestHelperService;
@@ -47,7 +45,6 @@ public class ParserDL extends UntypedActor implements ParserActor {
                     reqData.setOw_start_date(date);
                     System.out.println(date);
                     callables.add(new ParserDLDataThread(dlParser, reqData, processingResultOfParserActor, this));
-
                 }
             } else {
                 List<Date> owDates = ProcessRequestHelperService

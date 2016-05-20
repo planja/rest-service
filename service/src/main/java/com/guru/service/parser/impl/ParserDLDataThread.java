@@ -2,9 +2,13 @@ package com.guru.service.parser.impl;
 
 import akka.actor.ActorRef;
 import com.guru.domain.model.Trip;
+import com.guru.domain.repository.QueryRepository;
 import com.guru.parser.dl.DLParser;
 import com.guru.vo.transfer.RequestData;
+import com.guru.vo.transfer.Status;
+import com.guru.vo.transfer.StatusCount;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.Callable;
@@ -17,6 +21,9 @@ public class ParserDLDataThread implements Callable {
     private DLParser dlParser;
     private RequestData requestData;
     private ParserDL parserDL;
+
+    @Inject
+    private QueryRepository queryRepository;
 
     public ParserDLDataThread(DLParser dlParser, RequestData requestData, ActorRef processingResultOfParserActor, ParserDL parserDL) {
 
@@ -63,15 +70,26 @@ public class ParserDLDataThread implements Callable {
         Collection<Trip> flights;
         try {
             flights = dlParser.parse(requestData);
-
         } catch (Exception e) {
             flights = new ArrayList<>();
         }
 
         if (flights.size() != 0)
             processingResultOfParserActor.tell(flights, parserDL.self());
-        else
-            processingResultOfParserActor.tell((long) requestData.getRequest_id(), parserDL.self());
+        else {
+            System.out.println("noFlights");
+            Long queryId = (long) requestData.getRequest_id();
+            System.out.println(queryId);
+            StatusCount statusCount = Status.getStatusCountByQueryId(queryId);
+            Status.updateStatus(queryId);
+            float status = (float) statusCount.getCurrentStatus() / statusCount.getMaxStatus() * 100;
+            System.out.println(status);
+            queryRepository.updateStatus(queryId, (int) status);
+            System.out.println(status + "%");
+            System.out.println(Status.count++);
+            if (statusCount.getCurrentStatus() == statusCount.getMaxStatus())
+                Status.deleteFromStatusList(queryId);
+        }
         return null;
     }
 }

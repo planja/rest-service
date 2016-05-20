@@ -82,7 +82,6 @@ public class DLParser implements Parser {
         do {
 
             if (resultMap.containsKey(slices + "[" + i + "]")) {
-
                 sliceList.add(resultMap.get(slices + "[" + i + "]"));
             }
 
@@ -987,7 +986,11 @@ public class DLParser implements Parser {
             results.add(trip);
         }
         System.out.println("results - " + results);
+        if (results.size() == 0) {
+            return results;
+        }
         List<Trip> neededResults = fetchNeededResults(cabins, results);
+        System.out.println("needed results - " + neededResults);
         MileCost mileCost = null;
         if (neededResults.size() != 0) {
             List<MileCost> miles = StreamSupport.stream(Spliterators.spliteratorUnknownSize(mileCostRepository.findAll().iterator(), Spliterator.ORDERED), false)
@@ -995,9 +998,8 @@ public class DLParser implements Parser {
             mileCost = miles.stream().filter(o -> Objects.equals(o.getParser(), neededResults.get(0).getFlights().get(0).getParser()))
                     .findFirst().get();
             neededResults.get(0).setIsComplete(true);
+            setMiles2Trip(neededResults, mileCost);
         }
-
-        setMiles2Trip(results, mileCost);
         return neededResults;
     }
 
