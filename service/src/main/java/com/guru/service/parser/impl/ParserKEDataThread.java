@@ -2,9 +2,13 @@ package com.guru.service.parser.impl;
 
 import akka.actor.ActorRef;
 import com.guru.domain.model.Trip;
+import com.guru.domain.repository.QueryRepository;
 import com.guru.parser.ke.KEParser;
 import com.guru.vo.transfer.RequestData;
+import com.guru.vo.transfer.Status;
+import com.guru.vo.transfer.StatusCount;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.Callable;
@@ -17,6 +21,10 @@ public class ParserKEDataThread implements Callable {
     private KEParser keParser;
     private RequestData requestData;
     private ParserKE parserKE;
+
+
+    @Inject
+    private QueryRepository queryRepository;
 
     public ParserKEDataThread(KEParser keParser, RequestData requestData, ActorRef processingResultOfParserActor, ParserKE parserKE) {
 
@@ -69,8 +77,20 @@ public class ParserKEDataThread implements Callable {
 
         if (flights.size() != 0)
             processingResultOfParserActor.tell(flights, parserKE.self());
-        else
-            processingResultOfParserActor.tell((long) requestData.getRequest_id(), parserKE.self());
+        else {
+            System.out.println("noFlights");
+            Long queryId = (long) requestData.getRequest_id();
+            System.out.println(queryId);
+            StatusCount statusCount = Status.getStatusCountByQueryId(queryId);
+            Status.updateStatus(queryId);
+            float status = (float) statusCount.getCurrentStatus() / statusCount.getMaxStatus() * 100;
+            System.out.println(status);
+            queryRepository.updateStatus(queryId, (int) status);
+            System.out.println(status + "%");
+            System.out.println(Status.count++);
+            if (statusCount.getCurrentStatus() == statusCount.getMaxStatus())
+                Status.deleteFromStatusList(queryId);
+        }
         return null;
     }
 }

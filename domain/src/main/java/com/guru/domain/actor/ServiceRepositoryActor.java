@@ -41,6 +41,7 @@ public class ServiceRepositoryActor extends UntypedActor {
     @Override
     public void onReceive(Object message) throws Exception {
         if (message instanceof Long) {
+            System.out.println("message long");
             Long queryId = (Long) message;
             StatusCount statusCount = Status.getStatusCountByQueryId(queryId);
             Status.updateStatus(queryId);
@@ -52,6 +53,7 @@ public class ServiceRepositoryActor extends UntypedActor {
                 Status.deleteFromStatusList(queryId);
         }
        else if (message instanceof List<?>) {
+            System.out.println("message list");
             List<Trip> trips = (List<Trip>) message;
 
             for (Trip trip : trips) {
