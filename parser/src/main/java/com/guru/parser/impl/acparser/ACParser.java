@@ -72,27 +72,48 @@ public class ACParser implements Parser {
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 
         String owDate = df.format(requestData.getOw_start_date());
-        String rtDate = df.format(requestData.getOw_end_date());
-
-
-        ComplexTrip flights = getAC(requestData.getDefaultHttpClient(), owDate, rtDate, requestData.getOrigin(), requestData.getDestination(),
-                requestData.getSeats(), requestData.getAccount());
-        List<Trip> owTrips = getTrips(flights.getOneWayList(), requestData.getCabins(),
-                (long) requestData.getRequest_id());
-
+        String rtDate = df.format(requestData.getRt_start_date());
+        List<Trip> trips = new ArrayList<>();
 
 
         MileCost mileCost = null;
-        if (owTrips.size() != 0) {
-            List<MileCost> miles = StreamSupport.stream(Spliterators.spliteratorUnknownSize(mileCostRepository.findAll().iterator(), Spliterator.ORDERED), false)
-                    .collect(Collectors.toCollection(ArrayList::new));
-            mileCost = miles.stream().filter(o -> Objects.equals(o.getParser(), owTrips.get(0).getFlights().get(0).getParser()))
-                    .findFirst().get();
-        }
+        ComplexTrip flights = getAC(requestData.getDefaultHttpClient(), owDate, rtDate, requestData.getOrigin(), requestData.getDestination(),
+                requestData.getSeats(), requestData.getAccount());
+        if (Objects.equals(requestData.getType(), "ow")) {
+            List<Trip> owTrips = getTrips(flights.getOneWayList(), requestData.getCabins(),
+                    (long) requestData.getRequest_id());
+            if (owTrips.size() != 0) {
+                List<MileCost> miles = StreamSupport.stream(Spliterators.spliteratorUnknownSize(mileCostRepository.findAll().iterator(), Spliterator.ORDERED), false)
+                        .collect(Collectors.toCollection(ArrayList::new));
+                mileCost = miles.stream().filter(o -> Objects.equals(o.getParser(), owTrips.get(0).getFlights().get(0).getParser()))
+                        .findFirst().get();
+                ParserUtils.setMiles2Trip(owTrips, mileCost);
+                return owTrips;
+            }
+        } else {
+            List<Trip> owTrips = getTrips(flights.getOneWayList(), requestData.getCabins(),
+                    (long) requestData.getRequest_id());
+            List<Trip> rtTrips = getTrips(flights.getReturnWayList(), requestData.getCabins(),
+                    (long) requestData.getRequest_id());
+            if (owTrips.size() != 0 || rtTrips.size() != 0) {
+                List<MileCost> miles = StreamSupport.stream(Spliterators.spliteratorUnknownSize(mileCostRepository.findAll().iterator(), Spliterator.ORDERED), false)
+                        .collect(Collectors.toCollection(ArrayList::new));
+                if (owTrips.size() == 0) {
 
-        // ParserUtils.setMiles2Trip(rtTrips, mileCost);
-        ParserUtils.setMiles2Trip(owTrips, mileCost);
-        return owTrips;
+                    mileCost = miles.stream().filter(o -> Objects.equals(o.getParser(), rtTrips.get(0).getFlights().get(0).getParser()))
+                            .findFirst().get();
+                } else {
+                    mileCost = miles.stream().filter(o -> Objects.equals(o.getParser(), owTrips.get(0).getFlights().get(0).getParser()))
+                            .findFirst().get();
+                }
+                ParserUtils.setMiles2Trip(rtTrips, mileCost);
+                ParserUtils.setMiles2Trip(owTrips, mileCost);
+            }
+            trips.addAll(owTrips);
+            trips.addAll(rtTrips);
+            return trips;
+        }
+        return trips;
     }
 
     private List<Trip> getTrips(List<Trip> trips, List<String> classes, Long queryId) {

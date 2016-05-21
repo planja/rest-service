@@ -68,7 +68,7 @@ public class ParserAC extends UntypedActor implements ParserActor {
                             float status = (float) statusCount.getCurrentStatus() / statusCount.getMaxStatus() * 100;
                             queryRepository.updateStatus(queryId, (int) status);
                             System.out.println(status + "%");
-                            System.out.println("Count -"+Status.count++);
+                            System.out.println("Count -" + Status.count++);
                             //System.out.println("Count - " + count++);
                         }
 
@@ -78,48 +78,21 @@ public class ParserAC extends UntypedActor implements ParserActor {
                             .getDaysBetweenDates(newRequestData.getOw_start_date(), newRequestData.getOw_end_date());
                     List<Date> rtDates = ProcessRequestHelperService
                             .getDaysBetweenDates(newRequestData.getRt_start_date(), newRequestData.getRt_end_date());
-                    for (Date date : owDates) {
-                        newRequestData.setOw_end_date(date);
-                        newRequestData.setOw_start_date(date);
+                    for (int i = 0; i < owDates.size(); i++) {
+                        newRequestData.setOw_start_date(owDates.get(i));
+                        newRequestData.setRt_start_date(rtDates.get(i));
                         Collection<Trip> flights = acParser.parse(newRequestData);
                         if (flights.size() != 0) {
-                            //System.out.println(Status.count++);
                             processingResultOfParserActor.tell(flights, self());
-                        }
-                        else {
+                        } else {
                             Long queryId = (long) newRequestData.getRequest_id();
                             StatusCount statusCount = Status.getStatusCountByQueryId(queryId);
                             Status.updateStatus(queryId);
                             float status = (float) statusCount.getCurrentStatus() / statusCount.getMaxStatus() * 100;
                             queryRepository.updateStatus(queryId, (int) status);
                             System.out.println(status + "%");
-                            System.out.println("Count -"+Status.count++);
-                            //System.out.println("Count - " + count++);
+                            System.out.println("Count -" + Status.count++);
                         }
-
-                    }
-                    String destination = newRequestData.getDestination();
-                    String origin = newRequestData.getOrigin();
-                    newRequestData.setOrigin(destination);
-                    newRequestData.setDestination(origin);
-                    for (Date date : rtDates) {
-                        newRequestData.setOw_start_date(date);
-                        newRequestData.setOw_end_date(date);
-                        Collection<Trip> flights = acParser.parse(newRequestData);
-                        if (flights.size() != 0)
-                            processingResultOfParserActor.tell(flights, self());
-                        else {
-                            Long queryId = (long) newRequestData.getRequest_id();
-                            StatusCount statusCount = Status.getStatusCountByQueryId(queryId);
-                            Status.updateStatus(queryId);
-                            float status = (float) statusCount.getCurrentStatus() / statusCount.getMaxStatus() * 100;
-                            queryRepository.updateStatus(queryId, (int) status);
-                            System.out.println(status + "%");
-                            System.out.println("Count -"+Status.count++);
-                            //System.out.println("Count - " + count++);
-                        }
-
-
                     }
                 }
             }
