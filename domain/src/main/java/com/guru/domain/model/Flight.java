@@ -31,6 +31,7 @@ public class Flight implements scala.Serializable {
     @Column(name = "flight_duration")
     private String flightDuration;
 
+
     @Column(name = "cabin")
     private String cabin;
 
@@ -114,6 +115,27 @@ public class Flight implements scala.Serializable {
         this.aircraft = aircraft;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+    }
+
+    public Flight(Flight flight) {
+        this.position = flight.getPosition();
+        this.parser = flight.getParser();
+        this.carrierCode = flight.getCarrierCode();
+        this.carrierName = flight.getCarrierName();
+        this.flightDuration = flight.getFlightDuration();
+        this.cabin = flight.getCabin();
+        this.departTime = flight.getDepartTime();
+        this.departDate = flight.getDepartDate();
+        this.departPlace = flight.getDepartPlace();
+        this.departCode = flight.getDepartCode();
+        this.arriveTime = flight.getArriveTime();
+        this.arriveDate = flight.getArriveDate();
+        this.arrivePlace = flight.getArrivePlace();
+        this.arriveCode = flight.getArriveCode();
+        this.flightNumber = flight.getFlightNumber();
+        this.layover = flight.getLayover();
+        this.aircraft = flight.getAircraft();
+
     }
 
     public Long getId() {

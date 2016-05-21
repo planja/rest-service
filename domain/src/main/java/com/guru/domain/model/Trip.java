@@ -110,6 +110,34 @@ public class Trip implements scala.Serializable {
         this.cost = cost;
     }
 
+
+    public Trip(Trip trip) {
+        this.departCode = trip.getDepartCode();
+        this.arriveCode = trip.getArriveCode();
+        this.departPlace = trip.getDepartPlace();
+        this.arrivePlace = trip.getArrivePlace();
+        this.tripDate = trip.getTripDate();
+        this.tripDuration = trip.getTripDuration();
+        this.cost = trip.getCost();
+        List<Flight> flights = trip.getFlights();
+        List<Flight> thisFlights = new ArrayList<>();
+        for(Flight flight : flights){
+            thisFlights.add(new Flight(flight));
+        }
+        this.flights = thisFlights;
+        this.queryId = trip.getQueryId();
+        this.stops = trip.getStops();
+        this.cabins = trip.getCabins();
+        this.carriers = trip.getCarriers();
+        this.layovers = trip.getLayovers();
+        this.flightLegs = trip.getFlightLegs();
+        this.flightNumbers = trip.getFlightNumbers();
+        this.direction = trip.getDirection();
+        this.miles = trip.getMiles();
+        this.tax = trip.getTax();
+
+    }
+
     @Override
     public String toString() {
         return "Trip{" +
@@ -325,6 +353,7 @@ public class Trip implements scala.Serializable {
         this.tax = tax;
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -332,6 +361,7 @@ public class Trip implements scala.Serializable {
 
         Trip trip = (Trip) o;
 
+        if (direction != trip.direction) return false;
         if (id != null ? !id.equals(trip.id) : trip.id != null) return false;
         if (departCode != null ? !departCode.equals(trip.departCode) : trip.departCode != null) return false;
         if (arriveCode != null ? !arriveCode.equals(trip.arriveCode) : trip.arriveCode != null) return false;
@@ -348,7 +378,14 @@ public class Trip implements scala.Serializable {
         if (carriers != null ? !carriers.equals(trip.carriers) : trip.carriers != null) return false;
         if (layovers != null ? !layovers.equals(trip.layovers) : trip.layovers != null) return false;
         if (flightLegs != null ? !flightLegs.equals(trip.flightLegs) : trip.flightLegs != null) return false;
-        return !(flightNumbers != null ? !flightNumbers.equals(trip.flightNumbers) : trip.flightNumbers != null);
+        if (flightNumbers != null ? !flightNumbers.equals(trip.flightNumbers) : trip.flightNumbers != null)
+            return false;
+        if (flights != null ? !flights.equals(trip.flights) : trip.flights != null) return false;
+        if (clasInfo != null ? !clasInfo.equals(trip.clasInfo) : trip.clasInfo != null) return false;
+        if (clas != null ? !clas.equals(trip.clas) : trip.clas != null) return false;
+        if (isComplete != null ? !isComplete.equals(trip.isComplete) : trip.isComplete != null) return false;
+        if (miles != null ? !miles.equals(trip.miles) : trip.miles != null) return false;
+        return !(tax != null ? !tax.equals(trip.tax) : trip.tax != null);
 
     }
 
@@ -371,6 +408,13 @@ public class Trip implements scala.Serializable {
         result = 31 * result + (layovers != null ? layovers.hashCode() : 0);
         result = 31 * result + (flightLegs != null ? flightLegs.hashCode() : 0);
         result = 31 * result + (flightNumbers != null ? flightNumbers.hashCode() : 0);
+        result = 31 * result + (flights != null ? flights.hashCode() : 0);
+        result = 31 * result + direction;
+        result = 31 * result + (clasInfo != null ? clasInfo.hashCode() : 0);
+        result = 31 * result + (clas != null ? clas.hashCode() : 0);
+        result = 31 * result + (isComplete != null ? isComplete.hashCode() : 0);
+        result = 31 * result + (miles != null ? miles.hashCode() : 0);
+        result = 31 * result + (tax != null ? tax.hashCode() : 0);
         return result;
     }
 
