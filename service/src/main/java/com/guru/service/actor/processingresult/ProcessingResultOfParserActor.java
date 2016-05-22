@@ -13,10 +13,7 @@ import com.guru.vo.transfer.Status;
 import com.guru.vo.transfer.StatusCount;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Spliterator;
-import java.util.Spliterators;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -34,12 +31,13 @@ public class ProcessingResultOfParserActor extends UntypedActor {
     private QueryRepository queryRepository;
 
 
-
     @Override
     public void onReceive(Object message) throws Exception {
         if (message instanceof List<?>) {
             List<Trip> trips = (List<Trip>) message;
-            System.out.println("Kol-vo poletov - "+trips.size());
+            System.out.println("Kol-vo poletov -  " + trips.size());
+            System.out.println(trips.get(0).getFlights().get(0).getParser() + " " + trips.size());
+
 
             for (Trip trip : trips) {
                 log.info(trip.getFlightNumbers() + " flights in this trip: " + trip.getFlights().get(0));
@@ -56,9 +54,9 @@ public class ProcessingResultOfParserActor extends UntypedActor {
             queryRepository.updateStatus(queryId, (int) status);
 
 
-            System.out.println(status+" %");
+            System.out.println(status + " %");
             System.out.println(status + "%");
-            System.out.println("Count -"+Status.count++);
+            System.out.println("Count -" + Status.count++);
 
             if (statusCount.getCurrentStatus() == statusCount.getMaxStatus())
                 Status.deleteFromStatusList(queryId);

@@ -79,6 +79,9 @@ public class ACParser implements Parser {
         MileCost mileCost = null;
         ComplexTrip flights = getAC(requestData.getDefaultHttpClient(), owDate, rtDate, requestData.getOrigin(), requestData.getDestination(),
                 requestData.getSeats(), requestData.getAccount());
+
+
+
         if (Objects.equals(requestData.getType(), "ow")) {
             List<Trip> owTrips = getTrips(flights.getOneWayList(), requestData.getCabins(),
                     (long) requestData.getRequest_id());
@@ -112,6 +115,7 @@ public class ACParser implements Parser {
             trips.addAll(owTrips);
             trips.addAll(rtTrips);
             return trips;
+
         }
         return trips;
     }
@@ -171,7 +175,6 @@ public class ACParser implements Parser {
     }
 
     public ComplexTrip getAC(DefaultHttpClient client, String date, String returnDate, String origin, String destination, int seats, Account account) throws UnsupportedEncodingException, IOException, IncorrectCredentials, ParseException, InterruptedException {
-
         DefaultHttpClient httpclient = new DefaultHttpClient();
         httpclient.getParams().setParameter(ClientPNames.COOKIE_POLICY, CookiePolicy.BROWSER_COMPATIBILITY);
         httpclient.setCookieStore(new BasicCookieStore());

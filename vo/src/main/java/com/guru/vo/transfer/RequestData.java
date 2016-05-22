@@ -40,8 +40,8 @@ public class RequestData {
     public RequestData(RequestData requestData) {
         this.parsers = requestData.getParsers();
         this.user = requestData.getUser();
-        this.origin = requestData.getOrigin();
-        this.destination = requestData.getDestination();
+        this.setOrigin(requestData.getOrigin());
+        this.setDestination(requestData.getDestination());
         this.ow_start_date = requestData.getOw_start_date();
         this.ow_end_date = requestData.getOw_end_date();
         this.rt_start_date = requestData.getRt_start_date();
@@ -53,6 +53,23 @@ public class RequestData {
         this.type = requestData.getType();
         this.request_id = requestData.getRequest_id();
         this.user_id = requestData.getUser_id();
+
+
+       /* this.setParsers(requestData.getParsers());
+        this.setUser(requestData.getUser());
+        this.setOrigin(requestData.getOrigin());
+        this.setDestination(requestData.getDestination());
+        this.setOw_start_date(requestData.getOw_start_date());
+        this.setOw_end_date(requestData.getOw_end_date());
+        this.setRt_start_date(requestData.getRt_start_date());
+        this.setRt_end_date(requestData.getRt_end_date());
+        this.setOw_except_dates(requestData.getOw_except_dates());
+        this.setRt_except_dates(requestData.getRt_except_dates());
+        this.setSeats(requestData.getSeats());
+        this.setCabins(requestData.getCabins());
+        this.setType(requestData.getType());
+        this.setRequest_id(requestData.getRequest_id());
+        this.setUser_id(requestData.getUser_id());*/
     }
 
     public RequestData() {

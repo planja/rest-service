@@ -76,6 +76,7 @@ public class QFParser implements Parser {
         ComplexTrip flights = getQantas(requestData.getDefaultHttpClient(), requestData.getOw_start_date(),
                 requestData.getRt_start_date(), requestData.getOrigin(), requestData.getDestination(),
                 requestData.getSeats());
+
         if (Objects.equals(requestData.getType(), "ow")) {
             List<Trip> owTrips = getTrips(flights.getOneWayList(), requestData.getCabins(),
                     (long) requestData.getRequest_id());
@@ -108,6 +109,7 @@ public class QFParser implements Parser {
             }
             trips.addAll(owTrips);
             trips.addAll(rtTrips);
+            ;
             return trips;
         }
         return trips;

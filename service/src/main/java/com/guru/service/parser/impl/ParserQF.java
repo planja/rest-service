@@ -16,10 +16,7 @@ import com.guru.vo.utils.ProcessRequestHelperService;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import javax.inject.Inject;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import static com.guru.domain.config.SpringExtension.SpringExtProvider;
 
@@ -55,14 +52,21 @@ public class ParserQF extends UntypedActor implements ParserActor {
             newRequestData.setAccount(account);
             newRequestData.setDefaultHttpClient(httpclient);
             if (Objects.equals(newRequestData.getType(), "ow")) {
-                List<Date> owDates = newRequestData.getOwDates();
-                for (Date date : owDates) {
-                    newRequestData.setOw_end_date(date);
-                    newRequestData.setOw_start_date(date);
-                    Collection<Trip> flights = qfParser.parse(newRequestData);
-                    if (flights.size() != 0)
+                List<Date> owDates = ProcessRequestHelperService
+                        .getDaysBetweenDates(newRequestData.getOw_start_date(), newRequestData.getOw_end_date());
+                for (int i = 0; i < owDates.size(); i++) {
+                    newRequestData.setOw_start_date(owDates.get(i));
+                    newRequestData.setRt_start_date(owDates.get(i));
+                    Collection<Trip> flights;
+                    try {
+                        flights = qfParser.parse(newRequestData);
+                    } catch (Exception e) {
+                        System.out.println("EXEPTION");
+                        flights = new ArrayList<>();
+                    }
+                    if (flights.size() != 0) {
                         processingResultOfParserActor.tell(flights, self());
-                    else {
+                    } else {
                         Long queryId = (long) newRequestData.getRequest_id();
                         StatusCount statusCount = Status.getStatusCountByQueryId(queryId);
                         Status.updateStatus(queryId);
@@ -70,9 +74,7 @@ public class ParserQF extends UntypedActor implements ParserActor {
                         queryRepository.updateStatus(queryId, (int) status);
                         System.out.println(status + "%");
                         System.out.println("Count -" + Status.count++);
-                        //System.out.println("Count - " + count++);
                     }
-
                 }
             } else {
                 List<Date> owDates = ProcessRequestHelperService
@@ -82,8 +84,12 @@ public class ParserQF extends UntypedActor implements ParserActor {
                 for (int i = 0; i < owDates.size(); i++) {
                     newRequestData.setOw_start_date(owDates.get(i));
                     newRequestData.setRt_start_date(rtDates.get(i));
-                    Collection<Trip> flights = qfParser.parse(newRequestData);
-                    if (flights.size() != 0) {
+                    Collection<Trip> flights;
+                    try {
+                        flights = qfParser.parse(newRequestData);
+                    } catch (Exception e) {
+                        flights = new ArrayList<>();
+                    }                    if (flights.size() != 0) {
                         processingResultOfParserActor.tell(flights, self());
                     } else {
                         Long queryId = (long) newRequestData.getRequest_id();
