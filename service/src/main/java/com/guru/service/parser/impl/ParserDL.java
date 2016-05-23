@@ -59,12 +59,13 @@ public class ParserDL extends UntypedActor implements ParserActor {
                     callables.add(new ParserDLDataThread(dlParser, reqData, processingResultOfParserActor, this));
 
                 }
-                String destination = requestData.getDestination();
-                String origin = requestData.getOrigin();
-                requestData.setOrigin(destination);
-                requestData.setDestination(origin);
+                RequestData reqData = new RequestData(requestData);
+
+                String destination = reqData.getDestination();
+                String origin = reqData.getOrigin();
+                reqData.setOrigin(destination);
+                reqData.setDestination(origin);
                 for (Date date : rtDates) {
-                    RequestData reqData = new RequestData(requestData);
                     reqData.setOw_end_date(date);
                     reqData.setOw_start_date(date);
                     System.out.println(date);

@@ -43,6 +43,8 @@ public class ParserUtils {
         String regexp = "";
         if (parser instanceof QFParser)
             regexp = "((\\d*)h\\s)?(\\d*)m";
+        if (parser instanceof QFParser)
+            regexp = "((\\d*)h\\s)?(\\d*)m";
         if (parser instanceof ACParser) {
 
             regexp = "((\\d*)[h]\\s)?(\\d*)[min]";
@@ -86,6 +88,7 @@ public class ParserUtils {
 
     }
 
+
     public static String getCarriers(List<Flight> flights) {
         String str = "[" + flights.stream().map(o -> "\"" + o.getCarrierCode() + "\",").collect(Collectors.joining()) + "]";//??????
         int index = str.lastIndexOf(',');//Переделать
@@ -105,7 +108,6 @@ public class ParserUtils {
     }
 
 
-
     public static void setMiles2Trip(List<Trip> trips, MileCost mileCost) {
         if (mileCost == null) return;
         List<String> miles1 = new ArrayList<>();
@@ -118,12 +120,17 @@ public class ParserUtils {
             String m = trip.getClasInfo().stream().filter(o -> Objects.equals(o.getReduction(), trip.getClas()))
                     .findFirst().get().getMileage();
             System.out.println(m);
+            Integer miles;
 
-
-            Integer miles = Integer.valueOf(trip.getClasInfo().stream()
-                    .filter(o -> Objects.equals(o.getReduction(), trip.getClas()))
-                    .findFirst().get().getMileage());
+            try {
+                miles = Integer.valueOf(trip.getClasInfo().stream()
+                        .filter(o -> Objects.equals(o.getReduction(), trip.getClas()))
+                        .findFirst().get().getMileage());
+            } catch (NumberFormatException f) {
+                miles = 0;
+            }
             trip.setMiles(miles);
+
             BigDecimal tax = BigDecimal.ZERO;
             if (trip.getTax() != null) tax = trip.getTax();
             double parserCost = miles / 100 * mileCost.getCost().doubleValue() + tax.doubleValue();

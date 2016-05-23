@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 public class ParserConfig {
 
     @Bean
-    public QFParser qfParser(){
+    public QFParser qfParserr(){
         return new QFParser();
     }
 

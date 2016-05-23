@@ -53,7 +53,7 @@ public class Status {
                 case "QF":
                     int count;
                     if (Objects.equals(requestData.getType(), "rt"))
-                        count = requestData.getReturnDates().size() + requestData.getOwDates().size();
+                        count = requestData.getReturnDates().size()/* + requestData.getOwDates().size()*/;
                     else count = requestData.getOwDates().size();
                     totalCount += count;
                     break;
@@ -74,7 +74,7 @@ public class Status {
                 case "AC":
                     int acCount;
                     if (Objects.equals(requestData.getType(), "rt"))
-                        acCount = requestData.getReturnDates().size() + requestData.getOwDates().size();
+                        acCount = requestData.getReturnDates().size()/* + requestData.getOwDates().size()*/;
                     else acCount = requestData.getOwDates().size();
                     totalCount += acCount;
                     break;
